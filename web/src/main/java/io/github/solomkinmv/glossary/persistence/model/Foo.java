@@ -1,4 +1,4 @@
-package io.github.solomkinmv.glossary.web.model;
+package io.github.solomkinmv.glossary.persistence.model;
 
 /**
  * Created by max on 28.12.16.

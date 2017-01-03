@@ -1,7 +1,7 @@
 package io.github.solomkinmv.glossary.web.controller;
 
-import io.github.solomkinmv.glossary.web.model.Foo;
-import io.github.solomkinmv.glossary.web.service.FooService;
+import io.github.solomkinmv.glossary.persistence.model.Foo;
+import io.github.solomkinmv.glossary.service.FooService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;

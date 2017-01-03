@@ -1,6 +1,6 @@
-package io.github.solomkinmv.glossary.web.service;
+package io.github.solomkinmv.glossary.service;
 
-import io.github.solomkinmv.glossary.web.model.Foo;
+import io.github.solomkinmv.glossary.persistence.model.Foo;
 
 import java.util.List;
 
