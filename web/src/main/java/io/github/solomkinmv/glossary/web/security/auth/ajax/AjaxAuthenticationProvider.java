@@ -52,10 +52,6 @@ public class AjaxAuthenticationProvider extends AbstractUserDetailsAuthenticatio
             throw new BadCredentialsException("Authentication failed. Username or password not valid");
         }
 
-        if (!encoder.matches(password, user.getPassword())) {
-            throw new BadCredentialsException("Authentication failed. Username or password not valid");
-        }
-
         if (user.getRoles() == null) {
             throw new InsufficientAuthenticationException("User has not roles assigned");
         }

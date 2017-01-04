@@ -7,11 +7,12 @@ import io.github.solomkinmv.glossary.web.security.model.token.RawAccessJwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.List;
  * TODO: add JavaDoc
  */
 @Component
-public class JwtAuthenticationProvider implements AuthenticationProvider {
+public class JwtAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
     private final JwtSettings jwtSettings;
 
     @Autowired
@@ -30,7 +31,13 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    protected void additionalAuthenticationChecks(UserDetails userDetails,
+                                                  UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+    }
+
+    @Override
+    protected UserDetails retrieveUser(String username,
+                                       UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         RawAccessJwt rawAccessJwt = (RawAccessJwt) authentication.getCredentials();
 
         // FIXME: the same operations in RefreshTokenEndpoint done using RefreshJwt
@@ -40,9 +47,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
         List<GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(scopes);
 
-        AuthenticatedUser authenticatedUser = new AuthenticatedUser(subject, authorities);
-
-        return new JwtAuthenticationToken(authenticatedUser, authorities);
+        return new AuthenticatedUser(subject, authorities);
     }
 
     @Override
