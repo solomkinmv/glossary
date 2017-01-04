@@ -15,7 +15,6 @@ import org.springframework.util.StringUtils;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -66,7 +65,7 @@ public class JwtTokenFactory {
         }
 
         Claims claims = Jwts.claims().setSubject(authenticatedUser.getUsername());
-        claims.put("scopes", Collections.singletonList(Scopes.REFRESH_TOKEN.authority()));
+        claims.put("scopes", Scopes.REFRESH_TOKEN.authority());
 
         Instant currentTime = Instant.now();
         Instant tokenExpirationTime = currentTime.plus(settings.getRefreshTokenExpTime(), ChronoUnit.MINUTES);
