@@ -1,4 +1,4 @@
-package io.github.solomkinmv.glossary.web.security.auth.jwt.extractor;
+package io.github.solomkinmv.glossary.web.security.auth.extractor;
 
 /**
  * Created by max on 03.01.17.

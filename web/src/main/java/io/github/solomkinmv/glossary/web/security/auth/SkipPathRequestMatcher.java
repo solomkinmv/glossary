@@ -1,4 +1,4 @@
-package io.github.solomkinmv.glossary.web.security.auth.jwt;
+package io.github.solomkinmv.glossary.web.security.auth;
 
 import io.jsonwebtoken.lang.Assert;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;

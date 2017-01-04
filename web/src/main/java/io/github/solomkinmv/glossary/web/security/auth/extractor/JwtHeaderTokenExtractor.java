@@ -1,4 +1,4 @@
-package io.github.solomkinmv.glossary.web.security.auth.jwt.extractor;
+package io.github.solomkinmv.glossary.web.security.auth.extractor;
 
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.stereotype.Component;

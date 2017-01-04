@@ -1,6 +1,6 @@
-package io.github.solomkinmv.glossary.web.security.auth.jwt;
+package io.github.solomkinmv.glossary.web.security.auth;
 
-import io.github.solomkinmv.glossary.web.security.auth.jwt.extractor.TokenExtractor;
+import io.github.solomkinmv.glossary.web.security.auth.extractor.TokenExtractor;
 import io.github.solomkinmv.glossary.web.security.config.WebSecurityConfig;
 import io.github.solomkinmv.glossary.web.security.model.JwtAuthenticationToken;
 import io.github.solomkinmv.glossary.web.security.model.token.RawAccessJwt;

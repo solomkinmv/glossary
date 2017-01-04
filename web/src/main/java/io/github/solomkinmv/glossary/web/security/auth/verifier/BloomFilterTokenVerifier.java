@@ -1,4 +1,4 @@
-package io.github.solomkinmv.glossary.web.security.auth.jwt.verifier;
+package io.github.solomkinmv.glossary.web.security.auth.verifier;
 
 import org.springframework.stereotype.Component;
 

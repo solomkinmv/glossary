@@ -1,4 +1,4 @@
-package io.github.solomkinmv.glossary.web.security.auth.jwt;
+package io.github.solomkinmv.glossary.web.security.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.solomkinmv.glossary.web.security.exception.AuthMethodNotSupportedException;

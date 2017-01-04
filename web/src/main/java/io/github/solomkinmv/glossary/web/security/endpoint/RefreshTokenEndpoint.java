@@ -1,8 +1,8 @@
 package io.github.solomkinmv.glossary.web.security.endpoint;
 
 import io.github.solomkinmv.glossary.persistence.model.User;
-import io.github.solomkinmv.glossary.web.security.auth.jwt.extractor.TokenExtractor;
-import io.github.solomkinmv.glossary.web.security.auth.jwt.verifier.TokenVerifier;
+import io.github.solomkinmv.glossary.web.security.auth.extractor.TokenExtractor;
+import io.github.solomkinmv.glossary.web.security.auth.verifier.TokenVerifier;
 import io.github.solomkinmv.glossary.web.security.config.JwtSettings;
 import io.github.solomkinmv.glossary.web.security.config.WebSecurityConfig;
 import io.github.solomkinmv.glossary.web.security.exception.InvalidJwt;
