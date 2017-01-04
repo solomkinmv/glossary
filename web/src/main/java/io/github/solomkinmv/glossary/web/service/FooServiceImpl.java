@@ -1,4 +1,4 @@
-package io.github.solomkinmv.glossary.service;
+package io.github.solomkinmv.glossary.web.service;
 
 import io.github.solomkinmv.glossary.persistence.model.Foo;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ public class FooServiceImpl implements FooService {
     private final Map<Long, Foo> foos;
 
     public FooServiceImpl() {
-        this.foos = new HashMap<>();
+        foos = new HashMap<>();
         foos.put(1L, new Foo(1L, "foo1"));
         foos.put(2L, new Foo(1L, "foo2"));
         foos.put(3L, new Foo(1L, "foo3"));

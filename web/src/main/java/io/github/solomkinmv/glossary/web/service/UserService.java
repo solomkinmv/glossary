@@ -1,4 +1,4 @@
-package io.github.solomkinmv.glossary.service;
+package io.github.solomkinmv.glossary.web.service;
 
 import io.github.solomkinmv.glossary.persistence.model.User;
 

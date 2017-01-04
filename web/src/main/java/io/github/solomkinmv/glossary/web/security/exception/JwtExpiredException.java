@@ -1,6 +1,6 @@
 package io.github.solomkinmv.glossary.web.security.exception;
 
-import io.github.solomkinmv.glossary.web.security.model.token.JwtToken;
+import io.github.solomkinmv.glossary.web.security.model.token.Jwt;
 import org.springframework.security.core.AuthenticationException;
 
 /**
@@ -9,20 +9,20 @@ import org.springframework.security.core.AuthenticationException;
  */
 public class JwtExpiredException extends AuthenticationException {
 
-    private final JwtToken token;
+    private final Jwt token;
 
     public JwtExpiredException(String msg, Throwable t,
-                               JwtToken token) {
+                               Jwt token) {
         super(msg, t);
         this.token = token;
     }
 
-    public JwtExpiredException(String msg, JwtToken token) {
+    public JwtExpiredException(String msg, Jwt token) {
         super(msg);
         this.token = token;
     }
 
-    public JwtToken getToken() {
+    public Jwt getToken() {
         return token;
     }
 }

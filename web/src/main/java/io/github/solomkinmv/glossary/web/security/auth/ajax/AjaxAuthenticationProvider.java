@@ -1,13 +1,13 @@
 package io.github.solomkinmv.glossary.web.security.auth.ajax;
 
 import io.github.solomkinmv.glossary.persistence.model.User;
-import io.github.solomkinmv.glossary.service.UserService;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
-import io.github.solomkinmv.glossary.web.security.model.JwtAuthenticationToken;
+import io.github.solomkinmv.glossary.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -58,12 +58,11 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
 
         AuthenticatedUser authenticatedUser = new AuthenticatedUser(user.getId(), user.getUsername(), authorities);
 
-        // todo: remove constructor with credentials = null
-        return new JwtAuthenticationToken(authenticatedUser, null, authorities);
+        return new UsernamePasswordAuthenticationToken(authenticatedUser, null, authorities);
     }
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return (JwtAuthenticationToken.class.isAssignableFrom(authentication));
+        return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
     }
 }

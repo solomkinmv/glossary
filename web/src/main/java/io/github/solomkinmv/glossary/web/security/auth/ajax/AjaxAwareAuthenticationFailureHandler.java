@@ -21,6 +21,7 @@ import java.io.IOException;
 /**
  * Created by max on 03.01.17.
  * TODO: add JavaDoc
+ * TODO: it is used for jwt and ajax, move rename it and move somewhere
  */
 @Component
 public class AjaxAwareAuthenticationFailureHandler implements AuthenticationFailureHandler {
@@ -51,7 +52,7 @@ public class AjaxAwareAuthenticationFailureHandler implements AuthenticationFail
         }
 
         // TODO: check second statement if it overrides the first one
-        mapper.writeValue(response.getWriter(),
-                ErrorResponse.of("Authentication failed", ErrorCode.AUTHENTICATION, HttpStatus.UNAUTHORIZED));
+//        mapper.writeValue(response.getWriter(),
+//                ErrorResponse.of("Authentication failed", ErrorCode.AUTHENTICATION, HttpStatus.UNAUTHORIZED));
     }
 }

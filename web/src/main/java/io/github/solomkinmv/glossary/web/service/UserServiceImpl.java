@@ -1,7 +1,8 @@
-package io.github.solomkinmv.glossary.service;
+package io.github.solomkinmv.glossary.web.service;
 
 import io.github.solomkinmv.glossary.persistence.model.User;
 import io.github.solomkinmv.glossary.persistence.model.UserRole;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
@@ -14,7 +15,9 @@ import static java.util.Collections.singletonList;
  * Created by max on 02.01.17.
  * TODO: add JavaDoc
  */
+@Service
 public class UserServiceImpl implements UserService {
+
     @Override
     public Optional<User> getByUsername(String username) {
         switch (username) {

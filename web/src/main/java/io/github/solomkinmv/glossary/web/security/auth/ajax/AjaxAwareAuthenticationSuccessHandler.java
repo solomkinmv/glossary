@@ -2,7 +2,7 @@ package io.github.solomkinmv.glossary.web.security.auth.ajax;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
-import io.github.solomkinmv.glossary.web.security.model.token.JwtToken;
+import io.github.solomkinmv.glossary.web.security.model.token.Jwt;
 import io.github.solomkinmv.glossary.web.security.util.JwtTokenFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -38,8 +38,8 @@ public class AjaxAwareAuthenticationSuccessHandler implements AuthenticationSucc
                                         Authentication authentication) throws IOException, ServletException {
         AuthenticatedUser authenticatedUser = (AuthenticatedUser) authentication.getPrincipal();
 
-        JwtToken accessToken = tokenFactory.createAccessJwtToken(authenticatedUser);
-        JwtToken refreshToken = tokenFactory.createRefreshToken(authenticatedUser);
+        Jwt accessToken = tokenFactory.createAccessJwtToken(authenticatedUser);
+        Jwt refreshToken = tokenFactory.createRefreshToken(authenticatedUser);
 
         Map<String, String> tokenMap = new HashMap<>();
         tokenMap.put("token", accessToken.getToken());

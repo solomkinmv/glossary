@@ -1,4 +1,8 @@
-def jsonWebTokenVerion = "0.7.0"
+def jsonWebTokenVersion = "0.7.0"
+
+ext {
+    jsonwebtoken = "io.jsonwebtoken:jjwt:${jsonWebTokenVersion}"
+}
 
 buildscript {
     ext {
