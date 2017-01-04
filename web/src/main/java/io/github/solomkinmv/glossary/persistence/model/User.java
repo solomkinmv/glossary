@@ -11,6 +11,7 @@ public class User {
     private String username;
     private String password;
     private List<UserRole> roles;
+    private String details;
 
     public User() {
     }
@@ -36,5 +37,13 @@ public class User {
 
     public List<UserRole> getRoles() {
         return roles;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
     }
 }

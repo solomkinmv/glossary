@@ -4,6 +4,8 @@ import io.github.solomkinmv.glossary.persistence.model.User;
 import io.github.solomkinmv.glossary.persistence.model.UserRole;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static io.github.solomkinmv.glossary.persistence.model.Role.ADMIN;
@@ -18,17 +20,23 @@ import static java.util.Collections.singletonList;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private final Map<String, User> users;
+
+    public UserServiceImpl() {
+        users = new HashMap<>();
+        users.put("user1", new User(1L, "user1", "$2a$10$bnC26zz//2cavYoSCrlHdecWF8tkGfPodlHcYwlACBBwJvcEf0p2G",
+                asList(new UserRole(1L, ADMIN), new UserRole(2L, USER))));
+        users.put("user2", new User(2L, "user2", "$2a$10$bnC26zz//2cavYoSCrlHdecWF8tkGfPodlHcYwlACBBwJvcEf0p2G",
+                singletonList(new UserRole(2L, USER))));
+    }
+
     @Override
     public Optional<User> getByUsername(String username) {
-        switch (username) {
-            case "user1":
-                return Optional.of(new User(1L, "user1", "$2a$10$bnC26zz//2cavYoSCrlHdecWF8tkGfPodlHcYwlACBBwJvcEf0p2G",
-                        asList(new UserRole(1L, ADMIN), new UserRole(2L, USER))));
-            case "user2":
-                return Optional.of(new User(2L, "user2", "$2a$10$bnC26zz//2cavYoSCrlHdecWF8tkGfPodlHcYwlACBBwJvcEf0p2G",
-                        singletonList(new UserRole(2L, USER))));
-        }
+        return Optional.ofNullable(users.get(username));
+    }
 
-        return Optional.empty();
+    @Override
+    public void addUser(User user) {
+        users.put(user.getUsername(), user);
     }
 }
