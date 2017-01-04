@@ -44,7 +44,7 @@ public class JwtTokenFactory {
 
         Claims claims = Jwts.claims().setSubject(authenticatedUser.getUsername());
         claims.put("scopes",
-                authenticatedUser.getAuthorities().stream().map(Object::toString).collect(Collectors.toList()));
+                authenticatedUser.getAuthorities().stream().map(Object::toString).collect(Collectors.joining(",")));
 
         Instant currentTime = Instant.now();
         Instant tokenExpirationTime = currentTime.plus(settings.getTokenExpirationTime(), ChronoUnit.MINUTES);

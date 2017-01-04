@@ -11,18 +11,12 @@ import java.util.Collection;
  */
 public class AuthenticatedUser implements UserDetails {
 
-    private final Long id;
     private final String username;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public AuthenticatedUser(Long id, String username, Collection<? extends GrantedAuthority> authorities) {
-        this.id = id;
+    public AuthenticatedUser(String username, Collection<? extends GrantedAuthority> authorities) {
         this.username = username;
         this.authorities = authorities;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     @Override

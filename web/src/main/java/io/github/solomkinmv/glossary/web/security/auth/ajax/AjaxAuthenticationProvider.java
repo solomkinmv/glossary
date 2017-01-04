@@ -4,14 +4,14 @@ import io.github.solomkinmv.glossary.persistence.model.User;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
 import io.github.solomkinmv.glossary.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * TODO: extend from AbstractUserDetailsAuthenticationProvider
  */
 @Component
-public class AjaxAuthenticationProvider implements AuthenticationProvider {
+public class AjaxAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     private final BCryptPasswordEncoder encoder;
     private final UserService userService;
@@ -36,12 +36,21 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String username = (String) authentication.getPrincipal();
-        String password = (String) authentication.getCredentials();
+    protected void additionalAuthenticationChecks(UserDetails userDetails,
+                                                  UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+    }
 
+    @Override
+    protected UserDetails retrieveUser(String username,
+                                       UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         User user = userService.getByUsername(username)
                                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+
+        String password = (String) authentication.getCredentials();
+
+        if (!encoder.matches(password, user.getPassword())) {
+            throw new BadCredentialsException("Authentication failed. Username or password not valid");
+        }
 
         if (!encoder.matches(password, user.getPassword())) {
             throw new BadCredentialsException("Authentication failed. Username or password not valid");
@@ -56,9 +65,7 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
                                                          authority.getRole().authority()))
                                                  .collect(Collectors.toList());
 
-        AuthenticatedUser authenticatedUser = new AuthenticatedUser(user.getId(), user.getUsername(), authorities);
-
-        return new UsernamePasswordAuthenticationToken(authenticatedUser, null, authorities);
+        return new AuthenticatedUser(user.getUsername(), authorities);
     }
 
     @Override

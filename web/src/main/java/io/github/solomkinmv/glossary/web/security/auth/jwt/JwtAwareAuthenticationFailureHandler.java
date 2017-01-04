@@ -1,4 +1,4 @@
-package io.github.solomkinmv.glossary.web.security.auth.ajax;
+package io.github.solomkinmv.glossary.web.security.auth.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.solomkinmv.glossary.web.security.exception.AuthMethodNotSupportedException;
@@ -24,11 +24,11 @@ import java.io.IOException;
  * TODO: it is used for jwt and ajax, move rename it and move somewhere
  */
 @Component
-public class AjaxAwareAuthenticationFailureHandler implements AuthenticationFailureHandler {
+public class JwtAwareAuthenticationFailureHandler implements AuthenticationFailureHandler {
     private final ObjectMapper mapper;
 
     @Autowired
-    public AjaxAwareAuthenticationFailureHandler(ObjectMapper mapper) {
+    public JwtAwareAuthenticationFailureHandler(ObjectMapper mapper) {
         this.mapper = mapper;
     }
 

@@ -1,4 +1,4 @@
-package io.github.solomkinmv.glossary.web.security.auth.ajax;
+package io.github.solomkinmv.glossary.web.security.auth.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
@@ -23,12 +23,12 @@ import java.util.Map;
  * TODO: add JavaDoc
  */
 @Component
-public class AjaxAwareAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+public class JwtAwareAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
     private final ObjectMapper mapper;
     private final JwtTokenFactory tokenFactory;
 
     @Autowired
-    public AjaxAwareAuthenticationSuccessHandler(ObjectMapper mapper, JwtTokenFactory tokenFactory) {
+    public JwtAwareAuthenticationSuccessHandler(ObjectMapper mapper, JwtTokenFactory tokenFactory) {
         this.mapper = mapper;
         this.tokenFactory = tokenFactory;
     }

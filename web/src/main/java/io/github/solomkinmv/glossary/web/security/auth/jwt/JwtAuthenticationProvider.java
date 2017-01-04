@@ -11,18 +11,16 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by max on 04.01.17.
  * TODO: add JavaDoc
  */
 @Component
-@SuppressWarnings("unchecked")
 public class JwtAuthenticationProvider implements AuthenticationProvider {
     private final JwtSettings jwtSettings;
 
@@ -38,14 +36,11 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         // FIXME: the same operations in RefreshTokenEndpoint done using RefreshJwt
         Jws<Claims> claims = rawAccessJwt.parseClaims(jwtSettings.getTokenSigningKey());
         String subject = claims.getBody().getSubject();
-        List<String> scopes = claims.getBody().get("scopes", List.class);
+        String scopes = claims.getBody().get("scopes", String.class);
 
-        List<GrantedAuthority> authorities = scopes.stream()
-                                                   .map(authority -> new SimpleGrantedAuthority(authority))
-                                                   .collect(Collectors.toList());
+        List<GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(scopes);
 
-        // FIXME: deal with null instead of id
-        AuthenticatedUser authenticatedUser = new AuthenticatedUser(null, subject, authorities);
+        AuthenticatedUser authenticatedUser = new AuthenticatedUser(subject, authorities);
 
         return new JwtAuthenticationToken(authenticatedUser, authorities);
     }

@@ -65,6 +65,8 @@ public class RefreshTokenEndpoint {
             throw new InvalidJwt();
         }
 
+
+        // TODO: get all necessary data from JWT
         String subject = refreshToken.getSubject();
         User user = userService.getByUsername(subject)
                                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + subject));
@@ -77,7 +79,7 @@ public class RefreshTokenEndpoint {
                                                          authority.getRole().authority()))
                                                  .collect(Collectors.toList());
 
-        AuthenticatedUser authenticatedUser = new AuthenticatedUser(user.getId(), user.getUsername(), authorities);
+        AuthenticatedUser authenticatedUser = new AuthenticatedUser(user.getUsername(), authorities);
 
         return jwtTokenFactory.createRefreshToken(authenticatedUser);
     }
