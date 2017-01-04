@@ -1,11 +1,9 @@
 package io.github.solomkinmv.glossary.web.security.auth;
 
-import io.github.solomkinmv.glossary.web.security.config.JwtSettings;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
+import io.github.solomkinmv.glossary.web.security.model.JsonWebToken;
 import io.github.solomkinmv.glossary.web.security.model.JwtAuthenticationToken;
-import io.github.solomkinmv.glossary.web.security.model.token.RawAccessJwt;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
+import io.github.solomkinmv.glossary.web.security.util.JwtParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -22,23 +20,23 @@ import java.util.List;
  */
 @Component
 public class JwtAuthenticationProvider implements AuthenticationProvider {
-    private final JwtSettings jwtSettings;
+    private final JwtParser jwtParser;
 
     @Autowired
-    public JwtAuthenticationProvider(JwtSettings jwtSettings) {
-        this.jwtSettings = jwtSettings;
+    public JwtAuthenticationProvider(JwtParser jwtParser) {
+        this.jwtParser = jwtParser;
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        RawAccessJwt rawAccessJwt = (RawAccessJwt) authentication.getCredentials();
+        String rawToken = (String) authentication.getCredentials();
 
-        // FIXME: the same operations in RefreshTokenEndpoint done using RefreshJwt
-        Jws<Claims> claims = rawAccessJwt.parseClaims(jwtSettings.getTokenSigningKey());
-        String subject = claims.getBody().getSubject();
-        String scopes = claims.getBody().get("scopes", String.class);
+        JsonWebToken token = jwtParser.parseToken(rawToken);
 
-        List<GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(scopes);
+        String subject = token.getSubject();
+        String scope = token.getScope();
+
+        List<GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(scope);
 
         AuthenticatedUser authenticatedUser = new AuthenticatedUser(subject, authorities);
 

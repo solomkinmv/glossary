@@ -3,8 +3,8 @@ package io.github.solomkinmv.glossary.web.security.endpoint;
 import io.github.solomkinmv.glossary.persistence.model.User;
 import io.github.solomkinmv.glossary.web.security.config.WebSecurityConfig;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
+import io.github.solomkinmv.glossary.web.security.model.JsonWebToken;
 import io.github.solomkinmv.glossary.web.security.model.LoginRequest;
-import io.github.solomkinmv.glossary.web.security.model.token.Jwt;
 import io.github.solomkinmv.glossary.web.security.util.JwtTokenFactory;
 import io.github.solomkinmv.glossary.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,12 +58,12 @@ public class LoginEndpoint {
 
         AuthenticatedUser authenticatedUser = new AuthenticatedUser(username, authorities);
 
-        Jwt accessToken = tokenFactory.createAccessJwtToken(authenticatedUser);
-        Jwt refreshToken = tokenFactory.createRefreshToken(authenticatedUser);
+        JsonWebToken accessToken = tokenFactory.createAccessJwtToken(authenticatedUser);
+        JsonWebToken refreshToken = tokenFactory.createRefreshToken(authenticatedUser);
 
         Map<String, String> tokenMap = new HashMap<>();
-        tokenMap.put("token", accessToken.getToken());
-        tokenMap.put("refreshToken", refreshToken.getToken());
+        tokenMap.put("token", accessToken.getRawToken());
+        tokenMap.put("refreshToken", refreshToken.getRawToken());
 
         return tokenMap;
     }

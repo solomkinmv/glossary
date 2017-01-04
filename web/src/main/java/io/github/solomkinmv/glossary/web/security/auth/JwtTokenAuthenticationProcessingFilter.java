@@ -3,7 +3,6 @@ package io.github.solomkinmv.glossary.web.security.auth;
 import io.github.solomkinmv.glossary.web.security.auth.extractor.TokenExtractor;
 import io.github.solomkinmv.glossary.web.security.config.WebSecurityConfig;
 import io.github.solomkinmv.glossary.web.security.model.JwtAuthenticationToken;
-import io.github.solomkinmv.glossary.web.security.model.token.RawAccessJwt;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
@@ -37,8 +36,9 @@ public class JwtTokenAuthenticationProcessingFilter extends AbstractAuthenticati
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
         String tokenPayload = request.getHeader(WebSecurityConfig.JWT_TOKEN_HEADER_PARAM);
-        RawAccessJwt token = new RawAccessJwt(tokenExtractor.extract(tokenPayload));
-        return getAuthenticationManager().authenticate(new JwtAuthenticationToken(token));
+
+        String rawToken = tokenExtractor.extract(tokenPayload);
+        return getAuthenticationManager().authenticate(new JwtAuthenticationToken(rawToken));
     }
 
     @Override

@@ -2,9 +2,8 @@ package io.github.solomkinmv.glossary.web.security.util;
 
 import io.github.solomkinmv.glossary.web.security.config.JwtSettings;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
+import io.github.solomkinmv.glossary.web.security.model.JsonWebToken;
 import io.github.solomkinmv.glossary.web.security.model.Scopes;
-import io.github.solomkinmv.glossary.web.security.model.token.AccessJwt;
-import io.github.solomkinmv.glossary.web.security.model.token.Jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -32,7 +31,7 @@ public class JwtTokenFactory {
     }
 
     /* TODO: use template method pattern*/
-    public AccessJwt createAccessJwtToken(AuthenticatedUser authenticatedUser) {
+    public JsonWebToken createAccessJwtToken(AuthenticatedUser authenticatedUser) {
         if (StringUtils.isEmpty(authenticatedUser.getUsername())) {
             throw new IllegalArgumentException("Cannot create JWT without username");
         }
@@ -56,10 +55,10 @@ public class JwtTokenFactory {
                            .signWith(SignatureAlgorithm.HS512, settings.getTokenSigningKey())
                            .compact();
 
-        return new AccessJwt(token, claims);
+        return new JsonWebToken(token, claims);
     }
 
-    public Jwt createRefreshToken(AuthenticatedUser authenticatedUser) {
+    public JsonWebToken createRefreshToken(AuthenticatedUser authenticatedUser) {
         if (StringUtils.isEmpty(authenticatedUser.getUsername())) {
             throw new IllegalArgumentException("Cannot create JWT without username");
         }
@@ -79,6 +78,6 @@ public class JwtTokenFactory {
                            .signWith(SignatureAlgorithm.HS512, settings.getTokenSigningKey())
                            .compact();
 
-        return new AccessJwt(token, claims);
+        return new JsonWebToken(token, claims);
     }
 }

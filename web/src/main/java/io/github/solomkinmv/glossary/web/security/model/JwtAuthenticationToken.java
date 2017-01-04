@@ -1,6 +1,5 @@
 package io.github.solomkinmv.glossary.web.security.model;
 
-import io.github.solomkinmv.glossary.web.security.model.token.RawAccessJwt;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -11,13 +10,12 @@ import java.util.Collection;
  * TODO: add JavaDoc
  */
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
-
-    private RawAccessJwt rawAccessJwt;
+    private String rawToken;
     private AuthenticatedUser authenticatedUser;
 
-    public JwtAuthenticationToken(RawAccessJwt unsafeToken) {
+    public JwtAuthenticationToken(String rawToken) {
         super(null);
-        this.rawAccessJwt = unsafeToken;
+        this.rawToken = rawToken;
         setAuthenticated(false);
     }
 
@@ -31,7 +29,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
     @Override
     public Object getCredentials() {
-        return rawAccessJwt;
+        return rawToken;
     }
 
     @Override
@@ -42,6 +40,6 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
     @Override
     public void eraseCredentials() {
         super.eraseCredentials();
-        rawAccessJwt = null;
+        rawToken = null;
     }
 }
