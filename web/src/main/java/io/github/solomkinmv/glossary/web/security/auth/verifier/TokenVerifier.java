@@ -1,10 +1,15 @@
 package io.github.solomkinmv.glossary.web.security.auth.verifier;
 
 /**
- * Created by max on 03.01.17.
- * TODO: add JavaDoc
- * TODO: find out about JTI in JWT
+ * Provides ability to verify token by its JTI
  */
 public interface TokenVerifier {
+
+    /**
+     * Checks if JTI is allowed and valid.
+     *
+     * @param jti the token JTI
+     * @return boolean result of check
+     */
     boolean verify(String jti);
 }

@@ -29,8 +29,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Created by max on 03.01.17.
- * TODO: add JavaDoc
+ * Represents endpoint to refresh token.
  */
 @RestController
 public class RefreshTokenEndpoint {

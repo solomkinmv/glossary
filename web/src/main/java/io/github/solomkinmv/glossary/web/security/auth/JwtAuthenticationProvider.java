@@ -7,7 +7,6 @@ import io.github.solomkinmv.glossary.web.security.util.JwtParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Component;
@@ -15,8 +14,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- * Created by max on 04.01.17.
- * TODO: add JavaDoc
+ * Implementation of {@link AuthenticationProvider} for the JWT authentication.
  */
 @Component
 public class JwtAuthenticationProvider implements AuthenticationProvider {
@@ -27,8 +25,16 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         this.jwtParser = jwtParser;
     }
 
+    /**
+     * Authenticates user by specified credentials. This implementation parses raw JWT and
+     * creates {@link AuthenticatedUser} using data from the token.
+     *
+     * @param authentication the authentication object which contains principal and credentials
+     * @return new {@code authentication} object with {@link AuthenticatedUser}
+     * and list of {@link GrantedAuthority}
+     */
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    public Authentication authenticate(Authentication authentication) {
         String rawToken = (String) authentication.getCredentials();
 
         JsonWebToken token = jwtParser.parseToken(rawToken);

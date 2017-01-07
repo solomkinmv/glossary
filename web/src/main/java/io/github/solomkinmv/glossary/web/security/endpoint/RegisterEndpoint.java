@@ -27,8 +27,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Created by max on 05.01.17.
- * TODO: add JavaDoc
+ * Represents endpoint to register new user.
  */
 @RestController
 public class RegisterEndpoint {

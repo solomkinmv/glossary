@@ -3,6 +3,7 @@ package io.github.solomkinmv.glossary.web.security.auth;
 import io.github.solomkinmv.glossary.web.security.auth.extractor.TokenExtractor;
 import io.github.solomkinmv.glossary.web.security.config.WebSecurityConfig;
 import io.github.solomkinmv.glossary.web.security.model.JwtAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
@@ -18,8 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Created by max on 03.01.17.
- * TODO: add JavaDoc
+ * Implementation of {@link AbstractAuthenticationProcessingFilter} for the JWT authentication.
  */
 public class JwtTokenAuthenticationProcessingFilter extends AbstractAuthenticationProcessingFilter {
     private final AuthenticationFailureHandler failureHandler;
@@ -32,9 +32,17 @@ public class JwtTokenAuthenticationProcessingFilter extends AbstractAuthenticati
         this.tokenExtractor = tokenExtractor;
     }
 
+    /**
+     * Attempts to authenticate user. Extracts raw JWT token from the HttpRequest
+     * header {@link WebSecurityConfig#JWT_TOKEN_HEADER_PARAM}.
+     *
+     * @param request  the HttpRequest object
+     * @param response the HttpResponse object
+     * @return the {@link JwtAuthenticationToken} after
+     * the {@link AuthenticationManager#authenticate(Authentication)} call
+     */
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-            throws AuthenticationException, IOException, ServletException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         String tokenPayload = request.getHeader(WebSecurityConfig.JWT_TOKEN_HEADER_PARAM);
 
         String rawToken = tokenExtractor.extract(tokenPayload);

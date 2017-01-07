@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Created by max on 03.01.17.
- * TODO: add JavaDoc
+ * Represents model for the authentication request.
  */
 public class LoginRequest {
     private final String username;

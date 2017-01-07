@@ -25,8 +25,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Created by max on 04.01.17.
- * TODO: add JavaDoc
+ * Represents endpoint for the login request.
  */
 @RestController
 public class LoginEndpoint {

@@ -1,8 +1,7 @@
 package io.github.solomkinmv.glossary.web.security.model;
 
 /**
- * Created by max on 03.01.17.
- * TODO: add JavaDoc
+ * Contains additional authority scopes (roles).
  */
 public enum Scopes {
     REFRESH_TOKEN;

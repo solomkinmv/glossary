@@ -6,8 +6,7 @@ import org.springframework.http.HttpStatus;
 import java.time.Instant;
 
 /**
- * Created by max on 03.01.17.
- * TODO: add JavaDoc
+ * Represents error. Used to return error as formatted JSON.
  */
 public class ErrorResponse {
     private final HttpStatus status;

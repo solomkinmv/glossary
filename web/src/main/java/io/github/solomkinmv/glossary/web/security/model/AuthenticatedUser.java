@@ -6,8 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 
 /**
- * Created by max on 03.01.17.
- * TODO: add JavaDoc
+ * Represents authenticated user. Used by Spring Security.
  */
 public class AuthenticatedUser implements UserDetails {
 

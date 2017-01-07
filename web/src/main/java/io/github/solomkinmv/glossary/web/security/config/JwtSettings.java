@@ -4,9 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Created by max on 03.01.17.
- * TODO: add JavaDoc
- * TODO: use spring-boot-configuration-processor
+ * Contains JWT-specific settings.
  */
 @Configuration
 @ConfigurationProperties(prefix = "security.jwt")

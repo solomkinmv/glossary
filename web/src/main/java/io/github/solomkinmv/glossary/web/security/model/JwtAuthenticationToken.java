@@ -6,8 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 
 /**
- * Created by max on 03.01.17.
- * TODO: add JavaDoc
+ * Represents JWT authentication token. Used in Spring Security during authentication.
  */
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
     private String rawToken;

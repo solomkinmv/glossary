@@ -11,8 +11,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 
 /**
- * Created by max on 04.01.17.
- * TODO: add JavaDoc
+ * Converts raw token to the {@link JsonWebToken}.
  */
 @Component
 public class JwtParser {

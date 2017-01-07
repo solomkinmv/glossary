@@ -13,15 +13,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Created by max on 03.01.17.
- * TODO: add JavaDoc
- * TODO: it is used for jwt and ajax, move rename it and move somewhere
+ * Implementation of {@link AuthenticationFailureHandler} for the JWT authentication.
  */
 @Component
 public class JwtAwareAuthenticationFailureHandler implements AuthenticationFailureHandler {
@@ -32,9 +29,17 @@ public class JwtAwareAuthenticationFailureHandler implements AuthenticationFailu
         this.mapper = mapper;
     }
 
+    /**
+     * Handles different types of exceptions.
+     *
+     * @param request   the HttpRequest object
+     * @param response  the HttpResponse object
+     * @param exception the Exception object
+     * @throws IOException if couldn't write value to the HttpResponse
+     */
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-                                        AuthenticationException exception) throws IOException, ServletException {
+                                        AuthenticationException exception) throws IOException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
@@ -51,8 +56,7 @@ public class JwtAwareAuthenticationFailureHandler implements AuthenticationFailu
                     ErrorResponse.of(exception.getMessage(), ErrorCode.AUTHENTICATION, HttpStatus.UNAUTHORIZED));
         }
 
-        // TODO: check second statement if it overrides the first one
-//        mapper.writeValue(response.getWriter(),
-//                ErrorResponse.of("Authentication failed", ErrorCode.AUTHENTICATION, HttpStatus.UNAUTHORIZED));
+        mapper.writeValue(response.getWriter(),
+                ErrorResponse.of("Authentication failed", ErrorCode.AUTHENTICATION, HttpStatus.UNAUTHORIZED));
     }
 }

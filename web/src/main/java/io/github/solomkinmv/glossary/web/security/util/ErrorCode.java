@@ -3,8 +3,7 @@ package io.github.solomkinmv.glossary.web.security.util;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Created by max on 03.01.17.
- * TODO: add JavaDoc
+ * Contains enumeration of all error codes.
  */
 public enum ErrorCode {
     AUTHENTICATION, JWT_TOKEN_EXPIRED;

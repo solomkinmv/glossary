@@ -3,8 +3,7 @@ package io.github.solomkinmv.glossary.web.security.model;
 import io.jsonwebtoken.Claims;
 
 /**
- * Created by max on 04.01.17.
- * TODO: add JavaDoc
+ * Represents JWT. Contains raw token and JWT claim.
  */
 public class JsonWebToken {
     private final String rawToken;

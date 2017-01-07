@@ -5,13 +5,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
- * Created by max on 03.01.17.
- * TODO: add JavaDoc
+ * Implementation of {@link TokenExtractor} for the JWT.
+ * Extracts raw token from the HTTP header.
  */
 @Component
 public class JwtHeaderTokenExtractor implements TokenExtractor {
     private static final String HEADER_PREFIX = "Bearer ";
 
+    /**
+     * Extracts raw token from the HTTP header.
+     * Returns substring after the {@code "Bearer "} header prefix.
+     *
+     * @param payload the payload
+     * @return the raw token
+     */
     @Override
     public String extract(String header) {
         if (StringUtils.isEmpty(header)) {

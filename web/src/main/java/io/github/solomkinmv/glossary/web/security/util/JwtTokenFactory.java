@@ -18,8 +18,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Created by max on 03.01.17.
- * TODO: add JavaDoc
+ * Factory, which creates access and refresh {@link JsonWebToken tokens}.
  */
 @Component
 public class JwtTokenFactory {

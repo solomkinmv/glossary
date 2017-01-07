@@ -5,8 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
- * Created by max on 04.01.17.
- * TODO: add JavaDoc
+ * Spring configuration which provides {@code passwordEncoder} Bean.
  */
 @Configuration
 public class PasswordEncoderConfig {

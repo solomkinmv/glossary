@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by max on 04.01.17.
- * TODO: add JavaDoc
+ * Implementation of {@link RequestMatcher}, which matches path except list of excluded paths.
  */
 public class SkipPathRequestMatcher implements RequestMatcher {
     private final OrRequestMatcher skipMatcher;
