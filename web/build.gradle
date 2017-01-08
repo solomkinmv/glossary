@@ -9,4 +9,6 @@ dependencies {
 
     compile("org.springframework.boot:spring-boot-configuration-processor")
     compileJava.dependsOn(processResources)
+
+    compile project(":persistence")
 }

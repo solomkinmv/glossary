@@ -4,7 +4,7 @@ package io.github.solomkinmv.glossary.persistence.model;
  * Created by max on 02.01.17.
  * TODO: add JavaDoc
  */
-public enum Role {
+public enum RoleType {
     ADMIN, USER;
 
     public String authority() {

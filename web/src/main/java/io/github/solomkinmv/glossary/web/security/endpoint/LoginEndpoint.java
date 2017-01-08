@@ -52,7 +52,7 @@ public class LoginEndpoint {
 
         List<GrantedAuthority> authorities = user.getRoles().stream()
                                                  .map(authority -> new SimpleGrantedAuthority(
-                                                         authority.getRole().authority()))
+                                                         authority.getRoleType().authority()))
                                                  .collect(Collectors.toList());
 
         AuthenticatedUser authenticatedUser = new AuthenticatedUser(username, authorities);

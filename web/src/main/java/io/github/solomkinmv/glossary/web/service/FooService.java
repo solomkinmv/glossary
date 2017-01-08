@@ -1,7 +1,5 @@
 package io.github.solomkinmv.glossary.web.service;
 
-import io.github.solomkinmv.glossary.persistence.model.Foo;
-
 import java.util.List;
 
 public interface FooService {

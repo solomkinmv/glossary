@@ -1,6 +1,5 @@
 package io.github.solomkinmv.glossary.web.service;
 
-import io.github.solomkinmv.glossary.persistence.model.Foo;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

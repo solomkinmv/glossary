@@ -68,7 +68,7 @@ public class RefreshTokenEndpoint {
         }
         List<GrantedAuthority> authorities = user.getRoles().stream()
                                                  .map(authority -> new SimpleGrantedAuthority(
-                                                         authority.getRole().authority()))
+                                                         authority.getRoleType().authority()))
                                                  .collect(Collectors.toList());
 
         AuthenticatedUser authenticatedUser = new AuthenticatedUser(user.getUsername(), authorities);
