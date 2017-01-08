@@ -5,4 +5,8 @@ jar {
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-security")
+    compile jsonwebtoken
+
+    compile("org.springframework.boot:spring-boot-configuration-processor")
+    compileJava.dependsOn(processResources)
 }

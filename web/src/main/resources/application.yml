@@ -1,0 +1,5 @@
+security.jwt:
+  tokenExpirationTime: 15 # minutes
+  refreshTokenExpTime: 60 # minutes
+  tokenIssuer: http://solomkinmv.github.io
+  tokenSigningKey: xm8EV6Hy5RMFK4EEACIDAwQus

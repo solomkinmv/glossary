@@ -1,0 +1,67 @@
+package io.github.solomkinmv.glossary.web.security.auth;
+
+import io.github.solomkinmv.glossary.web.security.auth.extractor.TokenExtractor;
+import io.github.solomkinmv.glossary.web.security.config.WebSecurityConfig;
+import io.github.solomkinmv.glossary.web.security.model.JwtAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+/**
+ * Implementation of {@link AbstractAuthenticationProcessingFilter} for the JWT authentication.
+ */
+public class JwtTokenAuthenticationProcessingFilter extends AbstractAuthenticationProcessingFilter {
+    private final AuthenticationFailureHandler failureHandler;
+    private final TokenExtractor tokenExtractor;
+
+    public JwtTokenAuthenticationProcessingFilter(AuthenticationFailureHandler failureHandler,
+                                                  TokenExtractor tokenExtractor, RequestMatcher matcher) {
+        super(matcher);
+        this.failureHandler = failureHandler;
+        this.tokenExtractor = tokenExtractor;
+    }
+
+    /**
+     * Attempts to authenticate user. Extracts raw JWT token from the HttpRequest
+     * header {@link WebSecurityConfig#JWT_TOKEN_HEADER_PARAM}.
+     *
+     * @param request  the HttpRequest object
+     * @param response the HttpResponse object
+     * @return the {@link JwtAuthenticationToken} after
+     * the {@link AuthenticationManager#authenticate(Authentication)} call
+     */
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
+        String tokenPayload = request.getHeader(WebSecurityConfig.JWT_TOKEN_HEADER_PARAM);
+
+        String rawToken = tokenExtractor.extract(tokenPayload);
+        return getAuthenticationManager().authenticate(new JwtAuthenticationToken(rawToken));
+    }
+
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
+                                            Authentication authResult) throws IOException, ServletException {
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authResult);
+        SecurityContextHolder.setContext(context);
+        chain.doFilter(request, response);
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                              AuthenticationException failed) throws IOException, ServletException {
+        SecurityContextHolder.clearContext();
+        failureHandler.onAuthenticationFailure(request, response, failed);
+    }
+}
