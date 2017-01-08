@@ -53,6 +53,7 @@ public class UserServiceJpaDao extends AbstractJpaDaoService implements UserDao 
         EntityManager entityManager = emf.createEntityManager();
 
         User result = entityManager.createQuery("SELECT u FROM User u WHERE username = :username", User.class)
+                                   .setParameter("username", username)
                                    .getSingleResult();
         return Optional.ofNullable(result);
     }

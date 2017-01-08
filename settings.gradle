@@ -1,3 +1,4 @@
 rootProject.name = 'glossary'
 include 'web'
 include 'persistence'
+include 'service'

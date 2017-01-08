@@ -3,6 +3,7 @@ package io.github.solomkinmv.glossary.persistence.dao.impl;
 import io.github.solomkinmv.glossary.persistence.dao.AbstractJpaDaoService;
 import io.github.solomkinmv.glossary.persistence.dao.RoleDao;
 import io.github.solomkinmv.glossary.persistence.model.Role;
+import io.github.solomkinmv.glossary.persistence.model.RoleType;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -19,7 +20,8 @@ public class RoleServiceJpaDao extends AbstractJpaDaoService implements RoleDao 
     public List<Role> listAll() {
         EntityManager entityManager = emf.createEntityManager();
 
-        return entityManager.createQuery("SELECT r FROM Role r", Role.class).getResultList();
+        return entityManager.createQuery("SELECT r FROM Role r", Role.class)
+                            .getResultList();
     }
 
     @Override
@@ -46,5 +48,14 @@ public class RoleServiceJpaDao extends AbstractJpaDaoService implements RoleDao 
         entityManager.getTransaction().begin();
         entityManager.remove(entityManager.find(Role.class, id));
         entityManager.getTransaction().commit();
+    }
+
+    @Override
+    public Role findByRoleType(RoleType roleType) {
+        EntityManager entityManager = emf.createEntityManager();
+
+        return entityManager.createQuery("SELECT r FROM Role r WHERE roleType = :roleType", Role.class)
+                            .setParameter("roleType", roleType)
+                            .getSingleResult();
     }
 }

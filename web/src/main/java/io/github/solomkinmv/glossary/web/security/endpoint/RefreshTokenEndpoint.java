@@ -1,6 +1,7 @@
 package io.github.solomkinmv.glossary.web.security.endpoint;
 
 import io.github.solomkinmv.glossary.persistence.model.User;
+import io.github.solomkinmv.glossary.service.domain.UserService;
 import io.github.solomkinmv.glossary.web.security.auth.extractor.TokenExtractor;
 import io.github.solomkinmv.glossary.web.security.auth.verifier.TokenVerifier;
 import io.github.solomkinmv.glossary.web.security.config.WebSecurityConfig;
@@ -10,7 +11,6 @@ import io.github.solomkinmv.glossary.web.security.model.JsonWebToken;
 import io.github.solomkinmv.glossary.web.security.model.Scopes;
 import io.github.solomkinmv.glossary.web.security.util.JwtParser;
 import io.github.solomkinmv.glossary.web.security.util.JwtTokenFactory;
-import io.github.solomkinmv.glossary.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.InsufficientAuthenticationException;

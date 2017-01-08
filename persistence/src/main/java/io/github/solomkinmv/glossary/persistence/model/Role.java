@@ -19,6 +19,8 @@ public class Role extends AbstractModelClass {
 
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "roles")
     private final List<User> users = new ArrayList<>();
+
+    @Column(unique = true)
     @Enumerated(EnumType.STRING)
     private RoleType roleType;
 

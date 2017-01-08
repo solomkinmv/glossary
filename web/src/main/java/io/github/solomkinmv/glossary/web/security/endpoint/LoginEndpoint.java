@@ -1,12 +1,12 @@
 package io.github.solomkinmv.glossary.web.security.endpoint;
 
 import io.github.solomkinmv.glossary.persistence.model.User;
+import io.github.solomkinmv.glossary.service.domain.UserService;
 import io.github.solomkinmv.glossary.web.security.config.WebSecurityConfig;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
 import io.github.solomkinmv.glossary.web.security.model.JsonWebToken;
 import io.github.solomkinmv.glossary.web.security.model.LoginRequest;
 import io.github.solomkinmv.glossary.web.security.util.JwtTokenFactory;
-import io.github.solomkinmv.glossary.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationServiceException;

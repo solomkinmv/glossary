@@ -11,4 +11,5 @@ dependencies {
     compileJava.dependsOn(processResources)
 
     compile project(":persistence")
+    compile project(":service")
 }
