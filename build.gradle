@@ -1,0 +1,33 @@
+buildscript {
+    ext {
+        springBootVersion = "1.4.3.RELEASE"
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+allprojects {
+    group 'io.github.solomkinmv'
+    version '0.0.1-SNAPSHOT'
+}
+
+subprojects {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'spring-boot'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
