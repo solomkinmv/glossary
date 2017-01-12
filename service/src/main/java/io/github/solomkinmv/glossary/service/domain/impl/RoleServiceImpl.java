@@ -1,8 +1,9 @@
-package io.github.solomkinmv.glossary.service.domain;
+package io.github.solomkinmv.glossary.service.domain.impl;
 
 import io.github.solomkinmv.glossary.persistence.dao.RoleDao;
 import io.github.solomkinmv.glossary.persistence.model.Role;
 import io.github.solomkinmv.glossary.persistence.model.RoleType;
+import io.github.solomkinmv.glossary.service.domain.RoleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Optional<Role> getById(long id) {
+    public Optional<Role> getById(Long id) {
         LOGGER.debug("Getting role by id: {}", id);
         return roleDao.getById(id);
     }
@@ -44,7 +45,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Long id) {
         LOGGER.debug("Deleting role with id: {}", id);
         roleDao.delete(id);
     }

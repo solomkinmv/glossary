@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> getById(long id) {
+    public Optional<User> getById(Long id) {
         LOGGER.debug("Getting user by id: {}", id);
         return userDao.getById(id);
     }
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Long id) {
         LOGGER.debug("Deleting user with id: {}", id);
         userDao.delete(id);
     }

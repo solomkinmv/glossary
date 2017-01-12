@@ -91,5 +91,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(TOKEN_BASED_AUTH_ENTRY_POINT).authenticated()
             .and()
             .addFilterBefore(buildJwtTokenAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        http.headers().frameOptions().disable();
     }
 }
