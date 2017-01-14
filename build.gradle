@@ -1,7 +1,9 @@
 def jsonWebTokenVersion = "0.7.0"
+def hateoasVersion = "0.20.0.RELEASE"
 
 ext {
     jsonwebtoken = "io.jsonwebtoken:jjwt:${jsonWebTokenVersion}"
+    hateoas = "org.springframework.hateoas:spring-hateoas:${hateoasVersion}"
 }
 
 buildscript {
