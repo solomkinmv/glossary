@@ -1,9 +1,13 @@
 def jsonWebTokenVersion = "0.7.0"
 def hateoasVersion = "0.20.0.RELEASE"
+def beanValidationVersion = "1.1.0.Final"
 
 ext {
     jsonwebtoken = "io.jsonwebtoken:jjwt:${jsonWebTokenVersion}"
     hateoas = "org.springframework.hateoas:spring-hateoas:${hateoasVersion}"
+    beanValidation = "javax.validation:validation-api:${beanValidationVersion}"
+    hibernateValidation = "org.hibernate:hibernate-validator"
+    tomcatEmbedEl = "org.apache.tomcat.embed:tomcat-embed-el"
 }
 
 buildscript {

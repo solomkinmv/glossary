@@ -4,6 +4,9 @@ jar {
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
+    compile beanValidation
+    compile hibernateValidation
+    compile tomcatEmbedEl
     runtime('com.h2database:h2')
     compile('org.projectlombok:lombok')
     testCompile('org.springframework.boot:spring-boot-starter-test')

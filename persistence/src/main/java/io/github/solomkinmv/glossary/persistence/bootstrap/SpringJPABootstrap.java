@@ -4,6 +4,7 @@ import io.github.solomkinmv.glossary.persistence.dao.*;
 import io.github.solomkinmv.glossary.persistence.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
  * Bootstraps data for the persistence layer.
  */
 @Component
+@Profile("dev")
 public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
     private final UserDao userDao;
