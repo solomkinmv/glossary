@@ -67,4 +67,10 @@ public class TopicServiceImpl implements TopicService {
         LOGGER.debug("Deleting topic with id: {}", id);
         topicDao.delete(id);
     }
+
+    @Override
+    public void deleteAll() {
+        LOGGER.debug("Deleting all topics");
+        topicDao.deleteAll();
+    }
 }

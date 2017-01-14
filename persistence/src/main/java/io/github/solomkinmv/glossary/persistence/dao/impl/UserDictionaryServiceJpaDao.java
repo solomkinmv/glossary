@@ -59,4 +59,12 @@ public class UserDictionaryServiceJpaDao extends AbstractJpaDaoService implement
                                                      .getSingleResult();
         return Optional.ofNullable(userDictionary);
     }
+
+
+    @Override
+    public void deleteAll() {
+        EntityManager entityManager = emf.createEntityManager();
+
+        entityManager.createQuery("DELETE FROM UserDictionary").executeUpdate();
+    }
 }

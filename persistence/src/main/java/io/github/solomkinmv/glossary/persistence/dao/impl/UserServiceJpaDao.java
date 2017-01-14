@@ -57,4 +57,11 @@ public class UserServiceJpaDao extends AbstractJpaDaoService implements UserDao 
                                    .getSingleResult();
         return Optional.ofNullable(result);
     }
+
+    @Override
+    public void deleteAll() {
+        EntityManager entityManager = emf.createEntityManager();
+
+        entityManager.createQuery("DELETE FROM User").executeUpdate();
+    }
 }

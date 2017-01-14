@@ -17,4 +17,6 @@ public interface CRUDService<T, K> {
     T saveOrUpdate(T domainObject);
 
     void delete(K id);
+
+    void deleteAll();
 }

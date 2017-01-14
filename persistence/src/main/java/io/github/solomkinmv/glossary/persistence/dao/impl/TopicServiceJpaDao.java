@@ -48,4 +48,11 @@ public class TopicServiceJpaDao extends AbstractJpaDaoService implements TopicDa
         entityManager.remove(entityManager.find(Topic.class, id));
         entityManager.getTransaction().commit();
     }
+
+    @Override
+    public void deleteAll() {
+        EntityManager entityManager = emf.createEntityManager();
+
+        entityManager.createQuery("DELETE FROM Topic").executeUpdate();
+    }
 }

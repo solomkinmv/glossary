@@ -58,4 +58,12 @@ public class RoleServiceJpaDao extends AbstractJpaDaoService implements RoleDao 
                             .setParameter("roleType", roleType)
                             .getSingleResult();
     }
+
+
+    @Override
+    public void deleteAll() {
+        EntityManager entityManager = emf.createEntityManager();
+
+        entityManager.createQuery("DELETE FROM Role").executeUpdate();
+    }
 }

@@ -57,4 +57,13 @@ public class WordServiceJpaDao extends AbstractJpaDaoService implements WordDao 
         entityManager.remove(entity);
         entityManager.getTransaction().commit();
     }
+
+    @Override
+    public void deleteAll() {
+        EntityManager entityManager = emf.createEntityManager();
+
+        entityManager.getTransaction().begin();
+        entityManager.createQuery("DELETE FROM Word").executeUpdate();
+        entityManager.getTransaction().commit();
+    }
 }

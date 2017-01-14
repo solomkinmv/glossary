@@ -74,4 +74,10 @@ public class WordServiceImpl implements WordService {
         LOGGER.debug("Deleting word with id: {}", id);
         wordDao.delete(id);
     }
+
+    @Override
+    public void deleteAll() {
+        LOGGER.debug("Deleting all words");
+        wordDao.deleteAll();
+    }
 }

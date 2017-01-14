@@ -74,4 +74,10 @@ public class RoleServiceImpl implements RoleService {
         LOGGER.debug("Getting role by role type: {}", roleType);
         return roleDao.findByRoleType(roleType);
     }
+
+    @Override
+    public void deleteAll() {
+        LOGGER.debug("Deleting all roles");
+        roleDao.deleteAll();
+    }
 }

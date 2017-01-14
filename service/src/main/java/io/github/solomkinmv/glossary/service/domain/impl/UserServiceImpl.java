@@ -73,4 +73,10 @@ public class UserServiceImpl implements UserService {
         LOGGER.debug("Getting user by username: {}", username);
         return userDao.findByUsername(username);
     }
+
+    @Override
+    public void deleteAll() {
+        LOGGER.debug("Deleting all users");
+        userDao.deleteAll();
+    }
 }

@@ -73,4 +73,10 @@ public class UserDictionaryServiceImpl implements UserDictionaryService {
         LOGGER.debug("Getting userDictionary by username: {}", username);
         return userDictionaryDao.findByUsername(username);
     }
+
+    @Override
+    public void deleteAll() {
+        LOGGER.debug("Deleting all userDictionarys");
+        userDictionaryDao.deleteAll();
+    }
 }
