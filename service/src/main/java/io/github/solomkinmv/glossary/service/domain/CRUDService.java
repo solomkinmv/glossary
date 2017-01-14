@@ -14,7 +14,9 @@ public interface CRUDService<T, K> {
 
     Optional<T> getById(K id);
 
-    T saveOrUpdate(T domainObject);
+    T save(T domainObject);
+
+    T update(T domainObject);
 
     void delete(K id);
 }

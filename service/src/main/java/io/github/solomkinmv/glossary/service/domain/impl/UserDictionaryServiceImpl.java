@@ -3,6 +3,8 @@ package io.github.solomkinmv.glossary.service.domain.impl;
 import io.github.solomkinmv.glossary.persistence.dao.UserDictionaryDao;
 import io.github.solomkinmv.glossary.persistence.model.UserDictionary;
 import io.github.solomkinmv.glossary.service.domain.UserDictionaryService;
+import io.github.solomkinmv.glossary.service.exception.DomainObjectAlreadyExistException;
+import io.github.solomkinmv.glossary.service.exception.DomainObjectNotFound;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +40,25 @@ public class UserDictionaryServiceImpl implements UserDictionaryService {
     }
 
     @Override
-    public UserDictionary saveOrUpdate(UserDictionary userDictionary) {
-        LOGGER.debug("Saving or updating userDictionary: {}", userDictionary);
+    public UserDictionary save(UserDictionary userDictionary) {
+        LOGGER.debug("Saving userDictionary: {}", userDictionary);
+        if (userDictionary.getId() != null) {
+            return getById(userDictionary.getId())
+                    .map(userDictionaryDao::saveOrUpdate)
+                    .orElseThrow(() -> new DomainObjectAlreadyExistException(
+                            "UserDictionary with such id is already exist: " + userDictionary.getId()));
+        }
+
+        return userDictionaryDao.saveOrUpdate(userDictionary);
+    }
+
+    @Override
+    public UserDictionary update(UserDictionary userDictionary) {
+        LOGGER.debug("Updating userDictionary: {}", userDictionary);
+        if (userDictionary.getId() == null) {
+            LOGGER.error("Can't update userDictionary with null id");
+            throw new DomainObjectNotFound("Can't update userDictionary with null id");
+        }
         return userDictionaryDao.saveOrUpdate(userDictionary);
     }
 

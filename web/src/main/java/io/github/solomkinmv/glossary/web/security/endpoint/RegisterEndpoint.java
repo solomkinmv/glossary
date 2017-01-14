@@ -53,7 +53,7 @@ public class RegisterEndpoint {
         User user = new User(registrationRequest.getUsername(), pass, registrationRequest.getDetails(),
                 Collections.singletonList(role));
 
-        userService.saveOrUpdate(user);
+        userService.save(user);
 
         AuthenticatedUser authenticatedUser = new AuthenticatedUser(registrationRequest.getUsername(),
                 Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.authority())));

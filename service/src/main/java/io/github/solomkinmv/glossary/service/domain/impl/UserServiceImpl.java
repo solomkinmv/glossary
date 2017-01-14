@@ -3,6 +3,8 @@ package io.github.solomkinmv.glossary.service.domain.impl;
 import io.github.solomkinmv.glossary.persistence.dao.UserDao;
 import io.github.solomkinmv.glossary.persistence.model.User;
 import io.github.solomkinmv.glossary.service.domain.UserService;
+import io.github.solomkinmv.glossary.service.exception.DomainObjectAlreadyExistException;
+import io.github.solomkinmv.glossary.service.exception.DomainObjectNotFound;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +40,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User saveOrUpdate(User user) {
-        LOGGER.debug("Saving or updating user: {}", user);
+    public User save(User user) {
+        LOGGER.debug("Saving user: {}", user);
+        if (user.getId() != null) {
+            return getById(user.getId())
+                    .map(userDao::saveOrUpdate)
+                    .orElseThrow(() -> new DomainObjectAlreadyExistException(
+                            "User with such id is already exist: " + user.getId()));
+        }
+
+        return userDao.saveOrUpdate(user);
+    }
+
+    @Override
+    public User update(User user) {
+        LOGGER.debug("Updating user: {}", user);
+        if (user.getId() == null) {
+            LOGGER.error("Can't update user with null id");
+            throw new DomainObjectNotFound("Can't update user with null id");
+        }
         return userDao.saveOrUpdate(user);
     }
 

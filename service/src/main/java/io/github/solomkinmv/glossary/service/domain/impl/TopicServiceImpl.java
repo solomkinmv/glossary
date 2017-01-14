@@ -3,6 +3,8 @@ package io.github.solomkinmv.glossary.service.domain.impl;
 import io.github.solomkinmv.glossary.persistence.dao.TopicDao;
 import io.github.solomkinmv.glossary.persistence.model.Topic;
 import io.github.solomkinmv.glossary.service.domain.TopicService;
+import io.github.solomkinmv.glossary.service.exception.DomainObjectAlreadyExistException;
+import io.github.solomkinmv.glossary.service.exception.DomainObjectNotFound;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +40,25 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public Topic saveOrUpdate(Topic topic) {
-        LOGGER.debug("Saving or updating topic: {}", topic);
+    public Topic save(Topic topic) {
+        LOGGER.debug("Saving topic: {}", topic);
+        if (topic.getId() != null) {
+            return getById(topic.getId())
+                    .map(topicDao::saveOrUpdate)
+                    .orElseThrow(() -> new DomainObjectAlreadyExistException(
+                            "Topic with such id is already exist: " + topic.getId()));
+        }
+
+        return topicDao.saveOrUpdate(topic);
+    }
+
+    @Override
+    public Topic update(Topic topic) {
+        LOGGER.debug("Updating topic: {}", topic);
+        if (topic.getId() == null) {
+            LOGGER.error("Can't update topic with null id");
+            throw new DomainObjectNotFound("Can't update topic with null id");
+        }
         return topicDao.saveOrUpdate(topic);
     }
 

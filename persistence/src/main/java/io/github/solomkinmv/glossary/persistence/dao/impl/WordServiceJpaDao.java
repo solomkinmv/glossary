@@ -3,9 +3,12 @@ package io.github.solomkinmv.glossary.persistence.dao.impl;
 import io.github.solomkinmv.glossary.persistence.dao.AbstractJpaDaoService;
 import io.github.solomkinmv.glossary.persistence.dao.WordDao;
 import io.github.solomkinmv.glossary.persistence.model.Word;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +17,7 @@ import java.util.Optional;
  */
 @Service
 public class WordServiceJpaDao extends AbstractJpaDaoService implements WordDao {
+    private final Logger LOGGER = LoggerFactory.getLogger(WordServiceJpaDao.class);
 
     @Override
     public List<Word> listAll() {
@@ -45,7 +49,12 @@ public class WordServiceJpaDao extends AbstractJpaDaoService implements WordDao 
         EntityManager entityManager = emf.createEntityManager();
 
         entityManager.getTransaction().begin();
-        entityManager.remove(entityManager.find(Word.class, id));
+        Word entity = entityManager.find(Word.class, id);
+        if (entity == null) {
+            LOGGER.error("No such entity in the DB");
+            throw new EntityNotFoundException("Word id: " + id);
+        }
+        entityManager.remove(entity);
         entityManager.getTransaction().commit();
     }
 }

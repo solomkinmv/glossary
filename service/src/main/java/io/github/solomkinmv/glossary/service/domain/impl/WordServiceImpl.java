@@ -3,6 +3,8 @@ package io.github.solomkinmv.glossary.service.domain.impl;
 import io.github.solomkinmv.glossary.persistence.dao.WordDao;
 import io.github.solomkinmv.glossary.persistence.model.Word;
 import io.github.solomkinmv.glossary.service.domain.WordService;
+import io.github.solomkinmv.glossary.service.exception.DomainObjectAlreadyExistException;
+import io.github.solomkinmv.glossary.service.exception.DomainObjectNotFound;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +40,32 @@ public class WordServiceImpl implements WordService {
     }
 
     @Override
-    public Word saveOrUpdate(Word word) {
-        LOGGER.debug("Saving or updating word: {}", word);
+    public Word save(Word word) {
+        LOGGER.debug("Saving word: {}", word);
+        if (word.getId() != null) {
+            return getById(word.getId())
+                    .map(wordDao::saveOrUpdate)
+                    .orElseThrow(() -> new DomainObjectAlreadyExistException(
+                            "Word with such id is already exist: " + word.getId()));
+        }
+
+        return wordDao.saveOrUpdate(word);
+    }
+
+    @Override
+    public Word update(Word word) {
+        LOGGER.debug("Updating word: {}", word);
+        Long wordId = word.getId();
+        if (wordId == null) {
+            LOGGER.error("Can't update word with null id");
+            throw new DomainObjectNotFound("Can't update word with null id");
+        }
+
+        Optional<Word> wordOptional = wordDao.getById(wordId);
+        if (!wordOptional.isPresent()) {
+            throw new DomainObjectNotFound("No word with id " + wordId);
+        }
+
         return wordDao.saveOrUpdate(word);
     }
 
