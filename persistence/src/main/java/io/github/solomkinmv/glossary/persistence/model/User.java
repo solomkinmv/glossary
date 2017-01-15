@@ -1,8 +1,6 @@
 package io.github.solomkinmv.glossary.persistence.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,6 +13,8 @@ import java.util.List;
  */
 @Entity
 @Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class User extends AbstractModelClass {
