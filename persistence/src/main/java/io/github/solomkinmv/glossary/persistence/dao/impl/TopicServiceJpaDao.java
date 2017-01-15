@@ -19,7 +19,7 @@ public class TopicServiceJpaDao extends AbstractJpaDaoService implements TopicDa
     public List<Topic> listAll() {
         EntityManager entityManager = emf.createEntityManager();
 
-        return entityManager.createQuery("SELECT t FROM Topic t", Topic.class)
+        return entityManager.createQuery("FROM Topic", Topic.class)
                             .getResultList();
     }
 
@@ -53,6 +53,8 @@ public class TopicServiceJpaDao extends AbstractJpaDaoService implements TopicDa
     public void deleteAll() {
         EntityManager entityManager = emf.createEntityManager();
 
+        entityManager.getTransaction().begin();
         entityManager.createQuery("DELETE FROM Topic").executeUpdate();
+        entityManager.getTransaction().commit();
     }
 }

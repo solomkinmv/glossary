@@ -1,25 +1,26 @@
 package io.github.solomkinmv.glossary.persistence.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.validator.constraints.NotBlank;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import java.util.List;
+import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class Topic extends AbstractModelClass {
 
+    @NotBlank
     private String name;
+
+    @NotBlank
     private String description;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REMOVE})
     @JoinTable
-    private List<Word> words;
+    private Set<Word> words;
 }

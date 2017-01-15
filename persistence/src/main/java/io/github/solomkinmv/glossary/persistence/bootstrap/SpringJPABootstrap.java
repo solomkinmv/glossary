@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -49,7 +49,7 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
                 new User("user2", "$2a$10$bnC26zz//2cavYoSCrlHdecWF8tkGfPodlHcYwlACBBwJvcEf0p2G", "user2@email.com",
                         Collections.singletonList(userRole)));
 
-        List<Word> savedWords = saveWords();
+        Set<Word> savedWords = saveWords();
 
         Topic topic = topicDao.saveOrUpdate(new Topic("Basic", "description", savedWords));
 
@@ -59,7 +59,7 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
         System.out.println();
     }
 
-    private List<Word> saveWords() {
+    private Set<Word> saveWords() {
         ArrayList<Word> words = new ArrayList<>();
         words.add(new Word("user", "пользователь"));
         words.add(new Word("glass", "стекло"));
@@ -71,6 +71,6 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
 
         return words.stream()
                     .map(wordDao::saveOrUpdate)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toSet());
     }
 }

@@ -10,7 +10,7 @@ import java.util.*;
  */
 public class UserDaoStub implements UserDao {
 
-    private final List<User> users;
+    private List<User> users;
 
     public UserDaoStub() {
         users = new ArrayList<>();
@@ -48,6 +48,11 @@ public class UserDaoStub implements UserDao {
     @Override
     public void delete(Long id) {
         users.removeIf(user -> Objects.equals(user.getId(), id));
+    }
+
+    @Override
+    public void deleteAll() {
+        users = new ArrayList<>();
     }
 
     @Override
