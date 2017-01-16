@@ -14,7 +14,7 @@ import javax.persistence.Entity;
 public class Word extends AbstractModelClass {
 
     @NotBlank
-    private String word;
+    private String text;
 
     @NotBlank
     private String translation;

@@ -25,20 +25,20 @@ public class WordServiceJpaDaoTest {
 
     @Test
     public void savesWord() {
-        String wordText = "word";
+        String wordText = "text";
         String translation = "some text";
         Word word = new Word(wordText, translation);
 
         Word savedWord = wordDao.saveOrUpdate(word);
 
         assertNotNull(savedWord.getId());
-        assertEquals(wordText, savedWord.getWord());
+        assertEquals(wordText, savedWord.getText());
         assertEquals(translation, savedWord.getTranslation());
     }
 
     @Test
     public void updatesWord() {
-        String wordText = "word";
+        String wordText = "text";
         String translation = "some text";
         String updatedTranslation = "some text 2";
         Word word = new Word(wordText, translation);
@@ -48,13 +48,13 @@ public class WordServiceJpaDaoTest {
         Word updatedWord = wordDao.saveOrUpdate(savedWord);
 
         assertNotNull(savedWord.getId());
-        assertEquals(wordText, updatedWord.getWord());
+        assertEquals(wordText, updatedWord.getText());
         assertEquals(updatedTranslation, updatedWord.getTranslation());
     }
 
     @Test
     public void getsById() {
-        String wordText = "word";
+        String wordText = "text";
         String translation = "some text";
         Word word = new Word(wordText, translation);
 
@@ -68,7 +68,7 @@ public class WordServiceJpaDaoTest {
 
     @Test
     public void deletesWord() {
-        String wordText = "word";
+        String wordText = "text";
         String translation = "some text";
         Word word = new Word(wordText, translation);
 
