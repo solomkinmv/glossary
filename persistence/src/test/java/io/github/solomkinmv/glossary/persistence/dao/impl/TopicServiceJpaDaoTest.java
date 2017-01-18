@@ -35,7 +35,7 @@ public class TopicServiceJpaDaoTest {
     public void savesTopic() {
         String name = "name";
         String description = "description";
-        Topic topic = new Topic(name, description, Collections.emptySet());
+        Topic topic = new Topic(name, description, Collections.emptyList());
 
         Topic savedTopic = topicDao.saveOrUpdate(topic);
 
@@ -64,7 +64,7 @@ public class TopicServiceJpaDaoTest {
         String name = "name";
         String description = "description";
         String updatedDescription = "description 2";
-        Topic topic = new Topic(name, description, Collections.emptySet());
+        Topic topic = new Topic(name, description, Collections.emptyList());
 
         Topic savedTopic = topicDao.saveOrUpdate(topic);
         savedTopic.setDescription(updatedDescription);
@@ -80,7 +80,7 @@ public class TopicServiceJpaDaoTest {
     public void getsById() {
         String name = "name";
         String description = "description";
-        Topic topic = new Topic(name, description, Collections.emptySet());
+        Topic topic = new Topic(name, description, Collections.emptyList());
 
         Topic savedTopic = topicDao.saveOrUpdate(topic);
 
@@ -94,7 +94,7 @@ public class TopicServiceJpaDaoTest {
     public void deletesTopic() {
         String name = "name";
         String description = "description";
-        Topic topic = new Topic(name, description, Collections.emptySet());
+        Topic topic = new Topic(name, description, Collections.emptyList());
 
         Topic savedTopic = topicDao.saveOrUpdate(topic);
         Optional<Topic> foundTopic = topicDao.getById(savedTopic.getId());
@@ -119,8 +119,8 @@ public class TopicServiceJpaDaoTest {
 
     @Test
     public void deletesAllWithWords() {
-        Set<Word> words1 = getWords();
-        Set<Word> words2 = getWords();
+        List<Word> words1 = getWords();
+        List<Word> words2 = getWords();
         words2.add(new Word("text", "translation"));
 
         topicDao.saveOrUpdate(new Topic("text", "description", words1));
@@ -134,14 +134,14 @@ public class TopicServiceJpaDaoTest {
 
     @Test
     public void deletesWordFromTopic() {
-        Set<Word> words = getWords();
+        List<Word> words = getWords();
 
         String name = "name";
         String description = "description";
         Topic topic = new Topic(name, description, words);
 
         Topic savedTopic = topicDao.saveOrUpdate(topic);
-        words = new HashSet<>(savedTopic.getWords()); // saved words
+        words = new ArrayList<>(savedTopic.getWords()); // saved words
 
         Word wordToDelete = new ArrayList<>(words).get(0);
         savedTopic.getWords().remove(wordToDelete);
@@ -160,14 +160,14 @@ public class TopicServiceJpaDaoTest {
     // Maybe I should trigger remove from child to parent?
     @Test(expected = PersistenceException.class)
     public void deletesWordWhichIsInTopic() {
-        Set<Word> words = getWords();
+        List<Word> words = getWords();
 
         String name = "name";
         String description = "description";
         Topic topic = new Topic(name, description, words);
 
         Topic savedTopic = topicDao.saveOrUpdate(topic);
-        words = new HashSet<>(savedTopic.getWords()); // saved words
+        words = new ArrayList<>(savedTopic.getWords()); // saved words
         Word wordToDelete = new ArrayList<>(words).get(0);
 
         wordDao.delete(wordToDelete.getId());
@@ -177,7 +177,7 @@ public class TopicServiceJpaDaoTest {
     // Maybe I should trigger remove from child to parent?
     @Test(expected = PersistenceException.class)
     public void deletesAllWordsWhichIsInTopic() {
-        Set<Word> words = getWords();
+        List<Word> words = getWords();
 
         String name = "name";
         String description = "description";
@@ -195,17 +195,17 @@ public class TopicServiceJpaDaoTest {
 
     @Test(expected = ConstraintViolationException.class)
     public void failesToAddTopicWithNullName() {
-        topicDao.saveOrUpdate(new Topic(null, "text", Collections.emptySet()));
+        topicDao.saveOrUpdate(new Topic(null, "text", Collections.emptyList()));
     }
 
     @Test(expected = ConstraintViolationException.class)
     public void failesToAddTopicWithNullDescription() {
-        topicDao.saveOrUpdate(new Topic("text", null, Collections.emptySet()));
+        topicDao.saveOrUpdate(new Topic("text", null, Collections.emptyList()));
     }
 
     @Test
     public void savesTopicWithWords() {
-        Set<Word> words = getWords();
+        List<Word> words = getWords();
 
         String name = "name";
         String description = "description";
@@ -219,12 +219,11 @@ public class TopicServiceJpaDaoTest {
         assertEquals(words.size(), wordDao.listAll().size());
     }
 
-    private Set<Word> getWords() {
-        return new HashSet<>(
-                Arrays.asList(
+    private List<Word> getWords() {
+        return
+                new ArrayList<>(Arrays.asList(
                         new Word("word1", "translation1"),
                         new Word("word2", "translation2")
-                             )
-        );
+                                             ));
     }
 }

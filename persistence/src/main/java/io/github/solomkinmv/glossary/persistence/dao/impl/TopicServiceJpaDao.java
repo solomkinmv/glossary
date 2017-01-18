@@ -3,9 +3,12 @@ package io.github.solomkinmv.glossary.persistence.dao.impl;
 import io.github.solomkinmv.glossary.persistence.dao.AbstractJpaDaoService;
 import io.github.solomkinmv.glossary.persistence.dao.TopicDao;
 import io.github.solomkinmv.glossary.persistence.model.Topic;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +17,7 @@ import java.util.Optional;
  */
 @Service
 public class TopicServiceJpaDao extends AbstractJpaDaoService implements TopicDao {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TopicServiceJpaDao.class);
 
     @Override
     public List<Topic> listAll() {
@@ -45,6 +49,11 @@ public class TopicServiceJpaDao extends AbstractJpaDaoService implements TopicDa
         EntityManager entityManager = emf.createEntityManager();
 
         entityManager.getTransaction().begin();
+        Topic entity = entityManager.find(Topic.class, id);
+        if (entity == null) {
+            LOGGER.error("No such entity in the DB");
+            throw new EntityNotFoundException("Topic id: " + id);
+        }
         entityManager.remove(entityManager.find(Topic.class, id));
         entityManager.getTransaction().commit();
     }

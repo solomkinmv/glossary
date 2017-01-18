@@ -109,14 +109,14 @@ public class WordControllerTest {
 
     @Test
     public void getWord() throws Exception {
-        Word word = wordService.listAll().get(0);
+        Word word = wordList.get(0);
 
         mockMvc.perform(get("/api/words/" + word.getId()))
                .andExpect(status().isOk())
                .andExpect(content().contentType(contentType))
-               .andExpect(jsonPath("$.word.id", is(wordList.get(0).getId().intValue())))
-               .andExpect(jsonPath("$.word.text", is(wordList.get(0).getText())))
-               .andExpect(jsonPath("$.word.translation", is(wordList.get(0).getTranslation())));
+               .andExpect(jsonPath("$.word.id", is(word.getId().intValue())))
+               .andExpect(jsonPath("$.word.text", is(word.getText())))
+               .andExpect(jsonPath("$.word.translation", is(word.getTranslation())));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class WordControllerTest {
 
     @Test
     public void deleteWord() throws Exception {
-        Word word = wordService.listAll().get(0);
+        Word word = wordList.get(0);
 
         mockMvc.perform(delete("/api/words/" + word.getId()))
                .andExpect(status().isOk());
@@ -153,7 +153,7 @@ public class WordControllerTest {
 
     @Test
     public void putWord() throws Exception {
-        Word word = wordService.listAll().get(0);
+        Word word = wordList.get(0);
 
         word.setTranslation("translation 2");
 
@@ -171,7 +171,7 @@ public class WordControllerTest {
 
     @Test
     public void putAbsentWord() throws Exception {
-        Word word = wordService.listAll().get(0);
+        Word word = wordList.get(0);
         String wordJson = json(word);
 
         mockMvc.perform(put("/api/words/0")

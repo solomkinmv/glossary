@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/words")
 public class WordController {
-    private final Logger LOGGER = LoggerFactory.getLogger(WordController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WordController.class);
 
     private final WordService wordService;
 

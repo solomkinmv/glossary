@@ -55,10 +55,17 @@ public class TopicServiceImpl implements TopicService {
     @Override
     public Topic update(Topic topic) {
         LOGGER.debug("Updating topic: {}", topic);
-        if (topic.getId() == null) {
+        Long topicId = topic.getId();
+        if (topicId == null) {
             LOGGER.error("Can't update topic with null id");
             throw new DomainObjectNotFound("Can't update topic with null id");
         }
+
+        Optional<Topic> topicOptional = topicDao.getById(topicId);
+        if (!topicOptional.isPresent()) {
+            throw new DomainObjectNotFound("No topic with id " + topicId);
+        }
+
         return topicDao.saveOrUpdate(topic);
     }
 

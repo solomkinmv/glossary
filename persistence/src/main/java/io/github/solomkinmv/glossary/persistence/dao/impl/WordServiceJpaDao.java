@@ -17,7 +17,7 @@ import java.util.Optional;
  */
 @Service
 public class WordServiceJpaDao extends AbstractJpaDaoService implements WordDao {
-    private final Logger LOGGER = LoggerFactory.getLogger(WordServiceJpaDao.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WordServiceJpaDao.class);
 
     @Override
     public List<Word> listAll() {
