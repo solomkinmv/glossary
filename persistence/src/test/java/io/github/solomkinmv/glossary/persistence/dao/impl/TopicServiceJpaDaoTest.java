@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.persistence.PersistenceException;
 import javax.validation.ConstraintViolationException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -217,6 +218,58 @@ public class TopicServiceJpaDaoTest {
         assertEquals(name, savedTopic.getName());
         assertEquals(description, savedTopic.getDescription());
         assertEquals(words.size(), wordDao.listAll().size());
+    }
+
+    @Test
+    public void addsWordToTopic() {
+        List<Word> words = getWords();
+
+        String name = "name";
+        String description = "description";
+        Topic topic = new Topic(name, description, words);
+
+        Topic savedTopic = topicDao.saveOrUpdate(topic);
+
+        Word wordToAdd = new Word("added word", "added word translation");
+
+        savedTopic.getWords().add(wordToAdd);
+
+        Topic updatedTopic = topicDao.saveOrUpdate(savedTopic);
+
+        assertNotNull(savedTopic.getId());
+        assertEquals(name, savedTopic.getName());
+        assertEquals(description, savedTopic.getDescription());
+        assertEquals(words.size() + 1, wordDao.listAll().size());
+
+        Word addedWord = updatedTopic.getWords().get(words.size());
+
+        assertNotNull(addedWord.getId());
+        assertEquals("added word", addedWord.getText());
+        assertEquals("added word translation", addedWord.getTranslation());
+    }
+
+    @Test
+    public void assignWordsToTopic() {
+        List<Word> words = getWords();
+
+        String name = "name";
+        String description = "description";
+        Topic topic = new Topic(name, description, Collections.emptyList());
+
+        Topic savedTopic = topicDao.saveOrUpdate(topic);
+        List<Word> savedWords = words.stream().map(word -> wordDao.saveOrUpdate(word))
+                                     .collect(Collectors.toList());
+
+        savedTopic.getWords().addAll(savedWords);
+
+        Topic updatedTopic = topicDao.saveOrUpdate(savedTopic);
+
+        assertNotNull(updatedTopic.getId());
+        assertEquals(name, updatedTopic.getName());
+        assertEquals(description, updatedTopic.getDescription());
+        assertEquals(savedWords.size(), updatedTopic.getWords().size());
+        assertEquals(savedWords.get(0), updatedTopic.getWords().get(0));
+        assertEquals(savedWords.get(1), updatedTopic.getWords().get(1));
     }
 
     private List<Word> getWords() {
