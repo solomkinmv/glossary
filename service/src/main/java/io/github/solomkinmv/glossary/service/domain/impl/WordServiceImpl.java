@@ -43,10 +43,11 @@ public class WordServiceImpl implements WordService {
     public Word save(Word word) {
         LOGGER.debug("Saving word: {}", word);
         if (word.getId() != null) {
-            return getById(word.getId())
-                    .map(wordDao::saveOrUpdate)
-                    .orElseThrow(() -> new DomainObjectAlreadyExistException(
-                            "Word with such id is already exist: " + word.getId()));
+            Optional<Word> optionalWord = getById(word.getId());
+            optionalWord.ifPresent((dbWord) -> {
+                throw new DomainObjectAlreadyExistException(
+                        "Word with such id is already exist: " + word.getId());
+            });
         }
 
         return wordDao.saveOrUpdate(word);

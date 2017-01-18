@@ -43,10 +43,11 @@ public class TopicServiceImpl implements TopicService {
     public Topic save(Topic topic) {
         LOGGER.debug("Saving topic: {}", topic);
         if (topic.getId() != null) {
-            return getById(topic.getId())
-                    .map(topicDao::saveOrUpdate)
-                    .orElseThrow(() -> new DomainObjectAlreadyExistException(
-                            "Topic with such id is already exist: " + topic.getId()));
+            Optional<Topic> optionalTopic = getById(topic.getId());
+            optionalTopic.ifPresent((dbTopic) -> {
+                throw new DomainObjectAlreadyExistException(
+                        "Topic with such id is already exist: " + topic.getId());
+            });
         }
 
         return topicDao.saveOrUpdate(topic);
