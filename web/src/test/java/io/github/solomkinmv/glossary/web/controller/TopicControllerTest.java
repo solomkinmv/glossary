@@ -5,6 +5,7 @@ import io.github.solomkinmv.glossary.persistence.model.Word;
 import io.github.solomkinmv.glossary.service.domain.TopicService;
 import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.web.Application;
+import io.github.solomkinmv.glossary.web.dto.IdDto;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -214,9 +215,48 @@ public class TopicControllerTest {
                .andExpect(status().isNotFound());
     }
 
-    private String json(Topic topic) throws IOException {
+    @Test
+    public void getTopicWords() throws Exception {
+        Topic topic = topicList.get(0);
+        List<Word> topicWords = topic.getWords();
+        mockMvc.perform(get("/api/topics/" + topic.getId() + "/words"))
+               .andExpect(status().isOk())
+               .andExpect(content().contentType(contentType))
+               .andExpect(jsonPath("$.content", hasSize(topicWords.size())))
+               .andExpect(jsonPath("$.content[0].word.id", is(topicWords.get(0).getId().intValue())))
+               .andExpect(jsonPath("$.content[0].word.text", is(topicWords.get(0).getText())))
+               .andExpect(jsonPath("$.content[0].word.translation", is(topicWords.get(0).getTranslation())))
+               .andExpect(jsonPath("$.content[1].word.id", is(topicWords.get(1).getId().intValue())))
+               .andExpect(jsonPath("$.content[1].word.text", is(topicWords.get(1).getText())))
+               .andExpect(jsonPath("$.content[1].word.translation", is(topicWords.get(1).getTranslation())));
+    }
+
+    @Test
+    public void addWordToTopic() throws Exception {
+        Topic topic = topicList.get(0);
+        Word wordToAdd = topicList.get(1).getWords().get(0);
+
+        IdDto idDto = new IdDto(wordToAdd.getId());
+        String idJson = json(idDto);
+
+        mockMvc.perform(post("/api/topics/" + topic.getId() + "/words")
+                .contentType(contentType)
+                .content(idJson))
+               .andExpect(status().isOk());
+    }
+
+    @Test
+    public void deleteWordFromTopic() throws Exception {
+        Topic topic = topicList.get(0);
+        Word word = topic.getWords().get(0);
+
+        mockMvc.perform(delete("/api/topics/" + topic.getId() + "/words/" + word.getId()))
+               .andExpect(status().isOk());
+    }
+
+    private String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        mappingJackson2HttpMessageConverter.write(topic, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
+        mappingJackson2HttpMessageConverter.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
 
         return mockHttpOutputMessage.getBodyAsString();
     }
