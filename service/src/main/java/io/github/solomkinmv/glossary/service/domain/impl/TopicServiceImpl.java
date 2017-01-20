@@ -3,12 +3,12 @@ package io.github.solomkinmv.glossary.service.domain.impl;
 import io.github.solomkinmv.glossary.persistence.dao.TopicDao;
 import io.github.solomkinmv.glossary.persistence.model.Topic;
 import io.github.solomkinmv.glossary.service.domain.TopicService;
-import io.github.solomkinmv.glossary.service.exception.DomainObjectAlreadyExistException;
 import io.github.solomkinmv.glossary.service.exception.DomainObjectNotFound;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +17,7 @@ import java.util.Optional;
  * Implementation of {@link TopicService}.
  */
 @Service
+@Transactional
 public class TopicServiceImpl implements TopicService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TopicServiceImpl.class);
 
@@ -36,21 +37,16 @@ public class TopicServiceImpl implements TopicService {
     @Override
     public Optional<Topic> getById(Long id) {
         LOGGER.debug("Getting topic by id: {}", id);
-        return topicDao.getById(id);
+        return topicDao.findOne(id);
     }
 
     @Override
     public Topic save(Topic topic) {
         LOGGER.debug("Saving topic: {}", topic);
-        if (topic.getId() != null) {
-            Optional<Topic> optionalTopic = getById(topic.getId());
-            optionalTopic.ifPresent((dbTopic) -> {
-                throw new DomainObjectAlreadyExistException(
-                        "Topic with such id is already exist: " + topic.getId());
-            });
-        }
 
-        return topicDao.saveOrUpdate(topic);
+        topicDao.create(topic);
+
+        return topic;
     }
 
     @Override
@@ -62,12 +58,12 @@ public class TopicServiceImpl implements TopicService {
             throw new DomainObjectNotFound("Can't update topic with null id");
         }
 
-        Optional<Topic> topicOptional = topicDao.getById(topicId);
+        Optional<Topic> topicOptional = topicDao.findOne(topicId);
         if (!topicOptional.isPresent()) {
             throw new DomainObjectNotFound("No topic with id " + topicId);
         }
 
-        return topicDao.saveOrUpdate(topic);
+        return topicDao.update(topic);
     }
 
     @Override

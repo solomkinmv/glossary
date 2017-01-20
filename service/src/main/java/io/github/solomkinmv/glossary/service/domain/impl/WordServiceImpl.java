@@ -3,12 +3,12 @@ package io.github.solomkinmv.glossary.service.domain.impl;
 import io.github.solomkinmv.glossary.persistence.dao.WordDao;
 import io.github.solomkinmv.glossary.persistence.model.Word;
 import io.github.solomkinmv.glossary.service.domain.WordService;
-import io.github.solomkinmv.glossary.service.exception.DomainObjectAlreadyExistException;
 import io.github.solomkinmv.glossary.service.exception.DomainObjectNotFound;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +17,7 @@ import java.util.Optional;
  * Implementation of {@link WordService}.
  */
 @Service
+@Transactional
 public class WordServiceImpl implements WordService {
     private static final Logger LOGGER = LoggerFactory.getLogger(WordServiceImpl.class);
 
@@ -36,21 +37,16 @@ public class WordServiceImpl implements WordService {
     @Override
     public Optional<Word> getById(Long id) {
         LOGGER.debug("Getting word by id: {}", id);
-        return wordDao.getById(id);
+        return wordDao.findOne(id);
     }
 
     @Override
     public Word save(Word word) {
         LOGGER.debug("Saving word: {}", word);
-        if (word.getId() != null) {
-            Optional<Word> optionalWord = getById(word.getId());
-            optionalWord.ifPresent((dbWord) -> {
-                throw new DomainObjectAlreadyExistException(
-                        "Word with such id is already exist: " + word.getId());
-            });
-        }
 
-        return wordDao.saveOrUpdate(word);
+        wordDao.create(word);
+
+        return word;
     }
 
     @Override
@@ -62,12 +58,11 @@ public class WordServiceImpl implements WordService {
             throw new DomainObjectNotFound("Can't update word with null id");
         }
 
-        Optional<Word> wordOptional = wordDao.getById(wordId);
+        Optional<Word> wordOptional = wordDao.findOne(wordId);
         if (!wordOptional.isPresent()) {
             throw new DomainObjectNotFound("No word with id " + wordId);
         }
-
-        return wordDao.saveOrUpdate(word);
+        return wordDao.update(word);
     }
 
     @Override

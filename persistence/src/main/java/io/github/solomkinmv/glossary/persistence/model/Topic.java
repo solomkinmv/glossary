@@ -23,7 +23,7 @@ public class Topic extends AbstractModelClass {
     @NotBlank
     private String description;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REMOVE})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @JoinTable
     private List<Word> words;
 

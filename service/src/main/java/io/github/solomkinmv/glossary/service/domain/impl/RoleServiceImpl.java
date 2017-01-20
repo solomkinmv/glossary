@@ -4,12 +4,12 @@ import io.github.solomkinmv.glossary.persistence.dao.RoleDao;
 import io.github.solomkinmv.glossary.persistence.model.Role;
 import io.github.solomkinmv.glossary.persistence.model.RoleType;
 import io.github.solomkinmv.glossary.service.domain.RoleService;
-import io.github.solomkinmv.glossary.service.exception.DomainObjectAlreadyExistException;
 import io.github.solomkinmv.glossary.service.exception.DomainObjectNotFound;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +18,7 @@ import java.util.Optional;
  * Implementation of {@link RoleService}.
  */
 @Service
+@Transactional
 public class RoleServiceImpl implements RoleService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RoleServiceImpl.class);
 
@@ -37,20 +38,16 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Optional<Role> getById(Long id) {
         LOGGER.debug("Getting role by id: {}", id);
-        return roleDao.getById(id);
+        return roleDao.findOne(id);
     }
 
     @Override
     public Role save(Role role) {
         LOGGER.debug("Saving role: {}", role);
-        if (role.getId() != null) {
-            return getById(role.getId())
-                    .map(roleDao::saveOrUpdate)
-                    .orElseThrow(() -> new DomainObjectAlreadyExistException(
-                            "Role with such id is already exist: " + role.getId()));
-        }
 
-        return roleDao.saveOrUpdate(role);
+        roleDao.create(role);
+
+        return role;
     }
 
     @Override
@@ -60,7 +57,7 @@ public class RoleServiceImpl implements RoleService {
             LOGGER.error("Can't update role with null id");
             throw new DomainObjectNotFound("Can't update role with null id");
         }
-        return roleDao.saveOrUpdate(role);
+        return roleDao.update(role);
     }
 
     @Override
@@ -72,7 +69,8 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Role getByRoleType(RoleType roleType) {
         LOGGER.debug("Getting role by role type: {}", roleType);
-        return roleDao.findByRoleType(roleType);
+        return roleDao.findByRoleType(roleType)
+                      .orElseThrow(() -> new DomainObjectNotFound("Couldn't find role by type: " + roleType));
     }
 
     @Override

@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.ConstraintViolationException;
 import java.util.List;
@@ -15,10 +16,11 @@ import java.util.Optional;
 import static org.junit.Assert.*;
 
 /**
- * Test for {@link WordServiceJpaDao}
+ * Test for {@link AbstractJpaDao}
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Transactional
 public class WordServiceJpaDaoTest {
     @Autowired
     private WordDao wordDao;
@@ -29,7 +31,7 @@ public class WordServiceJpaDaoTest {
         String translation = "some text";
         Word word = new Word(wordText, translation);
 
-        Word savedWord = wordDao.saveOrUpdate(word);
+        Word savedWord = wordDao.update(word);
 
         assertNotNull(savedWord.getId());
         assertEquals(wordText, savedWord.getText());
@@ -43,13 +45,12 @@ public class WordServiceJpaDaoTest {
         String updatedTranslation = "some text 2";
         Word word = new Word(wordText, translation);
 
-        Word savedWord = wordDao.saveOrUpdate(word);
-        savedWord.setTranslation(updatedTranslation);
-        Word updatedWord = wordDao.saveOrUpdate(savedWord);
+        wordDao.create(word);
+        word.setTranslation(updatedTranslation);
 
-        assertNotNull(savedWord.getId());
-        assertEquals(wordText, updatedWord.getText());
-        assertEquals(updatedTranslation, updatedWord.getTranslation());
+        assertNotNull(word.getId());
+        assertEquals(wordText, word.getText());
+        assertEquals(updatedTranslation, word.getTranslation());
     }
 
     @Test
@@ -58,12 +59,12 @@ public class WordServiceJpaDaoTest {
         String translation = "some text";
         Word word = new Word(wordText, translation);
 
-        Word savedWord = wordDao.saveOrUpdate(word);
+        wordDao.create(word);
 
-        Optional<Word> foundById = wordDao.getById(savedWord.getId());
+        Optional<Word> foundById = wordDao.findOne(word.getId());
 
         assertTrue(foundById.isPresent());
-        assertEquals(savedWord, foundById.orElse(null));
+        assertEquals(word, foundById.orElse(null));
     }
 
     @Test
@@ -72,20 +73,20 @@ public class WordServiceJpaDaoTest {
         String translation = "some text";
         Word word = new Word(wordText, translation);
 
-        Word savedWord = wordDao.saveOrUpdate(word);
-        Optional<Word> foundById = wordDao.getById(savedWord.getId());
+        wordDao.create(word);
+        Optional<Word> foundById = wordDao.findOne(word.getId());
 
         wordDao.delete(foundById.orElse(null).getId());
 
-        Optional<Word> absentWord = wordDao.getById(savedWord.getId());
+        Optional<Word> absentWord = wordDao.findOne(word.getId());
 
         assertFalse(absentWord.isPresent());
     }
 
     @Test
     public void deletesAll() {
-        wordDao.saveOrUpdate(new Word("text1", "text1"));
-        wordDao.saveOrUpdate(new Word("text2", "text2"));
+        wordDao.create(new Word("text1", "text1"));
+        wordDao.create(new Word("text2", "text2"));
 
         wordDao.deleteAll();
 
@@ -94,18 +95,13 @@ public class WordServiceJpaDaoTest {
         assertTrue(words.isEmpty());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void failesToAddNullWord() {
-        wordDao.saveOrUpdate(null);
-    }
-
     @Test(expected = ConstraintViolationException.class)
     public void failesToAddWordWithNullText() {
-        wordDao.saveOrUpdate(new Word(null, "text"));
+        wordDao.update(new Word(null, "text"));
     }
 
     @Test(expected = ConstraintViolationException.class)
     public void failesToAddWordWithNullTranslation() {
-        wordDao.saveOrUpdate(new Word("text", null));
+        wordDao.update(new Word("text", null));
     }
 }

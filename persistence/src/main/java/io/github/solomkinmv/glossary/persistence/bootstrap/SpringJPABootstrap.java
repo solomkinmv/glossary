@@ -39,21 +39,21 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        Role adminRole = roleDao.saveOrUpdate(new Role(RoleType.ADMIN));
-        Role userRole = roleDao.saveOrUpdate(new Role(RoleType.USER));
+        Role adminRole = roleDao.update(new Role(RoleType.ADMIN));
+        Role userRole = roleDao.update(new Role(RoleType.USER));
 
-        User user1 = userDao.saveOrUpdate(
+        User user1 = userDao.update(
                 new User("user1", "$2a$10$bnC26zz//2cavYoSCrlHdecWF8tkGfPodlHcYwlACBBwJvcEf0p2G", "user1@email.com",
                         Collections.singletonList(userRole)));
-        User user2 = userDao.saveOrUpdate(
+        User user2 = userDao.update(
                 new User("user2", "$2a$10$bnC26zz//2cavYoSCrlHdecWF8tkGfPodlHcYwlACBBwJvcEf0p2G", "user2@email.com",
                         Collections.singletonList(userRole)));
 
         List<Word> savedWords = saveWords();
 
-        Topic topic = topicDao.saveOrUpdate(new Topic("Basic", "description", savedWords));
+        Topic topic = topicDao.update(new Topic("Basic", "description", savedWords));
 
-        UserDictionary userDictionary = userDictionaryDao.saveOrUpdate(
+        UserDictionary userDictionary = userDictionaryDao.update(
                 new UserDictionary(new HashSet<>(Collections.singletonList(topic)), user1));
 
         System.out.println();
@@ -70,7 +70,7 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
         words.add(new Word("pen", "ручка"));
 
         return words.stream()
-                    .map(wordDao::saveOrUpdate)
+                    .map(wordDao::update)
                     .collect(Collectors.toList());
     }
 }

@@ -12,9 +12,11 @@ import java.util.Optional;
 public interface CRUDService<T, K> {
     List<T> listAll();
 
-    Optional<T> getById(K id);
+    Optional<T> findOne(K id);
 
-    T saveOrUpdate(T domainObject);
+    void create(T entity);
+
+    T update(T entity);
 
     void delete(K id);
 

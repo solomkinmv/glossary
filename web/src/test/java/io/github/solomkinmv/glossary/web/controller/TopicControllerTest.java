@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -97,9 +98,7 @@ public class TopicControllerTest {
         String topicJson = json(new Topic(
                 "topic3",
                 "description3",
-                Arrays.asList(
-                        new Word("word5", "translation5"),
-                        wordService.listAll().get(0))));
+                Collections.emptyList()));
 
         mockMvc.perform(post("/api/topics")
                 .contentType(contentType)
