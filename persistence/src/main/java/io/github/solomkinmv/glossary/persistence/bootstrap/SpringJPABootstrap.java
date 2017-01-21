@@ -24,16 +24,16 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
     private final UserDao userDao;
     private final RoleDao roleDao;
     private final WordDao wordDao;
-    private final TopicDao topicDao;
+    private final WordSetDao wordSetDao;
     private final UserDictionaryDao userDictionaryDao;
 
     @Autowired
-    public SpringJPABootstrap(UserDao userDao, RoleDao roleDao, WordDao wordDao, TopicDao topicDao,
+    public SpringJPABootstrap(UserDao userDao, RoleDao roleDao, WordDao wordDao, WordSetDao wordSetDao,
                               UserDictionaryDao userDictionaryDao) {
         this.userDao = userDao;
         this.roleDao = roleDao;
         this.wordDao = wordDao;
-        this.topicDao = topicDao;
+        this.wordSetDao = wordSetDao;
         this.userDictionaryDao = userDictionaryDao;
     }
 
@@ -51,10 +51,10 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
 
         List<Word> savedWords = saveWords();
 
-        Topic topic = topicDao.update(new Topic("Basic", "description", savedWords));
+        WordSet wordSet = wordSetDao.update(new WordSet("Basic", "description", savedWords));
 
         UserDictionary userDictionary = userDictionaryDao.update(
-                new UserDictionary(new HashSet<>(Collections.singletonList(topic)), user1));
+                new UserDictionary(new HashSet<>(Collections.singletonList(wordSet)), user1));
 
         System.out.println();
     }

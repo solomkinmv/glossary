@@ -1,7 +1,7 @@
 package io.github.solomkinmv.glossary.web.controller;
 
-import io.github.solomkinmv.glossary.persistence.model.Topic;
 import io.github.solomkinmv.glossary.persistence.model.UserDictionary;
+import io.github.solomkinmv.glossary.persistence.model.WordSet;
 import io.github.solomkinmv.glossary.service.domain.UserDictionaryService;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,19 +37,19 @@ public class UserController {
         return "hello";
     }
 
-    @RequestMapping(value = "/topics", method = RequestMethod.GET)
+    @RequestMapping(value = "/wordSets", method = RequestMethod.GET)
     @ResponseBody
-    Topic topics(Principal principal) {
+    WordSet wordSets(Principal principal) {
         AuthenticatedUser authenticatedUser = (AuthenticatedUser) ((Authentication) principal).getPrincipal();
 
         String username = authenticatedUser.getUsername();
-        Set<Topic> topics = userDictionaryService.getByUsername(username)
-                                                 .map(UserDictionary::getTopics)
-                                                 .orElseThrow(() -> new UsernameNotFoundException(
+        Set<WordSet> wordSets = userDictionaryService.getByUsername(username)
+                                                     .map(UserDictionary::getWordSets)
+                                                     .orElseThrow(() -> new UsernameNotFoundException(
                                                          "No such username: " + username));
-        Optional<Topic> topic = topics.stream()
-                                      .findAny();
+        Optional<WordSet> wordSet = wordSets.stream()
+                                            .findAny();
 
-        return topic.orElse(null);
+        return wordSet.orElse(null);
     }
 }

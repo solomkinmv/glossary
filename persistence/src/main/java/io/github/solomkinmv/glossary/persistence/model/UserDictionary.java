@@ -15,7 +15,7 @@ public class UserDictionary extends AbstractModelClass {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable
-    private Set<Topic> topics;
+    private Set<WordSet> wordSets;
 
     @OneToOne
     private User user;

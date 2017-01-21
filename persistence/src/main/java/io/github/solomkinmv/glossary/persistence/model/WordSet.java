@@ -15,7 +15,7 @@ import java.util.Objects;
 @ToString(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class Topic extends AbstractModelClass {
+public class WordSet extends AbstractModelClass {
 
     @NotBlank
     private String name;
@@ -33,10 +33,10 @@ public class Topic extends AbstractModelClass {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        Topic topic = (Topic) o;
-        return Objects.equals(name, topic.name) &&
-                Objects.equals(description, topic.description) &&
-                wordsEquals(words, topic.words);
+        WordSet wordSet = (WordSet) o;
+        return Objects.equals(name, wordSet.name) &&
+                Objects.equals(description, wordSet.description) &&
+                wordsEquals(words, wordSet.words);
     }
 
     /* Need to override equals method, because Hibernate supplies PersistentBag
