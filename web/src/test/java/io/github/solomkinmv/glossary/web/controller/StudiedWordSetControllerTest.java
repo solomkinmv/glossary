@@ -1,7 +1,9 @@
 package io.github.solomkinmv.glossary.web.controller;
 
+import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
 import io.github.solomkinmv.glossary.persistence.model.Word;
 import io.github.solomkinmv.glossary.persistence.model.WordSet;
+import io.github.solomkinmv.glossary.service.domain.StudiedWordService;
 import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.service.domain.WordSetService;
 import io.github.solomkinmv.glossary.web.Application;
@@ -24,7 +26,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -43,9 +44,8 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-public class WordSetControllerTest {
+public class StudiedWordSetControllerTest {
 
-    private final List<WordSet> wordSetList = new ArrayList<>();
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
             StandardCharsets.UTF_8);
@@ -55,6 +55,8 @@ public class WordSetControllerTest {
     private WordSetService wordSetService;
     @Autowired
     private WordService wordService;
+    @Autowired
+    private StudiedWordService studiedWordService;
     @Autowired
     private WebApplicationContext webApplicationContext;
 
@@ -72,25 +74,26 @@ public class WordSetControllerTest {
     public void setUp() throws Exception {
         mockMvc = webAppContextSetup(webApplicationContext).build();
 
-        wordSetList.add(wordSetService.save(
-                new WordSet("wordSet1",
-                        "description1",
-                        Arrays.asList(
-                                new Word("word1", "translation1"),
-                                new Word("word2", "translation2")))));
+        wordService.save(new Word("word1", "translation1"));
+        wordService.save(new Word("word2", "translation2"));
+        wordService.save(new Word("word3", "translation3"));
+        wordService.save(new Word("word4", "translation4"));
 
-        wordSetList.add(wordSetService.save(
-                new WordSet("wordSet2",
-                        "description2",
-                        Arrays.asList(
-                                new Word("word3", "translation3"),
-                                new Word("word4", "translation4")))));
+        wordSetService.save(new WordSet("wordSet1", "description1",
+                Arrays.asList(
+                        new StudiedWord(wordService.listAll().get(0)),
+                        new StudiedWord(wordService.listAll().get(1)))));
+
+        wordSetService.save(new WordSet("wordSet2", "description2",
+                Arrays.asList(
+                        new StudiedWord(wordService.listAll().get(2)),
+                        new StudiedWord(wordService.listAll().get(3)))));
     }
 
     @After
     public void tearDown() throws Exception {
         wordSetService.deleteAll();
-        wordService.deleteAll();
+        studiedWordService.deleteAll();
     }
 
     @Test
@@ -120,6 +123,8 @@ public class WordSetControllerTest {
 
     @Test
     public void getWordSets() throws Exception {
+        List<WordSet> wordSetList = wordSetService.listAll();
+
         mockMvc.perform(get("/api/wordSets"))
                .andExpect(status().isOk())
                .andExpect(content().contentType(contentType))
@@ -127,22 +132,22 @@ public class WordSetControllerTest {
                .andExpect(jsonPath("$.content[0].wordSet.id", is(wordSetList.get(0).getId().intValue())))
                .andExpect(jsonPath("$.content[0].wordSet.name", is(wordSetList.get(0).getName())))
                .andExpect(jsonPath("$.content[0].wordSet.description", is(wordSetList.get(0).getDescription())))
-               .andExpect(jsonPath("$.content[0].wordSet.words[0].id",
-                       is(wordSetList.get(0).getWords().get(0).getId().intValue())))
-               .andExpect(jsonPath("$.content[0].wordSet.words[1].id",
-                       is(wordSetList.get(0).getWords().get(1).getId().intValue())))
+               .andExpect(jsonPath("$.content[0].wordSet.studiedWords[0].id",
+                       is(wordSetList.get(0).getStudiedWords().get(0).getId().intValue())))
+               .andExpect(jsonPath("$.content[0].wordSet.studiedWords[1].id",
+                       is(wordSetList.get(0).getStudiedWords().get(1).getId().intValue())))
                .andExpect(jsonPath("$.content[1].wordSet.id", is(wordSetList.get(1).getId().intValue())))
                .andExpect(jsonPath("$.content[1].wordSet.name", is(wordSetList.get(1).getName())))
                .andExpect(jsonPath("$.content[1].wordSet.description", is(wordSetList.get(1).getDescription())))
-               .andExpect(jsonPath("$.content[1].wordSet.words[0].id",
-                       is(wordSetList.get(1).getWords().get(0).getId().intValue())))
-               .andExpect(jsonPath("$.content[1].wordSet.words[1].id",
-                       is(wordSetList.get(1).getWords().get(1).getId().intValue())));
+               .andExpect(jsonPath("$.content[1].wordSet.studiedWords[0].id",
+                       is(wordSetList.get(1).getStudiedWords().get(0).getId().intValue())))
+               .andExpect(jsonPath("$.content[1].wordSet.studiedWords[1].id",
+                       is(wordSetList.get(1).getStudiedWords().get(1).getId().intValue())));
     }
 
     @Test
     public void getWordSet() throws Exception {
-        WordSet wordSet = wordSetList.get(0);
+        WordSet wordSet = wordSetService.listAll().get(0);
 
         mockMvc.perform(get("/api/wordSets/" + wordSet.getId()))
                .andExpect(status().isOk())
@@ -150,8 +155,10 @@ public class WordSetControllerTest {
                .andExpect(jsonPath("$.wordSet.id", is(wordSet.getId().intValue())))
                .andExpect(jsonPath("$.wordSet.name", is(wordSet.getName())))
                .andExpect(jsonPath("$.wordSet.description", is(wordSet.getDescription())))
-               .andExpect(jsonPath("$.wordSet.words[0].id", is(wordSet.getWords().get(0).getId().intValue())))
-               .andExpect(jsonPath("$.wordSet.words[1].id", is(wordSet.getWords().get(1).getId().intValue())));
+               .andExpect(jsonPath("$.wordSet.studiedWords[0].id",
+                       is(wordSet.getStudiedWords().get(0).getId().intValue())))
+               .andExpect(jsonPath("$.wordSet.studiedWords[1].id",
+                       is(wordSet.getStudiedWords().get(1).getId().intValue())));
     }
 
     @Test
@@ -168,7 +175,7 @@ public class WordSetControllerTest {
 
     @Test
     public void deleteWordSet() throws Exception {
-        WordSet wordSet = wordSetList.get(0);
+        WordSet wordSet = wordSetService.listAll().get(0);
         mockMvc.perform(delete("/api/wordSets/" + wordSet.getId()))
                .andExpect(status().isOk());
     }
@@ -187,7 +194,7 @@ public class WordSetControllerTest {
 
     @Test
     public void putWordSet() throws Exception {
-        WordSet wordSet = wordSetList.get(0);
+        WordSet wordSet = wordSetService.listAll().get(0);
 
         wordSet.setDescription("description 42");
 
@@ -205,7 +212,7 @@ public class WordSetControllerTest {
 
     @Test
     public void putAbsentWordSet() throws Exception {
-        WordSet wordSet = wordSetList.get(0);
+        WordSet wordSet = wordSetService.listAll().get(0);
         String wordSetJson = json(wordSet);
 
         mockMvc.perform(put("/api/wordSets/0")
@@ -215,27 +222,32 @@ public class WordSetControllerTest {
     }
 
     @Test
-    public void getWordSetWords() throws Exception {
-        WordSet wordSet = wordSetList.get(0);
-        List<Word> wordSetWords = wordSet.getWords();
+    public void getWordSetStudiedWords() throws Exception {
+        WordSet wordSet = wordSetService.listAll().get(0);
+        List<StudiedWord> wordSetStudiedWords = wordSet.getStudiedWords();
         mockMvc.perform(get("/api/wordSets/" + wordSet.getId() + "/words"))
                .andExpect(status().isOk())
                .andExpect(content().contentType(contentType))
-               .andExpect(jsonPath("$.content", hasSize(wordSetWords.size())))
-               .andExpect(jsonPath("$.content[0].word.id", is(wordSetWords.get(0).getId().intValue())))
-               .andExpect(jsonPath("$.content[0].word.text", is(wordSetWords.get(0).getText())))
-               .andExpect(jsonPath("$.content[0].word.translation", is(wordSetWords.get(0).getTranslation())))
-               .andExpect(jsonPath("$.content[1].word.id", is(wordSetWords.get(1).getId().intValue())))
-               .andExpect(jsonPath("$.content[1].word.text", is(wordSetWords.get(1).getText())))
-               .andExpect(jsonPath("$.content[1].word.translation", is(wordSetWords.get(1).getTranslation())));
+               .andExpect(jsonPath("$.content", hasSize(wordSetStudiedWords.size())))
+               .andExpect(jsonPath("$.content[0].studiedWord.id", is(wordSetStudiedWords.get(0).getId().intValue())))
+               .andExpect(jsonPath("$.content[0].studiedWord.word.text",
+                       is(wordSetStudiedWords.get(0).getWord().getText())))
+               .andExpect(jsonPath("$.content[0].studiedWord.word.translation",
+                       is(wordSetStudiedWords.get(0).getWord().getTranslation())))
+               .andExpect(jsonPath("$.content[1].studiedWord.id", is(wordSetStudiedWords.get(1).getId().intValue())))
+               .andExpect(jsonPath("$.content[1].studiedWord.word.text",
+                       is(wordSetStudiedWords.get(1).getWord().getText())))
+               .andExpect(jsonPath("$.content[1].studiedWord.word.translation",
+                       is(wordSetStudiedWords.get(1).getWord().getTranslation())));
     }
 
     @Test
     public void addWordToWordSet() throws Exception {
+        List<WordSet> wordSetList = wordSetService.listAll();
         WordSet wordSet = wordSetList.get(0);
-        Word wordToAdd = wordSetList.get(1).getWords().get(0);
+        StudiedWord studiedWordToAdd = wordSetList.get(1).getStudiedWords().get(0);
 
-        IdDto idDto = new IdDto(wordToAdd.getId());
+        IdDto idDto = new IdDto(studiedWordToAdd.getId());
         String idJson = json(idDto);
 
         mockMvc.perform(post("/api/wordSets/" + wordSet.getId() + "/words")
@@ -246,10 +258,10 @@ public class WordSetControllerTest {
 
     @Test
     public void deleteWordFromWordSet() throws Exception {
-        WordSet wordSet = wordSetList.get(0);
-        Word word = wordSet.getWords().get(0);
+        WordSet wordSet = wordSetService.listAll().get(0);
+        StudiedWord studiedWord = wordSet.getStudiedWords().get(0);
 
-        mockMvc.perform(delete("/api/wordSets/" + wordSet.getId() + "/words/" + word.getId()))
+        mockMvc.perform(delete("/api/wordSets/" + wordSet.getId() + "/words/" + studiedWord.getId()))
                .andExpect(status().isOk());
     }
 

@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
  * Implementation of {@link WordSetDao}.
  */
 @Repository
-public class WordSetServiceJpaDao extends AbstractJpaDao<WordSet> implements WordSetDao {
+public class WordSetDaoJpaDao extends AbstractJpaDao<WordSet> implements WordSetDao {
 
-    public WordSetServiceJpaDao() {
+    public WordSetDaoJpaDao() {
         setClazz(WordSet.class);
     }
 }

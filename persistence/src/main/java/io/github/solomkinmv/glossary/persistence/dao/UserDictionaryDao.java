@@ -7,7 +7,7 @@ import java.util.Optional;
 /**
  * Describes methods to interact with {@link UserDictionary} domain object.
  */
-public interface UserDictionaryDao extends CRUDService<UserDictionary, Long> {
+public interface UserDictionaryDao extends CRUDDao<UserDictionary, Long> {
 
     Optional<UserDictionary> findByUsername(String username);
 }

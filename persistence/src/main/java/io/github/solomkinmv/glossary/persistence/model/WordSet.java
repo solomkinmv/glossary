@@ -25,7 +25,7 @@ public class WordSet extends AbstractModelClass {
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @JoinTable
-    private List<Word> words;
+    private List<StudiedWord> studiedWords;
 
 
     @Override
@@ -36,18 +36,18 @@ public class WordSet extends AbstractModelClass {
         WordSet wordSet = (WordSet) o;
         return Objects.equals(name, wordSet.name) &&
                 Objects.equals(description, wordSet.description) &&
-                wordsEquals(words, wordSet.words);
+                wordsEquals(studiedWords, wordSet.studiedWords);
     }
 
     /* Need to override equals method, because Hibernate supplies PersistentBag
     list implementation, which checks only links. */
-    private boolean wordsEquals(List<Word> thisWords, List<Word> thatWords) {
-        if (thisWords.size() != thatWords.size()) {
+    private boolean wordsEquals(List<StudiedWord> thisStudiedWords, List<StudiedWord> thatStudiedWords) {
+        if (thisStudiedWords.size() != thatStudiedWords.size()) {
             return false;
         }
 
-        for (int i = 0; i < thisWords.size(); i++) {
-            if (!thisWords.get(i).equals(thatWords.get(i))) {
+        for (int i = 0; i < thisStudiedWords.size(); i++) {
+            if (!thisStudiedWords.get(i).equals(thatStudiedWords.get(i))) {
                 return false;
             }
         }
@@ -64,7 +64,7 @@ public class WordSet extends AbstractModelClass {
         result = result * PRIME + ($name == null ? 43 : $name.hashCode());
         final Object $description = this.getDescription();
         result = result * PRIME + ($description == null ? 43 : $description.hashCode());
-        final Object $words = this.getWords();
+        final Object $words = this.getStudiedWords();
         result = result * PRIME + ($words == null ? 43 : $words.hashCode());
         return result;
     }

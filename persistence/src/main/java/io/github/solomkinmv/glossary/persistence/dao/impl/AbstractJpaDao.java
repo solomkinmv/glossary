@@ -1,6 +1,6 @@
 package io.github.solomkinmv.glossary.persistence.dao.impl;
 
-import io.github.solomkinmv.glossary.persistence.dao.CRUDService;
+import io.github.solomkinmv.glossary.persistence.dao.CRUDDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +14,7 @@ import java.util.Optional;
 /**
  * Abstract class for all JPA DAO services.
  */
-public abstract class AbstractJpaDao<T extends Serializable> implements CRUDService<T, Long> {
+public abstract class AbstractJpaDao<T extends Serializable> implements CRUDDao<T, Long> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractJpaDao.class);
 
     @PersistenceContext

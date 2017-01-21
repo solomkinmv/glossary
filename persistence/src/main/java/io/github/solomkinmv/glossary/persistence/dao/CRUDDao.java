@@ -9,7 +9,7 @@ import java.util.Optional;
  * @param <T> type of domain object
  * @param <K> type of key
  */
-public interface CRUDService<T, K> {
+public interface CRUDDao<T, K> {
     List<T> listAll();
 
     Optional<T> findOne(K id);

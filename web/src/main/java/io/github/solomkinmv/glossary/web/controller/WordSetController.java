@@ -1,12 +1,13 @@
 package io.github.solomkinmv.glossary.web.controller;
 
+import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
 import io.github.solomkinmv.glossary.persistence.model.Word;
 import io.github.solomkinmv.glossary.persistence.model.WordSet;
 import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.service.domain.WordSetService;
 import io.github.solomkinmv.glossary.web.dto.IdDto;
 import io.github.solomkinmv.glossary.web.exception.EntryNotFoundException;
-import io.github.solomkinmv.glossary.web.resource.WordResource;
+import io.github.solomkinmv.glossary.web.resource.StudiedWordResource;
 import io.github.solomkinmv.glossary.web.resource.WordSetResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,16 +91,16 @@ public class WordSetController {
     }
 
     @RequestMapping(value = "/{wordSetId}/words", method = RequestMethod.GET)
-    public Resources<WordResource> words(@PathVariable Long wordSetId) {
-        LOGGER.info("Getting all words for wordSet with id {}", wordSetId);
+    public Resources<StudiedWordResource> words(@PathVariable Long wordSetId) {
+        LOGGER.info("Getting all studiedWords for wordSet with id {}", wordSetId);
 
-        Optional<WordSet> optionalwordSet = wordSetService.getById(wordSetId);
+        Optional<WordSet> optionalWordSet = wordSetService.getById(wordSetId);
 
-        WordSet wordSet = optionalwordSet.orElseThrow(
+        WordSet wordSet = optionalWordSet.orElseThrow(
                 () -> new EntryNotFoundException("Couldn't find wordSet with id: " + wordSetId));
 
-        return new Resources<>(wordSet.getWords().stream()
-                                      .map(WordResource::new)
+        return new Resources<>(wordSet.getStudiedWords().stream()
+                                      .map(StudiedWordResource::new)
                                       .collect(Collectors.toList()));
     }
 
@@ -112,29 +113,29 @@ public class WordSetController {
                 () -> new EntryNotFoundException("Couldn't find wordSet with id: " + wordSetId));
 
         Word word = wordService.getById(wordId).orElseThrow(
-                () -> new EntryNotFoundException("Couldn't find word with id: " + wordId));
+                () -> new EntryNotFoundException("Couldn't find studiedWord with id: " + wordId));
 
-        List<Word> wordSetWords = wordSet.getWords();
-        if (wordSetWords.contains(word)) {
+        List<StudiedWord> wordSetStudiedWords = wordSet.getStudiedWords();
+        if (wordSetStudiedWords.stream().anyMatch(studiedWord -> studiedWord.getWord().getId().equals(word.getId()))) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        wordSetWords.add(word);
+        wordSetStudiedWords.add(new StudiedWord(word));
         WordSet updatedWordSet = wordSetService.update(wordSet);
         WordSetResource wordSetResource = new WordSetResource(updatedWordSet);
         return ResponseEntity.ok().body(wordSetResource);
     }
 
     @RequestMapping(value = "/{wordSetId}/words/{wordId}", method = RequestMethod.DELETE)
-    public ResponseEntity<Word> deleteWord(@PathVariable Long wordSetId, @PathVariable Long wordId) {
+    public ResponseEntity<StudiedWord> deleteWord(@PathVariable Long wordSetId, @PathVariable Long wordId) {
         LOGGER.info("Deleting word with id: {}", wordSetId);
         WordSet wordSet = wordSetService.getById(wordSetId)
                                         .orElseThrow(
                                                 () -> new EntryNotFoundException(
                                                         "Couldn't find wordSet with id: " + wordSetId));
 
-        wordSet.getWords().removeIf(word -> word.getId().equals(wordId));
-        WordSet updatedWordSet = wordSetService.update(wordSet);
+        wordSet.getStudiedWords().removeIf(word -> word.getId().equals(wordId));
+        wordSetService.update(wordSet);
         return ResponseEntity.ok().build();
     }
 

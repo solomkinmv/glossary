@@ -10,9 +10,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 /**
  * Bootstraps data for the persistence layer.
@@ -24,43 +23,84 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
     private final UserDao userDao;
     private final RoleDao roleDao;
     private final WordDao wordDao;
+    private final StudiedWordDao studiedWordDao;
     private final WordSetDao wordSetDao;
     private final UserDictionaryDao userDictionaryDao;
 
+    private List<Word> words;
+    private Role adminRole;
+    private Role userRole;
+    private List<User> users;
+    private Map<User, List<StudiedWord>> studiedWords;
+
     @Autowired
-    public SpringJPABootstrap(UserDao userDao, RoleDao roleDao, WordDao wordDao, WordSetDao wordSetDao,
+    public SpringJPABootstrap(UserDao userDao, RoleDao roleDao, WordDao wordDao, StudiedWordDao studiedWordDao,
+                              WordSetDao wordSetDao,
                               UserDictionaryDao userDictionaryDao) {
         this.userDao = userDao;
         this.roleDao = roleDao;
         this.wordDao = wordDao;
+        this.studiedWordDao = studiedWordDao;
         this.wordSetDao = wordSetDao;
         this.userDictionaryDao = userDictionaryDao;
     }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        Role adminRole = roleDao.update(new Role(RoleType.ADMIN));
-        Role userRole = roleDao.update(new Role(RoleType.USER));
-
-        User user1 = userDao.update(
-                new User("user1", "$2a$10$bnC26zz//2cavYoSCrlHdecWF8tkGfPodlHcYwlACBBwJvcEf0p2G", "user1@email.com",
-                        Collections.singletonList(userRole)));
-        User user2 = userDao.update(
-                new User("user2", "$2a$10$bnC26zz//2cavYoSCrlHdecWF8tkGfPodlHcYwlACBBwJvcEf0p2G", "user2@email.com",
-                        Collections.singletonList(userRole)));
-
-        List<Word> savedWords = saveWords();
-
-        WordSet wordSet = wordSetDao.update(new WordSet("Basic", "description", savedWords));
-
-        UserDictionary userDictionary = userDictionaryDao.update(
-                new UserDictionary(new HashSet<>(Collections.singletonList(wordSet)), user1));
-
-        System.out.println();
+        saveRoles();
+        saveWords();
+        saveUsers();
+        saveStudiedWords();
+        saveWordSetForUsers();
     }
 
-    private List<Word> saveWords() {
-        ArrayList<Word> words = new ArrayList<>();
+    private void saveStudiedWords() {
+        List<StudiedWord> userOneStudiedWords = new ArrayList<>();
+        userOneStudiedWords.add(new StudiedWord(words.get(0), WordStage.NOT_STUDIED));
+        userOneStudiedWords.add(new StudiedWord(words.get(1), WordStage.NOT_STUDIED));
+        userOneStudiedWords.add(new StudiedWord(words.get(2), WordStage.NOT_STUDIED));
+
+        List<StudiedWord> userTwoStudiedWords = new ArrayList<>();
+        userTwoStudiedWords.add(new StudiedWord(words.get(3), WordStage.NOT_STUDIED));
+        userTwoStudiedWords.add(new StudiedWord(words.get(4), WordStage.NOT_STUDIED));
+        userTwoStudiedWords.add(new StudiedWord(words.get(5), WordStage.NOT_STUDIED));
+        userTwoStudiedWords.add(new StudiedWord(words.get(6), WordStage.NOT_STUDIED));
+
+        userOneStudiedWords.forEach(studiedWordDao::create);
+        userTwoStudiedWords.forEach(studiedWordDao::create);
+
+        studiedWords.put(users.get(0), userOneStudiedWords);
+        studiedWords.put(users.get(1), userTwoStudiedWords);
+    }
+
+    private void saveWordSetForUsers() {
+        WordSet wordSet1 = new WordSet("Basic", "description", studiedWords.get(users.get(0)));
+        WordSet wordSet2 = new WordSet("Advanced", "description", studiedWords.get(users.get(1)));
+
+        wordSetDao.create(wordSet1);
+        wordSetDao.create(wordSet2);
+    }
+
+    private void saveUsers() {
+        users = new ArrayList<>();
+        users.add(new User("user1", "$2a$10$bnC26zz//2cavYoSCrlHdecWF8tkGfPodlHcYwlACBBwJvcEf0p2G", "user1@email.com",
+                Collections.singletonList(userRole)));
+        users.add(new User("user2", "$2a$10$bnC26zz//2cavYoSCrlHdecWF8tkGfPodlHcYwlACBBwJvcEf0p2G", "user2@email.com",
+                Collections.singletonList(userRole)));
+
+        users.forEach(userDao::create);
+    }
+
+    private void saveRoles() {
+        adminRole = new Role(RoleType.ADMIN);
+        userRole = new Role(RoleType.USER);
+
+        roleDao.create(adminRole);
+        roleDao.create(userRole);
+    }
+
+    private void saveWords() {
+        words = new ArrayList<>();
         words.add(new Word("user", "пользователь"));
         words.add(new Word("glass", "стекло"));
         words.add(new Word("potato", "картошка"));
@@ -69,8 +109,6 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
         words.add(new Word("pocket", "карман"));
         words.add(new Word("pen", "ручка"));
 
-        return words.stream()
-                    .map(wordDao::update)
-                    .collect(Collectors.toList());
+        words.forEach(wordDao::create);
     }
 }
