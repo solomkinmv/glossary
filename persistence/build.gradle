@@ -2,6 +2,10 @@ jar {
     baseName = 'glossary-persistence'
 }
 
+bootRepackage {
+    enabled = false
+}
+
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile beanValidation
