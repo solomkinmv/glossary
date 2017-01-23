@@ -46,7 +46,7 @@ public class UserController {
         Set<WordSet> wordSets = userDictionaryService.getByUsername(username)
                                                      .map(UserDictionary::getWordSets)
                                                      .orElseThrow(() -> new UsernameNotFoundException(
-                                                         "No such username: " + username));
+                                                             "No such username: " + username));
         Optional<WordSet> wordSet = wordSets.stream()
                                             .findAny();
 
