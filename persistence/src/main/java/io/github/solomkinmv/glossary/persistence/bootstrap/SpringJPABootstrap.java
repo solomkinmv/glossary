@@ -8,16 +8,15 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import javax.transaction.Transactional;
+import java.util.*;
 
 /**
  * Bootstraps data for the persistence layer.
  */
 @Component
 @Profile("dev")
+@Transactional
 public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
     private final UserDao userDao;
@@ -32,6 +31,8 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
     private Role userRole;
     private List<User> users;
     private Map<User, List<StudiedWord>> studiedWords;
+    private Map<User, Set<WordSet>> wordSets;
+    private HashMap<User, UserDictionary> userDictionaries;
 
     @Autowired
     public SpringJPABootstrap(UserDao userDao, RoleDao roleDao, WordDao wordDao, StudiedWordDao studiedWordDao,
@@ -48,10 +49,26 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         saveRoles();
-        saveWords();
         saveUsers();
+        saveWords();
         saveStudiedWords();
         saveWordSetForUsers();
+        saveUserDictionaries();
+    }
+
+    private void saveUserDictionaries() {
+        User user0 = users.get(0);
+        UserDictionary userDictionary0 = new UserDictionary(wordSets.get(user0), user0);
+
+        User user1 = users.get(1);
+        UserDictionary userDictionary1 = new UserDictionary(wordSets.get(user1), user1);
+
+        userDictionaryDao.create(userDictionary0);
+        userDictionaryDao.create(userDictionary1);
+
+        userDictionaries = new HashMap<>();
+        userDictionaries.put(user0, userDictionary0);
+        userDictionaries.put(user1, userDictionary1);
     }
 
     private void saveStudiedWords() {
@@ -69,6 +86,7 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
         userOneStudiedWords.forEach(studiedWordDao::create);
         userTwoStudiedWords.forEach(studiedWordDao::create);
 
+        studiedWords = new HashMap<>();
         studiedWords.put(users.get(0), userOneStudiedWords);
         studiedWords.put(users.get(1), userTwoStudiedWords);
     }
@@ -79,6 +97,10 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
 
         wordSetDao.create(wordSet1);
         wordSetDao.create(wordSet2);
+
+        wordSets = new HashMap<>();
+        wordSets.put(users.get(0), Collections.singleton(wordSet1));
+        wordSets.put(users.get(1), Collections.singleton(wordSet2));
     }
 
     private void saveUsers() {
