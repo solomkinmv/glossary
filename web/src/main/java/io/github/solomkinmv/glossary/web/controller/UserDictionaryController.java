@@ -31,12 +31,11 @@ public class UserDictionaryController {
         AuthenticatedUser authenticatedUser = (AuthenticatedUser) ((Authentication) principal).getPrincipal();
 
         String username = authenticatedUser.getUsername();
-        UserDictionaryResource userDictionaryResource = userDictionaryService
+
+        return userDictionaryService
                 .getByUsername(username)
                 .map(UserDictionaryResource::new)
                 .orElseThrow(() -> new EntryNotFoundException(
                         "Couldn't find user dictionary by following username: " + username));
-
-        return userDictionaryResource;
     }
 }
