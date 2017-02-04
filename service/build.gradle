@@ -1,14 +1,17 @@
 jar {
-	baseName = 'glossary-service'
+    baseName = 'glossary-service'
 }
 
 bootRepackage {
-	enabled = false
+    enabled = false
 }
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile('org.springframework.boot:spring-boot-starter')
+    compile httpClient
+    compile fluentHC
+    compile jackson
+    testCompile('org.springframework.boot:spring-boot-starter-test')
 
-	compile project(":persistence")
+    compile project(":persistence")
 }
