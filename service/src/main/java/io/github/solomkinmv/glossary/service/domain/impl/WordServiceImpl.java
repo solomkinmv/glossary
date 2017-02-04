@@ -76,4 +76,10 @@ public class WordServiceImpl implements WordService {
         LOGGER.debug("Deleting all words");
         wordDao.deleteAll();
     }
+
+    @Override
+    public List<Word> search(String text) {
+        LOGGER.debug("Searching for words with text: {}", text);
+        return wordDao.search(text);
+    }
 }

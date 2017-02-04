@@ -41,6 +41,14 @@ public class WordController {
                                           .collect(Collectors.toList()));
     }
 
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    public Resources<WordResource> search(@RequestParam("query") String query) {
+        return new Resources<>(wordService.search(query)
+                                          .stream()
+                                          .map(WordResource::new)
+                                          .collect(Collectors.toList()));
+    }
+
     @RequestMapping(value = "/{wordId}", method = RequestMethod.GET)
     public WordResource get(@PathVariable Long wordId) {
         LOGGER.info("Getting word with id: {}", wordId);

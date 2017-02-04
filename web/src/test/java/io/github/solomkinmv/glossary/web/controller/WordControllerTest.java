@@ -3,6 +3,7 @@ package io.github.solomkinmv.glossary.web.controller;
 import io.github.solomkinmv.glossary.persistence.model.Word;
 import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.web.Application;
+import org.apache.http.client.utils.URIBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,8 +44,8 @@ public class WordControllerTest {
 
     private final List<Word> wordList = new ArrayList<>();
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(),
-            StandardCharsets.UTF_8);
+                                                        MediaType.APPLICATION_JSON.getSubtype(),
+                                                        StandardCharsets.UTF_8);
     private MockMvc mockMvc;
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
     @Autowired
@@ -72,13 +74,46 @@ public class WordControllerTest {
     }
 
     @Test
+    public void searchWords() throws Exception {
+        URI uri = new URIBuilder("/api/words/search")
+                .addParameter("query", "word")
+                .build();
+
+        mockMvc.perform(get(uri))
+               .andExpect(status().isOk())
+               .andExpect(content().contentType(contentType))
+               .andExpect(jsonPath("$.content", hasSize(2)));
+    }
+
+    @Test
+    public void searchSpecificWord() throws Exception {
+        String wordText = "word1";
+        URI uri = new URIBuilder("/api/words/search")
+                .addParameter("query", wordText)
+                .build();
+
+        mockMvc.perform(get(uri))
+               .andExpect(status().isOk())
+               .andExpect(content().contentType(contentType))
+               .andExpect(jsonPath("$.content", hasSize(1)))
+               .andExpect(jsonPath("$.content[0].word.text", is(wordText)));
+    }
+
+    @Test
     public void createWord() throws Exception {
         String wordJson = json(new Word("text", "translation"));
 
         mockMvc.perform(post("/api/words")
-                .contentType(contentType)
-                .content(wordJson))
+                                .contentType(contentType)
+                                .content(wordJson))
                .andExpect(status().isCreated());
+    }
+
+    private String json(Word o) throws IOException {
+        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
+        mappingJackson2HttpMessageConverter.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
+
+        return mockHttpOutputMessage.getBodyAsString();
     }
 
     @Test
@@ -88,8 +123,8 @@ public class WordControllerTest {
         String wordJson = json(word);
 
         mockMvc.perform(post("/api/words/" + word.getId())
-                .contentType(contentType)
-                .content(wordJson))
+                                .contentType(contentType)
+                                .content(wordJson))
                .andExpect(status().is(HttpStatus.CONFLICT.value()));
     }
 
@@ -160,8 +195,8 @@ public class WordControllerTest {
         String wordJson = json(word);
 
         mockMvc.perform(put("/api/words/" + word.getId())
-                .contentType(contentType)
-                .content(wordJson))
+                                .contentType(contentType)
+                                .content(wordJson))
                .andExpect(status().isOk());
 
         Word updatedWord = wordService.getById(word.getId()).orElse(null);
@@ -175,15 +210,8 @@ public class WordControllerTest {
         String wordJson = json(word);
 
         mockMvc.perform(put("/api/words/0")
-                .contentType(contentType)
-                .content(wordJson))
+                                .contentType(contentType)
+                                .content(wordJson))
                .andExpect(status().isNotFound());
-    }
-
-    private String json(Word o) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        mappingJackson2HttpMessageConverter.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-
-        return mockHttpOutputMessage.getBodyAsString();
     }
 }
