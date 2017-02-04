@@ -2,9 +2,7 @@ package io.github.solomkinmv.glossary.service.domain.impl;
 
 import io.github.solomkinmv.glossary.persistence.dao.UserDictionaryDao;
 import io.github.solomkinmv.glossary.persistence.model.UserDictionary;
-import io.github.solomkinmv.glossary.service.converter.UserDictionaryConverter;
 import io.github.solomkinmv.glossary.service.domain.UserDictionaryService;
-import io.github.solomkinmv.glossary.service.dto.DictionaryDto;
 import io.github.solomkinmv.glossary.service.exception.DomainObjectNotFound;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +22,10 @@ public class UserDictionaryServiceImpl implements UserDictionaryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserDictionaryServiceImpl.class);
 
     private final UserDictionaryDao userDictionaryDao;
-    private final UserDictionaryConverter userDictionaryConverter;
 
     @Autowired
-    public UserDictionaryServiceImpl(UserDictionaryDao userDictionaryDao, UserDictionaryConverter userDictionaryConverter) {
+    public UserDictionaryServiceImpl(UserDictionaryDao userDictionaryDao) {
         this.userDictionaryDao = userDictionaryDao;
-        this.userDictionaryConverter = userDictionaryConverter;
     }
 
     @Override
@@ -70,10 +66,9 @@ public class UserDictionaryServiceImpl implements UserDictionaryService {
     }
 
     @Override
-    public Optional<DictionaryDto> getByUsername(String username) {
+    public Optional<UserDictionary> getByUsername(String username) {
         LOGGER.debug("Getting userDictionary by username: {}", username);
-        return userDictionaryDao.findByUsername(username)
-                .map(userDictionaryConverter::toDto);
+        return userDictionaryDao.findByUsername(username);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package io.github.solomkinmv.glossary.service.converter;
+package io.github.solomkinmv.glossary.web.converter;
 
 import io.github.solomkinmv.glossary.persistence.model.UserDictionary;
 import io.github.solomkinmv.glossary.service.dto.DictionaryDto;
