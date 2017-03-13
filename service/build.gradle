@@ -8,6 +8,7 @@ bootRepackage {
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter')
+    compile group: 'com.flickr4java', name: 'flickr4java', version: '2.16'
     compile httpClient
     compile fluentHC
     compile jackson

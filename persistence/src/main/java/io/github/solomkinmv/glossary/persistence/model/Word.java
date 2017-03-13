@@ -18,4 +18,6 @@ public class Word extends AbstractModelClass {
 
     @NotBlank
     private String translation;
+
+    private String url;
 }
