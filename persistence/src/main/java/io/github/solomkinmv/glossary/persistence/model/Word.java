@@ -12,12 +12,16 @@ import javax.persistence.Entity;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Word extends AbstractModelClass {
-
     @NotBlank
     private String text;
 
     @NotBlank
     private String translation;
 
-    private String url;
+    private String imageUrl;
+
+    public Word(String text, String translation) {
+        this.text = text;
+        this.translation = translation;
+    }
 }
