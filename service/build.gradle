@@ -8,6 +8,8 @@ bootRepackage {
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter')
+    compile group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.11.105'
+    compile group: 'javazoom', name: 'jlayer', version: '1.0.1'
     compile group: 'com.flickr4java', name: 'flickr4java', version: '2.16'
     compile httpClient
     compile fluentHC
