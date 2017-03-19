@@ -12,8 +12,8 @@ import io.github.solomkinmv.glossary.service.exception.ImageStoreException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileSystemUtils;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -37,19 +37,6 @@ public class ImageServiceImpl implements ImageService {
         this.flickr = flickr;
         imageDir = Paths.get(storageProperties.getImgUploadDir());
         imgPrefix = storageProperties.getImgPrefix();
-    }
-
-    @PostConstruct
-    private void init() {
-        try {
-            if (!Files.exists(imageDir)) {
-                Files.createDirectory(imageDir);
-            }
-        } catch (IOException e) {
-            String msg = "Can't create directory " + imageDir;
-            log.error(msg);
-            throw new ImageStoreException(msg);
-        }
     }
 
     /**
@@ -98,6 +85,9 @@ public class ImageServiceImpl implements ImageService {
             log.error("Image already exist: " + imgFilename);
             throw new ImageExistException("Image file name: " + imgFilename);
         }
+
+        ensureCopyingDirectoryExist();
+
         try {
             Files.copy(inputStream, imgPath);
         } catch (IOException e) {
@@ -116,11 +106,30 @@ public class ImageServiceImpl implements ImageService {
      */
     @Override
     public void deleteImg(String originalFilename) {
+        log.info("Deleting image with {} filename", originalFilename);
         Path imgPath = imageDir.resolve(adaptFilename(originalFilename));
         try {
             Files.deleteIfExists(imgPath);
         } catch (IOException e) {
             log.warn("Can't remove image " + imgPath);
+        }
+    }
+
+    @Override
+    public void deleteImgDir() {
+        log.info("Deleting directory with uploaded images");
+        FileSystemUtils.deleteRecursively(imageDir.toFile());
+    }
+
+    private void ensureCopyingDirectoryExist() {
+        try {
+            if (!Files.exists(imageDir)) {
+                Files.createDirectory(imageDir);
+            }
+        } catch (IOException e) {
+            String msg = "Can't create directory " + imageDir;
+            log.error(msg);
+            throw new ImageStoreException(msg);
         }
     }
 

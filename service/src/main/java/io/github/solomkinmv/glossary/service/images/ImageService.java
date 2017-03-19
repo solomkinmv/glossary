@@ -31,4 +31,9 @@ public interface ImageService {
      * @param originalFilename the name of the image
      */
     void deleteImg(String originalFilename);
+
+    /**
+     * Removes image upload directory.
+     */
+    void deleteImgDir();
 }

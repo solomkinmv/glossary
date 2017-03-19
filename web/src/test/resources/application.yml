@@ -7,3 +7,7 @@ spring:
     format_sql: true
 
 translate.key: trnsl.1.1.20170203T233533Z.93a3ca61465d0928.e64b79ae3d8a474cb87ef51e06ab926755908d76
+
+flickr:
+  key: abc
+  secret: abc
