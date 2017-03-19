@@ -1,9 +1,9 @@
 package io.github.solomkinmv.glossary.service.exception;
 
-import io.github.solomkinmv.glossary.service.flickr.ImageSearch;
+import io.github.solomkinmv.glossary.service.images.ImageService;
 
 /**
- * Represents exception during {@link ImageSearch} processing.
+ * Represents exception during {@link ImageService} processing.
  */
 public class ImageSearchException extends RuntimeException {
 

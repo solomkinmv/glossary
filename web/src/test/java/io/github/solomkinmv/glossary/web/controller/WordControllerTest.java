@@ -117,18 +117,6 @@ public class WordControllerTest {
     }
 
     @Test
-    public void createExistingWord() throws Exception {
-        Word word = wordService.listAll().get(0);
-
-        String wordJson = json(word);
-
-        mockMvc.perform(post("/api/words/" + word.getId())
-                                .contentType(contentType)
-                                .content(wordJson))
-               .andExpect(status().is(HttpStatus.CONFLICT.value()));
-    }
-
-    @Test
     public void getWords() throws Exception {
         mockMvc.perform(get("/api/words"))
                .andExpect(status().isOk())
@@ -140,6 +128,18 @@ public class WordControllerTest {
                .andExpect(jsonPath("$.content[1].word.id", is(wordList.get(1).getId().intValue())))
                .andExpect(jsonPath("$.content[1].word.text", is(wordList.get(1).getText())))
                .andExpect(jsonPath("$.content[1].word.translation", is(wordList.get(1).getTranslation())));
+    }
+
+    @Test
+    public void createExistingWord() throws Exception {
+        Word word = wordService.listAll().get(0);
+
+        String wordJson = json(word);
+
+        mockMvc.perform(post("/api/words/" + word.getId())
+                                .contentType(contentType)
+                                .content(wordJson))
+               .andExpect(status().is(HttpStatus.CONFLICT.value()));
     }
 
     @Test

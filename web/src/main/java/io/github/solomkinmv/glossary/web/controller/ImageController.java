@@ -1,13 +1,18 @@
 package io.github.solomkinmv.glossary.web.controller;
 
-import io.github.solomkinmv.glossary.service.flickr.ImageSearch;
+import io.github.solomkinmv.glossary.service.images.ImageService;
+import io.github.solomkinmv.glossary.web.dto.ImageDto;
+import io.github.solomkinmv.glossary.web.exception.UploadException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resources;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.io.IOException;
+import java.net.URI;
 
 /**
  * Endpoint for operations with images.
@@ -16,16 +21,45 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/images")
 @Slf4j
 public class ImageController {
-    private final ImageSearch imageSearch;
+    private static final String UPLOAD_IMG_KEY = "file";
+    private final ImageService imageService;
 
     @Autowired
-    public ImageController(ImageSearch imageSearch) {
-        this.imageSearch = imageSearch;
+    public ImageController(ImageService imageService) {
+        this.imageService = imageService;
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public Resources<String> search(@RequestParam("query") String query) {
         log.info("Searching for images by following query: {}", query);
-        return new Resources<>(imageSearch.search(query.split(",")));
+        return new Resources<>(imageService.search(query.split(",")));
+    }
+
+    @PostMapping("")
+    public ResponseEntity<?> uploadImage(@RequestParam(UPLOAD_IMG_KEY) MultipartFile file) {
+        log.info("Uploading file with name: {}", file.getOriginalFilename());
+        if (file.isEmpty()) {
+            String message = "Failed to store empty file: {}" + file.getOriginalFilename();
+            log.error(message);
+            throw new UploadException(message);
+        }
+        String uriLocation;
+        try {
+            uriLocation = imageService.store(file.getInputStream(), file.getOriginalFilename());
+        } catch (IOException e) {
+            String message = "Failed to store empty file: " + file.getOriginalFilename();
+            log.error(message);
+            throw new UploadException(message, e);
+        }
+        String uriString = ServletUriComponentsBuilder.fromCurrentContextPath().path(uriLocation).toUriString();
+        return ResponseEntity.created(URI.create(uriString)).build();
+    }
+
+    @DeleteMapping("")
+    public ResponseEntity<?> deleteUploadedImage(@RequestBody ImageDto imageDto) {
+        String imgFilename = imageDto.getImage();
+        log.info("Deleting image by filename {}", imgFilename);
+        imageService.deleteImg(imgFilename);
+        return ResponseEntity.ok().build();
     }
 }
