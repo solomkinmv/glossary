@@ -1,6 +1,4 @@
 ### Java template
-*.class
-
 # Package Files #
 *.jar
 *.war
@@ -11,5 +9,8 @@ hs_err_pid*
 
 .gradle/
 .idea/
-*.iml
 !/gradle/wrapper/gradle-wrapper.jar
+.DS_Store
+out/
+*/build/
+*/target/
