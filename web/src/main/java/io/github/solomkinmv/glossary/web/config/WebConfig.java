@@ -1,6 +1,6 @@
 package io.github.solomkinmv.glossary.web.config;
 
-import io.github.solomkinmv.glossary.service.images.StorageProperties;
+import io.github.solomkinmv.glossary.service.storage.StorageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -26,7 +26,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         String externalImgDir = Paths.get(storageProperties.getImgUploadDir()).toUri().toString();
-        String resourceHandlerPath = String.format("/%s/**", storageProperties.getImgPrefix());
+        String resourceHandlerPath = String.format("/%s/**", storageProperties.getImgUrlPrefix());
         registry
                 .addResourceHandler(resourceHandlerPath)
                 .addResourceLocations(externalImgDir)

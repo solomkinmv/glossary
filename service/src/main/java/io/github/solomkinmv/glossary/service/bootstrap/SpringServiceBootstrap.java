@@ -1,6 +1,6 @@
 package io.github.solomkinmv.glossary.service.bootstrap;
 
-import io.github.solomkinmv.glossary.service.images.StorageProperties;
+import io.github.solomkinmv.glossary.service.storage.StorageProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;

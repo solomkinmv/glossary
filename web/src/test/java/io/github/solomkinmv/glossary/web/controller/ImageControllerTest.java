@@ -3,7 +3,7 @@ package io.github.solomkinmv.glossary.web.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.solomkinmv.glossary.service.images.ImageService;
-import io.github.solomkinmv.glossary.service.images.StorageProperties;
+import io.github.solomkinmv.glossary.service.storage.StorageProperties;
 import io.github.solomkinmv.glossary.web.Application;
 import io.github.solomkinmv.glossary.web.dto.ImageDto;
 import org.junit.After;
@@ -60,19 +60,20 @@ public class ImageControllerTest {
 
     @Test
     public void uploadsImage() throws Exception {
-        String originalFilename = "img.jpg";
+        String originalFilename = "img one.jpg";
+        String expectedFilename = "img_one.jpg";
         MockMultipartFile file = new MockMultipartFile("file", originalFilename, "image/png",
                                                        "nonsensecontent".getBytes());
         mockMvc.perform(fileUpload("/api/images")
                                 .file(file)
                                 .accept(MediaType.APPLICATION_JSON))
                .andExpect(status().isCreated())
-               .andExpect(header().string("Location", containsString(imgPathPrefix + "/" + originalFilename)));
+               .andExpect(header().string("Location", containsString(imgPathPrefix + "/" + expectedFilename)));
     }
 
     @Test
     public void deletesImage() throws Exception {
-        String originalFilename = "img.jpg";
+        String originalFilename = "img one.jpg";
         MockMultipartFile file = new MockMultipartFile("file", originalFilename, "image/png",
                                                        "nonsensecontent".getBytes());
         mockMvc.perform(fileUpload("/api/images")
@@ -85,12 +86,12 @@ public class ImageControllerTest {
                .andExpect(status().isOk());
     }
 
-    private String json(Object object) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(object);
-    }
-
     @Autowired
     public void setImgUploadDir(StorageProperties storageProperties) {
-        imgPathPrefix = storageProperties.getImgPrefix();
+        imgPathPrefix = storageProperties.getImgUrlPrefix();
+    }
+
+    private String json(Object object) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(object);
     }
 }

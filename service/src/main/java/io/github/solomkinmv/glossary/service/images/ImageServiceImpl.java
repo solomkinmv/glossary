@@ -6,19 +6,14 @@ import com.flickr4java.flickr.photos.Photo;
 import com.flickr4java.flickr.photos.PhotoList;
 import com.flickr4java.flickr.photos.PhotosInterface;
 import com.flickr4java.flickr.photos.SearchParameters;
-import io.github.solomkinmv.glossary.service.exception.ImageExistException;
 import io.github.solomkinmv.glossary.service.exception.ImageSearchException;
-import io.github.solomkinmv.glossary.service.exception.ImageStoreException;
+import io.github.solomkinmv.glossary.service.storage.StorageService;
+import io.github.solomkinmv.glossary.service.storage.StoredType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileSystemUtils;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -29,14 +24,12 @@ public class ImageServiceImpl implements ImageService {
     private static final int PAGE_SIZE = 10;
 
     private final Flickr flickr;
-    private final Path imageDir;
-    private final String imgPrefix;
+    private final StorageService storageService;
 
     @Autowired
-    public ImageServiceImpl(Flickr flickr, StorageProperties storageProperties) {
+    public ImageServiceImpl(Flickr flickr, StorageService storageService) {
         this.flickr = flickr;
-        imageDir = Paths.get(storageProperties.getImgUploadDir());
-        imgPrefix = storageProperties.getImgPrefix();
+        this.storageService = storageService;
     }
 
     /**
@@ -79,58 +72,21 @@ public class ImageServiceImpl implements ImageService {
      */
     @Override
     public String store(InputStream inputStream, String originalFilename) {
-        String imgFilename = adaptFilename(originalFilename);
-        Path imgPath = imageDir.resolve(imgFilename);
-        if (Files.exists(imgPath)) {
-            log.error("Image already exist: " + imgFilename);
-            throw new ImageExistException("Image file name: " + imgFilename);
-        }
-
-        ensureCopyingDirectoryExist();
-
-        try {
-            Files.copy(inputStream, imgPath);
-        } catch (IOException e) {
-            String msg = "Can't store image " + imgFilename + " to " + imageDir.toAbsolutePath();
-            log.error(msg);
-            throw new ImageStoreException(msg, e);
-        }
-
-        return imgPrefix + "/" + imgFilename;
+        log.info("Storing image with {} filename", originalFilename);
+        String filename = adaptFilename(originalFilename);
+        return storageService.store(inputStream, filename, StoredType.IMG);
     }
 
-    /**
-     * Deletes uploaded image by {@code originalFilename}.
-     *
-     * @param originalFilename the name of the image
-     */
     @Override
     public void deleteImg(String originalFilename) {
         log.info("Deleting image with {} filename", originalFilename);
-        Path imgPath = imageDir.resolve(adaptFilename(originalFilename));
-        try {
-            Files.deleteIfExists(imgPath);
-        } catch (IOException e) {
-            log.warn("Can't remove image " + imgPath);
-        }
+        String filename = adaptFilename(originalFilename);
+        storageService.deleteObject(filename, StoredType.IMG);
     }
 
     @Override
     public void deleteImgDir() {
-        log.info("Deleting directory with uploaded images");
-        FileSystemUtils.deleteRecursively(imageDir.toFile());
-    }
-
-    private void ensureCopyingDirectoryExist() {
-        try {
-            if (!Files.exists(imageDir)) {
-                Files.createDirectory(imageDir);
-            }
-        } catch (IOException e) {
-            String msg = "Can't create directory " + imageDir;
-            log.error(msg);
-            throw new ImageStoreException(msg);
-        }
+        storageService.deleteStorageByType(StoredType.IMG);
     }
 
     private String adaptFilename(String originalFilename) {
