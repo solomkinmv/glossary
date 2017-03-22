@@ -1,6 +1,7 @@
 package io.github.solomkinmv.glossary.service.storage;
 
 import java.io.InputStream;
+import java.util.Optional;
 
 /**
  * Describes operations for storing objects.
@@ -32,4 +33,13 @@ public interface StorageService {
      * @param type the type of objects to be deleted
      */
     void deleteStorageByType(StoredType type);
+
+    /**
+     * Returns object by specified {@code filename} and {@code type}.
+     *
+     * @param filename the object's filename
+     * @param type     the object's type
+     * @return an optional URL to the object
+     */
+    Optional<String> getObject(String filename, StoredType type);
 }

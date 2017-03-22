@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Optional;
 
 /**
  * Implementation of the {@link StorageService} to store in the FileSystem.
@@ -72,8 +73,7 @@ public class FileSystemStorageService implements StorageService {
             throw new ImageStoreException(msg, e);
         }
 
-        String urlPrefix = storedTypeUrlPrefixMapping.get(type);
-        return urlPrefix + "/" + filename;
+        return buildPath(filename, type);
     }
 
     @Override
@@ -96,6 +96,18 @@ public class FileSystemStorageService implements StorageService {
         FileSystemUtils.deleteRecursively(dir.toFile());
     }
 
+    @Override
+    public Optional<String> getObject(String filename, StoredType type) {
+        Path uploadDir = storedTypeDirMapping.get(type);
+        Path objectPath = uploadDir.resolve(filename);
+
+        if (!Files.exists(objectPath)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(buildPath(filename, type));
+    }
+
     private void ensureCopyingDirectoryExist(Path dirPath) {
         log.debug("Ensuring that there is directory {} to store object", dirPath);
         try {
@@ -107,5 +119,10 @@ public class FileSystemStorageService implements StorageService {
             log.error(msg);
             throw new ImageStoreException(msg);
         }
+    }
+
+    private String buildPath(String objectName, StoredType type) {
+        String urlPrefix = storedTypeUrlPrefixMapping.get(type);
+        return urlPrefix + "/" + objectName;
     }
 }

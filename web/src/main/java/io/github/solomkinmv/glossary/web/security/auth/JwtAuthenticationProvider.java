@@ -29,7 +29,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
      * Authenticates user by specified credentials. This implementation parses raw JWT and
      * creates {@link AuthenticatedUser} using data from the token.
      *
-     * @param authentication the authentication object which contains principal and credentials
+     * @param authentication the authentication object which getObject principal and credentials
      * @return new {@code authentication} object with {@link AuthenticatedUser}
      * and list of {@link GrantedAuthority}
      */
