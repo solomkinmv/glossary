@@ -36,20 +36,26 @@ public class PollySpeechService implements SpeechService {
     @Override
     public String getSpeechRecord(String speech) {
         log.info("Getting speech record");
-        return storageService.getObject(speech, TYPE)
-                             .orElseGet(createSpeechRecordSupplier(speech));
+        String filename = adaptToFilename(speech);
+        return storageService.getObject(filename, TYPE)
+                             .orElseGet(createSpeechRecordSupplier(speech, filename));
     }
 
-    private Supplier<String> createSpeechRecordSupplier(String speech) {
-        SynthesizeSpeechRequest synthReq = new SynthesizeSpeechRequest()
-                .withText(speech)
-                .withVoiceId(voice.getId())
-                .withOutputFormat(FORMAT);
-        SynthesizeSpeechResult synthRes = polly.synthesizeSpeech(synthReq);
+    private Supplier<String> createSpeechRecordSupplier(String speech, String filename) {
+        return () -> {
+            log.info("Creating new speech record: \"{}\"", speech);
+            SynthesizeSpeechRequest synthReq = new SynthesizeSpeechRequest()
+                    .withText(speech)
+                    .withVoiceId(voice.getId())
+                    .withOutputFormat(FORMAT);
+            SynthesizeSpeechResult synthRes = polly.synthesizeSpeech(synthReq);
 
-        InputStream audioStream = synthRes.getAudioStream();
-        String filename = speech.replace(' ', '_') + "." + FORMAT;
+            InputStream audioStream = synthRes.getAudioStream();
+            return storageService.store(audioStream, filename, TYPE);
+        };
+    }
 
-        return () -> storageService.store(audioStream, filename, TYPE);
+    private String adaptToFilename(String speech) {
+        return speech.replaceAll("\\W", "") + "." + FORMAT;
     }
 }

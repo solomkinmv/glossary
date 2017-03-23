@@ -1,7 +1,7 @@
 package io.github.solomkinmv.glossary.service.storage.impl;
 
-import io.github.solomkinmv.glossary.service.exception.ImageStoreException;
 import io.github.solomkinmv.glossary.service.exception.ObjectExistException;
+import io.github.solomkinmv.glossary.service.exception.StorageException;
 import io.github.solomkinmv.glossary.service.storage.StorageProperties;
 import io.github.solomkinmv.glossary.service.storage.StorageService;
 import io.github.solomkinmv.glossary.service.storage.StoredType;
@@ -69,8 +69,8 @@ public class FileSystemStorageService implements StorageService {
             Files.copy(inputStream, objectPath);
         } catch (IOException e) {
             String msg = "Can't store an object " + filename + " to " + uploadDir.toAbsolutePath();
-            log.error(msg);
-            throw new ImageStoreException(msg, e);
+            log.error(msg, e);
+            throw new StorageException(msg, e);
         }
 
         return buildPath(filename, type);
@@ -116,8 +116,8 @@ public class FileSystemStorageService implements StorageService {
             }
         } catch (IOException e) {
             String msg = "Can't create directory " + dirPath;
-            log.error(msg);
-            throw new ImageStoreException(msg);
+            log.error(msg, e);
+            throw new StorageException(msg, e);
         }
     }
 

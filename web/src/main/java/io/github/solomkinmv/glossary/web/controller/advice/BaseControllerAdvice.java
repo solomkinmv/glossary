@@ -3,6 +3,7 @@ package io.github.solomkinmv.glossary.web.controller.advice;
 import io.github.solomkinmv.glossary.service.exception.DomainObjectAlreadyExistException;
 import io.github.solomkinmv.glossary.service.exception.DomainObjectNotFound;
 import io.github.solomkinmv.glossary.service.exception.ObjectExistException;
+import io.github.solomkinmv.glossary.service.exception.StorageException;
 import org.springframework.hateoas.VndErrors;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,6 +39,12 @@ public class BaseControllerAdvice {
     @ExceptionHandler(ObjectExistException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     VndErrors imageAlreadyExist(ObjectExistException e) {
+        return new VndErrors("error", e.getMessage());
+    }
+
+    @ExceptionHandler(StorageException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    VndErrors storageError(StorageException e) {
         return new VndErrors("error", e.getMessage());
     }
 }

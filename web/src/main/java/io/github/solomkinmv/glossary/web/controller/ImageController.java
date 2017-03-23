@@ -29,6 +29,7 @@ public class ImageController {
         this.imageService = imageService;
     }
 
+    // TODO: replace String with HATEAOS resource
     @RequestMapping(value = "", method = RequestMethod.GET)
     public Resources<String> search(@RequestParam("query") String query) {
         log.info("Searching for images by following query: {}", query);
