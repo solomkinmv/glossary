@@ -1,6 +1,7 @@
 package io.github.solomkinmv.glossary.web.config;
 
 import io.github.solomkinmv.glossary.service.storage.StorageProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -14,9 +15,11 @@ import java.nio.file.Paths;
  * Configures static resource handler for the uploaded images.
  */
 @Configuration
+@Slf4j
 public class WebConfig extends WebMvcConfigurerAdapter {
     private static final int CACHE_PERIOD = 3600;
     private static final String RESOURCE_HANDLER_FORMAT = "/%s/**";
+    private static final String RESOURCE_LOCATION_FORMAT = "file:%s/";
     private final StorageProperties storageProperties;
 
     @Autowired
@@ -26,16 +29,23 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String externalImgDir = Paths.get(storageProperties.getImgUploadDir()).toUri().toString();
+        // FIXME: check file location
+        String externalImgDir = String.format(RESOURCE_LOCATION_FORMAT,
+                                              Paths.get(storageProperties.getImgUploadDir())
+                                                   .toAbsolutePath());
         String imgResourceHandlerPath = String.format(RESOURCE_HANDLER_FORMAT, storageProperties.getImgUrlPrefix());
         addResourceHandler(registry, externalImgDir, imgResourceHandlerPath);
 
-        String externalSoundDir = Paths.get(storageProperties.getSoundUploadDir()).toUri().toString();
+        String externalSoundDir = String.format(RESOURCE_LOCATION_FORMAT,
+                                                Paths.get(storageProperties.getSoundUploadDir())
+                                                     .toAbsolutePath());
         String soundResourceHandlerPath = String.format(RESOURCE_HANDLER_FORMAT, storageProperties.getSoundUrlPrefix());
         addResourceHandler(registry, externalSoundDir, soundResourceHandlerPath);
     }
 
     private void addResourceHandler(ResourceHandlerRegistry registry, String externalResourceDir, String resourceHandlerPath) {
+        log.info("Adding resource handler. External resource dir: {}. Resource handler path: {}",
+                 externalResourceDir, resourceHandlerPath);
         registry
                 .addResourceHandler(resourceHandlerPath)
                 .addResourceLocations(externalResourceDir)
