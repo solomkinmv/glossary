@@ -1,5 +1,6 @@
 jar {
-    baseName = "glossary-web"
+    baseName = "glossary"
+    version = null
 }
 
 dependencies {
@@ -15,4 +16,20 @@ dependencies {
 
     compile project(":persistence")
     compile project(":service")
+}
+
+group = 'solomkinmv'
+
+apply plugin: "docker"
+
+task buildDocker(type: Docker, dependsOn: build) {
+    push = true
+    applicationName = jar.baseName
+    dockerfile = file('src/main/docker/Dockerfile')
+    doFirst {
+        copy {
+            from jar
+            into stageDir
+        }
+    }
 }

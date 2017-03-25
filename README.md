@@ -8,7 +8,4 @@
 
 ## Docker
 ### Build container
-`docker build -t glossary .`
-
-### Run container with dev profile
-`docker run -e "SPRING_PROFILES_ACTIVE=dev" -p 8080:8080 -t glossary`
+`./gradlew web:buildDocker`
