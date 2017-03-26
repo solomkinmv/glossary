@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.URI;
@@ -31,6 +32,9 @@ public class YandexTranslator implements Translator {
 
     @Override
     public String execute(String text, Language source, Language target) {
+        if (StringUtils.isEmpty(text)) {
+            return "";
+        }
         try {
             URI uri = new URIBuilder(YANDEX_TRANSLATE_ENDPOINT)
                     .addParameter("key", key)

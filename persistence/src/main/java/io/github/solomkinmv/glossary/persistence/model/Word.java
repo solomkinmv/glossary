@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.Entity;
+import java.net.URL;
 
 @Entity
 @Data
@@ -18,7 +19,9 @@ public class Word extends AbstractModelClass {
     @NotBlank
     private String translation;
 
-    private String imageUrl;
+    private URL image;
+
+    private URL sound;
 
     public Word(String text, String translation) {
         this.text = text;
