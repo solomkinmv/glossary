@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,11 +48,19 @@ public class QuizPracticeServiceImpl implements QuizPracticeService {
 
         return new QuizPractice(
                 words.stream()
-                     .filter(studiedWord -> !studiedWord.getStage().equals(WordStage.LEARNED))
-                     .sorted(Comparator.comparingInt(w -> w.getStage().ordinal()))
+                     .filter(notLearned())
+                     .sorted(comparatorByLearningLevel())
                      .limit(TEST_SIZE)
                      .collect(Collectors.toMap(Function.identity(), word -> generateChoices(word, words),
                                                this::throwExceptionIfDuplicates)));
+    }
+
+    private Comparator<WordDto> comparatorByLearningLevel() {
+        return Comparator.comparingInt(w -> w.getStage().ordinal());
+    }
+
+    private Predicate<WordDto> notLearned() {
+        return studiedWord -> !studiedWord.getStage().equals(WordStage.LEARNED);
     }
 
     private QuizPractice.Choices throwExceptionIfDuplicates(QuizPractice.Choices choices1, QuizPractice.Choices choices2) {
