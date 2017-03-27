@@ -25,6 +25,6 @@ public class StudiedWord extends AbstractModelClass {
     private WordStage stage;
 
     public StudiedWord(Word word) {
-        this(word, WordStage.NOT_STUDIED);
+        this(word, WordStage.NOT_LEARNED);
     }
 }

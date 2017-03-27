@@ -5,7 +5,7 @@ package io.github.solomkinmv.glossary.persistence.model;
  * <p>Used in {@link StudiedWord}.
  */
 public enum WordStage {
-    NOT_STUDIED,
-    IN_PROGRESS,
+    NOT_LEARNED,
+    LEARNING,
     LEARNED
 }

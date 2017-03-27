@@ -37,7 +37,8 @@ public class QuizPracticeServiceImplQuiz {
         when(wordSetService.getById(1L)).thenReturn(Optional.of(createWordSet()));
         when(wordSetService.getById(2L)).thenReturn(Optional.empty());
 
-        practiceService = new QuizPracticeServiceImpl(new Random(SEED), new WordConverter(), wordSetService);
+        practiceService = new QuizPracticeServiceImpl(new Random(SEED), new WordConverter(), wordSetService,
+                                                      studiedWordService);
     }
 
     @Test
@@ -51,7 +52,7 @@ public class QuizPracticeServiceImplQuiz {
 
         long countOfNotStudiedWords = words.keySet().stream()
                                            .map(WordDto::getStage)
-                                           .filter(WordStage.NOT_STUDIED::equals)
+                                           .filter(WordStage.NOT_LEARNED::equals)
                                            .count();
         assertEquals(2, countOfNotStudiedWords);
 
@@ -75,17 +76,17 @@ public class QuizPracticeServiceImplQuiz {
 
     private List<StudiedWord> createStudiedWords() {
         return Arrays.asList(
-                new StudiedWord(new Word("text1", "translation"), WordStage.NOT_STUDIED),
-                new StudiedWord(new Word("text2", "translation"), WordStage.NOT_STUDIED),
-                new StudiedWord(new Word("text3", "translation"), WordStage.IN_PROGRESS),
-                new StudiedWord(new Word("text4", "translation"), WordStage.IN_PROGRESS),
-                new StudiedWord(new Word("text5", "translation"), WordStage.IN_PROGRESS),
-                new StudiedWord(new Word("text6", "translation"), WordStage.IN_PROGRESS),
-                new StudiedWord(new Word("text7", "translation"), WordStage.IN_PROGRESS),
-                new StudiedWord(new Word("text8", "translation"), WordStage.IN_PROGRESS),
-                new StudiedWord(new Word("text9", "translation"), WordStage.IN_PROGRESS),
-                new StudiedWord(new Word("text10", "translation"), WordStage.IN_PROGRESS),
-                new StudiedWord(new Word("text11", "translation"), WordStage.IN_PROGRESS),
+                new StudiedWord(new Word("text1", "translation"), WordStage.NOT_LEARNED),
+                new StudiedWord(new Word("text2", "translation"), WordStage.NOT_LEARNED),
+                new StudiedWord(new Word("text3", "translation"), WordStage.LEARNING),
+                new StudiedWord(new Word("text4", "translation"), WordStage.LEARNING),
+                new StudiedWord(new Word("text5", "translation"), WordStage.LEARNING),
+                new StudiedWord(new Word("text6", "translation"), WordStage.LEARNING),
+                new StudiedWord(new Word("text7", "translation"), WordStage.LEARNING),
+                new StudiedWord(new Word("text8", "translation"), WordStage.LEARNING),
+                new StudiedWord(new Word("text9", "translation"), WordStage.LEARNING),
+                new StudiedWord(new Word("text10", "translation"), WordStage.LEARNING),
+                new StudiedWord(new Word("text11", "translation"), WordStage.LEARNING),
                 new StudiedWord(new Word("text12", "translation"), WordStage.LEARNED),
                 new StudiedWord(new Word("text13", "translation"), WordStage.LEARNED)
         );

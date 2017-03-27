@@ -73,15 +73,15 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
 
     private void saveStudiedWords() {
         List<StudiedWord> userOneStudiedWords = new ArrayList<>();
-        userOneStudiedWords.add(new StudiedWord(words.get(0), WordStage.NOT_STUDIED));
-        userOneStudiedWords.add(new StudiedWord(words.get(1), WordStage.NOT_STUDIED));
-        userOneStudiedWords.add(new StudiedWord(words.get(2), WordStage.NOT_STUDIED));
+        userOneStudiedWords.add(new StudiedWord(words.get(0), WordStage.NOT_LEARNED));
+        userOneStudiedWords.add(new StudiedWord(words.get(1), WordStage.NOT_LEARNED));
+        userOneStudiedWords.add(new StudiedWord(words.get(2), WordStage.NOT_LEARNED));
 
         List<StudiedWord> userTwoStudiedWords = new ArrayList<>();
-        userTwoStudiedWords.add(new StudiedWord(words.get(3), WordStage.NOT_STUDIED));
-        userTwoStudiedWords.add(new StudiedWord(words.get(4), WordStage.NOT_STUDIED));
-        userTwoStudiedWords.add(new StudiedWord(words.get(5), WordStage.NOT_STUDIED));
-        userTwoStudiedWords.add(new StudiedWord(words.get(6), WordStage.NOT_STUDIED));
+        userTwoStudiedWords.add(new StudiedWord(words.get(3), WordStage.NOT_LEARNED));
+        userTwoStudiedWords.add(new StudiedWord(words.get(4), WordStage.NOT_LEARNED));
+        userTwoStudiedWords.add(new StudiedWord(words.get(5), WordStage.NOT_LEARNED));
+        userTwoStudiedWords.add(new StudiedWord(words.get(6), WordStage.NOT_LEARNED));
 
         userOneStudiedWords.forEach(studiedWordDao::create);
         userTwoStudiedWords.forEach(studiedWordDao::create);

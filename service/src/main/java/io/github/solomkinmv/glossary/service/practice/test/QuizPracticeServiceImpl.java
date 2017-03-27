@@ -1,10 +1,15 @@
 package io.github.solomkinmv.glossary.service.practice.test;
 
+import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
 import io.github.solomkinmv.glossary.persistence.model.WordSet;
 import io.github.solomkinmv.glossary.persistence.model.WordStage;
 import io.github.solomkinmv.glossary.service.converter.WordConverter;
+import io.github.solomkinmv.glossary.service.domain.StudiedWordService;
 import io.github.solomkinmv.glossary.service.domain.WordSetService;
 import io.github.solomkinmv.glossary.service.dto.WordDto;
+import io.github.solomkinmv.glossary.service.exception.DomainObjectNotFound;
+import io.github.solomkinmv.glossary.service.practice.StatusUpdater;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,34 +22,33 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
+@Slf4j
 public class QuizPracticeServiceImpl implements QuizPracticeService {
     public static final int TEST_SIZE = 10;
     public static final int NUMBER_OF_CHOICES = 5;
     private final WordConverter wordConverter;
     private final WordSetService wordSetService;
+    private final StudiedWordService studiedWordService;
+    private final StatusUpdater statusUpdater;
     private final Random random;
 
     @Autowired
-    public QuizPracticeServiceImpl(WordConverter wordConverter, WordSetService wordSetService) {
-        this(new Random(), wordConverter, wordSetService);
+    public QuizPracticeServiceImpl(WordConverter wordConverter, WordSetService wordSetService, StudiedWordService studiedWordService, StatusUpdater statusUpdater) {
+        this(new Random(), wordConverter, wordSetService, studiedWordService, statusUpdater);
     }
 
-    public QuizPracticeServiceImpl(Random random, WordConverter wordConverter, WordSetService wordSetService) {
+    public QuizPracticeServiceImpl(Random random, WordConverter wordConverter, WordSetService wordSetService, StudiedWordService studiedWordService, StatusUpdater statusUpdater) {
         this.random = random;
         this.wordConverter = wordConverter;
         this.wordSetService = wordSetService;
+        this.studiedWordService = studiedWordService;
+        this.statusUpdater = statusUpdater;
     }
 
     @Override
     public QuizPractice generateQuiz(long wordSetId) {
-        List<WordDto> words = wordSetService
-                .getById(wordSetId)
-                .map(WordSet::getStudiedWords)
-                .orElseThrow(() -> new IllegalArgumentException("No such word set with id: " + wordSetId))
-                .stream()
-                .map(wordConverter::toDto)
-                .collect(Collectors.toList());
-
+        log.info("Generating quiz for wordSet with id {}", wordSetId);
+        List<WordDto> words = getWords(wordSetId);
 
         return new QuizPractice(
                 words.stream()
@@ -53,6 +57,35 @@ public class QuizPracticeServiceImpl implements QuizPracticeService {
                      .limit(TEST_SIZE)
                      .collect(Collectors.toMap(Function.identity(), word -> generateChoices(word, words),
                                                this::throwExceptionIfDuplicates)));
+    }
+
+    @Override
+    public void handleResults(QuizResults results) {
+        log.info("Handling quiz results: {}", results);
+        results.getWordAnswers().forEach(this::handleAnswer);
+    }
+
+    private List<WordDto> getWords(long wordSetId) {
+        return wordSetService
+                .getById(wordSetId)
+                .map(WordSet::getStudiedWords)
+                .orElseThrow(() -> new IllegalArgumentException("No such word set with id: " + wordSetId))
+                .stream()
+                .map(wordConverter::toDto)
+                .collect(Collectors.toList());
+    }
+
+    private void handleAnswer(Long wordId, boolean correctAnswer) {
+        StudiedWord studiedWord = studiedWordService.getById(wordId)
+                                                    .orElseThrow(() -> new DomainObjectNotFound(
+                                                            "No such studied word with id: " + wordId));
+
+        handleAnswer(studiedWord, correctAnswer);
+    }
+
+    private void handleAnswer(StudiedWord word, boolean correctAnswer) {
+        word.setStage(statusUpdater.compute(word.getStage(), correctAnswer));
+        studiedWordService.update(word);
     }
 
     private Comparator<WordDto> comparatorByLearningLevel() {
