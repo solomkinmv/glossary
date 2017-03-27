@@ -5,6 +5,7 @@ import io.github.solomkinmv.glossary.persistence.model.Word;
 import io.github.solomkinmv.glossary.persistence.model.WordSet;
 import io.github.solomkinmv.glossary.persistence.model.WordStage;
 import io.github.solomkinmv.glossary.service.converter.WordConverter;
+import io.github.solomkinmv.glossary.service.domain.StudiedWordService;
 import io.github.solomkinmv.glossary.service.domain.WordSetService;
 import io.github.solomkinmv.glossary.service.dto.WordDto;
 import io.github.solomkinmv.glossary.service.practice.test.QuizPractice;
@@ -24,11 +25,13 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class QuizPracticeServiceImplQuiz {
+public class QuizPracticeServiceImplTest {
     private static final long SEED = 42;
 
     @Mock
     private WordSetService wordSetService;
+    @Mock
+    private StudiedWordService studiedWordService;
     private QuizPracticeServiceImpl practiceService;
 
 
@@ -38,7 +41,7 @@ public class QuizPracticeServiceImplQuiz {
         when(wordSetService.getById(2L)).thenReturn(Optional.empty());
 
         practiceService = new QuizPracticeServiceImpl(new Random(SEED), new WordConverter(), wordSetService,
-                                                      studiedWordService);
+                                                      studiedWordService, new StatusUpdaterImpl());
     }
 
     @Test
