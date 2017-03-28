@@ -1,4 +1,4 @@
-package io.github.solomkinmv.glossary.service.practice.test;
+package io.github.solomkinmv.glossary.service.practice.quiz;
 
 import lombok.Value;
 

@@ -1,9 +1,6 @@
 package io.github.solomkinmv.glossary.persistence.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -17,6 +14,8 @@ import javax.persistence.MappedSuperclass;
 @Setter
 @ToString
 @EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
 abstract class AbstractModelClass implements ModelObject {
     @Id
     @GeneratedValue

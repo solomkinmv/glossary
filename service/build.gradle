@@ -15,7 +15,7 @@ dependencies {
     compile httpClient
     compile fluentHC
     compile jackson
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('org.springframework.boot:spring-boot-starter-quiz')
 
     compile project(":persistence")
 }

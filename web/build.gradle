@@ -6,7 +6,7 @@ jar {
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-security")
-    compile("org.springframework.boot:spring-boot-starter-test")
+    compile("org.springframework.boot:spring-boot-starter-quiz")
     compile('org.projectlombok:lombok')
     compile hateoas
     compile jsonwebtoken

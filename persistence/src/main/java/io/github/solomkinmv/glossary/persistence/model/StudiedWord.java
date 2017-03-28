@@ -1,6 +1,9 @@
 package io.github.solomkinmv.glossary.persistence.model;
 
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -15,7 +18,6 @@ import javax.persistence.OneToOne;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@AllArgsConstructor
 @NoArgsConstructor
 public class StudiedWord extends AbstractModelClass {
 
@@ -25,6 +27,17 @@ public class StudiedWord extends AbstractModelClass {
     private WordStage stage;
 
     public StudiedWord(Word word) {
-        this(word, WordStage.NOT_LEARNED);
+        this(null, word, WordStage.NOT_LEARNED);
+    }
+
+    public StudiedWord(Word word, WordStage stage) {
+        this.word = word;
+        this.stage = stage;
+    }
+
+    public StudiedWord(Long id, Word word, WordStage stage) {
+        super(id);
+        this.word = word;
+        this.stage = stage;
     }
 }

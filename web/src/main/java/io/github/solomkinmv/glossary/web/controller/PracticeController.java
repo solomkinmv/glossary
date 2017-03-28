@@ -1,8 +1,8 @@
 package io.github.solomkinmv.glossary.web.controller;
 
-import io.github.solomkinmv.glossary.service.practice.test.QuizPractice;
-import io.github.solomkinmv.glossary.service.practice.test.QuizPracticeService;
-import io.github.solomkinmv.glossary.service.practice.test.QuizResults;
+import io.github.solomkinmv.glossary.service.practice.quiz.Quiz;
+import io.github.solomkinmv.glossary.service.practice.quiz.QuizPracticeService;
+import io.github.solomkinmv.glossary.service.practice.quiz.QuizResults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +20,13 @@ public class PracticeController {
         this.quizPracticeService = quizPracticeService;
     }
 
-    @GetMapping("tests")
-    ResponseEntity<QuizPractice> getTest(@RequestParam("wordSetId") Long wordSetId) {
-        log.info("Getting test for word set with id {}", wordSetId);
+    @GetMapping("/tests")
+    ResponseEntity<Quiz> getTest(@RequestParam("wordSetId") Long wordSetId) {
+        log.info("Getting quiz for word set with id {}", wordSetId);
         return ResponseEntity.ok(quizPracticeService.generateQuiz(wordSetId));
     }
 
-    @PostMapping("tests")
+    @PostMapping("/tests")
     ResponseEntity<Void> handleResults(@RequestBody QuizResults quizResults) {
         log.info("Handling quiz results");
         quizPracticeService.handleResults(quizResults);
