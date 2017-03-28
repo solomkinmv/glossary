@@ -4,7 +4,7 @@ import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
 import io.github.solomkinmv.glossary.persistence.model.Word;
 import io.github.solomkinmv.glossary.persistence.model.WordSet;
 import io.github.solomkinmv.glossary.persistence.model.WordStage;
-import io.github.solomkinmv.glossary.service.practice.quiz.provider.QuizProvider;
+import io.github.solomkinmv.glossary.service.practice.Answer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import static io.github.solomkinmv.glossary.service.practice.quiz.QuizPracticeServiceImpl.NUMBER_OF_CHOICES;
-import static io.github.solomkinmv.glossary.service.practice.quiz.QuizPracticeServiceImpl.TEST_SIZE;
+import static io.github.solomkinmv.glossary.service.practice.provider.AbstractTestProvider.NUMBER_OF_CHOICES;
+import static io.github.solomkinmv.glossary.service.practice.provider.AbstractTestProvider.TEST_SIZE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -34,7 +34,7 @@ public class QuizProviderTest {
 
         long countOfNotStudiedWords = questions.stream()
                                                .map(Quiz.Question::getAnswer)
-                                               .map(Quiz.Answer::getStage)
+                                               .map(Answer::getStage)
                                                .filter(WordStage.NOT_LEARNED::equals)
                                                .count();
         assertEquals(2, countOfNotStudiedWords);

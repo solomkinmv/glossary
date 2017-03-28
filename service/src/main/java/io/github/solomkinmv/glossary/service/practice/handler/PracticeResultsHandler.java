@@ -1,25 +1,25 @@
-package io.github.solomkinmv.glossary.service.practice.quiz.handler;
+package io.github.solomkinmv.glossary.service.practice.handler;
 
 import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
 import io.github.solomkinmv.glossary.service.domain.StudiedWordService;
 import io.github.solomkinmv.glossary.service.exception.DomainObjectNotFound;
+import io.github.solomkinmv.glossary.service.practice.PracticeResults;
 import io.github.solomkinmv.glossary.service.practice.StatusUpdater;
-import io.github.solomkinmv.glossary.service.practice.quiz.QuizResults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class QuizResultHandler {
+public class PracticeResultsHandler {
     private final StudiedWordService studiedWordService;
     private final StatusUpdater statusUpdater;
 
-    public QuizResultHandler(StudiedWordService studiedWordService, StatusUpdater statusUpdater) {
+    public PracticeResultsHandler(StudiedWordService studiedWordService, StatusUpdater statusUpdater) {
         this.studiedWordService = studiedWordService;
         this.statusUpdater = statusUpdater;
     }
 
-    public void handle(QuizResults results) {
+    public void handle(PracticeResults results) {
         log.info("Handling quiz results: {}", results);
         results.getWordAnswers().forEach(this::handleAnswer);
     }

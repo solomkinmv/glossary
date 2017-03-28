@@ -1,4 +1,4 @@
-package io.github.solomkinmv.glossary.service.practice.quiz;
+package io.github.solomkinmv.glossary.service.practice.writing;
 
 import io.github.solomkinmv.glossary.persistence.model.WordSet;
 import io.github.solomkinmv.glossary.service.domain.WordSetService;
@@ -11,20 +11,20 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class QuizPracticeServiceImpl extends AbstractPracticeService<Quiz, PracticeResults> implements QuizPracticeService {
-    private final QuizProvider quizProvider;
+public class WritingPracticeServiceImpl extends AbstractPracticeService<WritingPracticeTest, PracticeResults> implements WritingPracticeService {
     private final PracticeResultsHandler practiceResultsHandler;
+    private final WritingTestProvider writingTestProvider;
 
     @Autowired
-    public QuizPracticeServiceImpl(WordSetService wordSetService, QuizProvider quizProvider, PracticeResultsHandler practiceResultsHandler) {
+    protected WritingPracticeServiceImpl(WordSetService wordSetService, PracticeResultsHandler practiceResultsHandler, WritingTestProvider writingTestProvider) {
         super(wordSetService);
         this.practiceResultsHandler = practiceResultsHandler;
-        this.quizProvider = quizProvider;
+        this.writingTestProvider = writingTestProvider;
     }
 
     @Override
-    protected Quiz generateTest(WordSet wordSet) {
-        return quizProvider.generateQuiz(wordSet);
+    protected WritingPracticeTest generateTest(WordSet wordSet) {
+        return writingTestProvider.generateWritingTest(wordSet);
     }
 
     @Override

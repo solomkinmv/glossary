@@ -1,7 +1,7 @@
 package io.github.solomkinmv.glossary.service.practice.quiz;
 
-public interface QuizPracticeService {
-    Quiz generateQuiz(long wordSetId);
+import io.github.solomkinmv.glossary.service.practice.PracticeResults;
+import io.github.solomkinmv.glossary.service.practice.PracticeService;
 
-    void handleResults(QuizResults results);
+public interface QuizPracticeService extends PracticeService<Quiz, PracticeResults> {
 }
