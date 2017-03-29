@@ -13,5 +13,5 @@ dependencies {
     compile tomcatEmbedEl
     runtime hsqldb
     compile('org.projectlombok:lombok')
-    testCompile('org.springframework.boot:spring-boot-starter-quiz')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
 }
