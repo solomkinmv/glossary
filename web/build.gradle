@@ -8,6 +8,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-security")
     testCompile("org.springframework.boot:spring-boot-starter-test")
     compile('org.projectlombok:lombok')
+    compile("org.springframework.boot:spring-boot-starter-hateoas")
     compile hateoas
     compile jsonwebtoken
 
