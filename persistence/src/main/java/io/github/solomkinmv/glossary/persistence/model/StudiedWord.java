@@ -8,7 +8,7 @@ import lombok.ToString;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.OneToOne;
+import java.net.URL;
 
 /**
  * Model for the studied word. Should be unique for each user.
@@ -21,23 +21,14 @@ import javax.persistence.OneToOne;
 @NoArgsConstructor
 public class StudiedWord extends AbstractModelClass {
 
-    @OneToOne
-    private Word word;
+    private String text;
+
+    private String translation;
+
     @Enumerated(EnumType.STRING)
     private WordStage stage;
 
-    public StudiedWord(Word word) {
-        this(null, word, WordStage.NOT_LEARNED);
-    }
+    private URL image;
 
-    public StudiedWord(Word word, WordStage stage) {
-        this.word = word;
-        this.stage = stage;
-    }
-
-    public StudiedWord(Long id, Word word, WordStage stage) {
-        super(id);
-        this.word = word;
-        this.stage = stage;
-    }
+    private URL sound;
 }

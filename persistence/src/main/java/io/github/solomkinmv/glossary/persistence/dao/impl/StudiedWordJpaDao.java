@@ -18,11 +18,11 @@ public class StudiedWordJpaDao extends AbstractJpaDao<StudiedWord> implements St
 
     @Override
     public List<StudiedWord> listAllByUsername(String username) {
-        return entityManager.createQuery(
-                "SELECT s FROM StudiedWord s \n" +
-                        "JOIN WordSet w ON s.id=w.id \n" +
-                        "JOIN UserDictionary u ON w MEMBER OF u.wordSets \n" +
-                        "WHERE u.user.username=:username", StudiedWord.class)
+        return entityManager.createQuery("SELECT s FROM UserDictionary u " +
+                                                 "JOIN u.wordSets w " +
+                                                 "JOIN w.studiedWords s " +
+                                                 "WHERE u.user.username=:username",
+                                         StudiedWord.class)
                             .setParameter("username", username)
                             .getResultList();
     }

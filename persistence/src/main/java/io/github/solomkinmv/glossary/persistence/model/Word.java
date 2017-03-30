@@ -1,10 +1,12 @@
 package io.github.solomkinmv.glossary.persistence.model;
 
 import lombok.*;
-import org.hibernate.validator.constraints.NotBlank;
 
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import java.net.URL;
+import java.util.List;
 
 @Entity
 @Data
@@ -13,18 +15,14 @@ import java.net.URL;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Word extends AbstractModelClass {
-    @NotBlank
+    @Column(unique = true)
     private String text;
 
-    @NotBlank
-    private String translation;
+    @ElementCollection
+    private List<String> translations;
 
-    private URL image;
+    @ElementCollection
+    private List<URL> image;
 
     private URL sound;
-
-    public Word(String text, String translation) {
-        this.text = text;
-        this.translation = translation;
-    }
 }
