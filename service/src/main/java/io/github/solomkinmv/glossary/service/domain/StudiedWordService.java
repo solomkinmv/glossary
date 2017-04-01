@@ -7,6 +7,6 @@ import java.util.List;
 /**
  * Describes methods to interact with {@link StudiedWord}.
  */
-public interface StudiedWordService extends CRUDService<StudiedWord, Long> {
+public interface StudiedWordService extends CreateService<StudiedWord>, ReadService<StudiedWord, Long>, DeleteService<Long> {
     List<StudiedWord> listByUsername(String username);
 }

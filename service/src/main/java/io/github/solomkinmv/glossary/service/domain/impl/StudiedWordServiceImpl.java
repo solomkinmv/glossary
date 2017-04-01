@@ -1,15 +1,21 @@
 package io.github.solomkinmv.glossary.service.domain.impl;
 
 import io.github.solomkinmv.glossary.persistence.dao.StudiedWordDao;
+import io.github.solomkinmv.glossary.persistence.dao.WordDao;
 import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
+import io.github.solomkinmv.glossary.persistence.model.Word;
 import io.github.solomkinmv.glossary.service.domain.StudiedWordService;
 import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.service.exception.DomainObjectNotFound;
+import io.github.solomkinmv.glossary.service.speach.SpeechService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
+import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,10 +27,14 @@ import java.util.Optional;
 @Slf4j
 public class StudiedWordServiceImpl implements StudiedWordService {
     private final StudiedWordDao studiedWordDao;
+    private final WordDao wordDao;
+    private final SpeechService speechService;
 
     @Autowired
-    public StudiedWordServiceImpl(StudiedWordDao studiedWordDao) {
+    public StudiedWordServiceImpl(StudiedWordDao studiedWordDao, WordDao wordDao, SpeechService speechService) {
         this.studiedWordDao = studiedWordDao;
+        this.wordDao = wordDao;
+        this.speechService = speechService;
     }
 
     @Override
@@ -44,29 +54,18 @@ public class StudiedWordServiceImpl implements StudiedWordService {
         log.debug("Saving studiedWord: {}", studiedWord);
 
         studiedWordDao.create(studiedWord);
+        synchronizeWord(studiedWord);
 
         return studiedWord;
     }
 
     @Override
-    public StudiedWord update(StudiedWord studiedWord) {
-        log.debug("Updating studiedWord: {}", studiedWord);
-        Long wordId = studiedWord.getId();
-        if (wordId == null) {
-            log.error("Can't update studiedWord with null id");
-            throw new DomainObjectNotFound("Can't update studiedWord with null id");
-        }
-
-        Optional<StudiedWord> wordOptional = studiedWordDao.findOne(wordId);
-        if (!wordOptional.isPresent()) {
-            throw new DomainObjectNotFound("No studiedWord with id " + wordId);
-        }
-        return studiedWordDao.update(studiedWord);
-    }
-
-    @Override
     public void delete(Long id) {
         log.debug("Deleting studiedWord with id: {}", id);
+        StudiedWord studiedWord = getById(id)
+                .orElseThrow(
+                        () -> new DomainObjectNotFound("Can't get studied word with id " + id));
+        synchronizeWordOnDelete(studiedWord);
         studiedWordDao.delete(id);
     }
 
@@ -74,6 +73,43 @@ public class StudiedWordServiceImpl implements StudiedWordService {
     public void deleteAll() {
         log.debug("Deleting all words");
         studiedWordDao.deleteAll();
+    }
+
+    private void synchronizeWordOnDelete(StudiedWord studiedWord) {
+        wordDao.findByText(studiedWord.getText()).ifPresent(word -> {
+            if (CollectionUtils.isEmpty(word.getTranslations())) {
+                wordDao.delete(word.getId());
+            } else {
+                word.getTranslations().remove(studiedWord.getTranslation());
+                word.getImages().remove(studiedWord.getImage());
+                wordDao.update(word);
+            }
+        });
+    }
+
+    private void synchronizeWord(StudiedWord studiedWord) {
+        Optional<Word> wordOptional = wordDao.findByText(studiedWord.getText());
+        if (wordOptional.isPresent()) {
+            Word word = wordOptional.get();
+            List<String> translations = word.getTranslations();
+            if (!translations.contains(studiedWord.getTranslation())) {
+                translations.add(studiedWord.getTranslation());
+            }
+            List<URL> images = word.getImages();
+            if (!images.contains(studiedWord.getImage())) {
+                word.getImages().add(studiedWord.getImage());
+            }
+        } else {
+            createInitialWord(studiedWord);
+        }
+    }
+
+    private void createInitialWord(StudiedWord studiedWord) {
+        List<String> translations = Collections.singletonList(studiedWord.getTranslation());
+        List<URL> images = Collections.singletonList(studiedWord.getImage());
+        Word word = new Word(studiedWord.getText(), translations, images,
+                             speechService.getSpeechRecord(studiedWord.getText()));
+        wordDao.create(word);
     }
 
     @Override

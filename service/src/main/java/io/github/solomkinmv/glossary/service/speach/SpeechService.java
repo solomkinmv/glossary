@@ -1,5 +1,7 @@
 package io.github.solomkinmv.glossary.service.speach;
 
+import java.net.URL;
+
 public interface SpeechService {
-    String getSpeechRecord(String speech);
+    URL getSpeechRecord(String speech);
 }
