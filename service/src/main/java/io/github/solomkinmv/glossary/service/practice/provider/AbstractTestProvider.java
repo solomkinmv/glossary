@@ -1,7 +1,6 @@
 package io.github.solomkinmv.glossary.service.practice.provider;
 
 import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
-import io.github.solomkinmv.glossary.persistence.model.Word;
 import io.github.solomkinmv.glossary.persistence.model.WordStage;
 import io.github.solomkinmv.glossary.service.practice.Answer;
 
@@ -35,8 +34,7 @@ public abstract class AbstractTestProvider {
 
     private Set<String> generateAlternatives(Stream<StudiedWord> wordStream) {
         return wordStream
-                .map(StudiedWord::getWord)
-                .map(Word::getTranslation)
+                .map(StudiedWord::getTranslation)
                 .distinct()
                 .limit(NUMBER_OF_CHOICES)
                 .collect(Collectors.toSet());
@@ -55,12 +53,11 @@ public abstract class AbstractTestProvider {
         return Comparator.comparingInt(w -> w.getStage().ordinal());
     }
 
-    protected Answer createAnswer(StudiedWord studiedWord, boolean origin) {
-        Word word = studiedWord.getWord();
+    protected Answer createAnswer(StudiedWord word, boolean origin) {
         return new Answer(
-                studiedWord.getId(),
+                word.getId(),
                 origin ? word.getText() : word.getTranslation(),
-                studiedWord.getStage(),
+                word.getStage(),
                 word.getImage(),
                 word.getSound());
     }

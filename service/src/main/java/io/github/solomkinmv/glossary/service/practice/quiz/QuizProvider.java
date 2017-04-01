@@ -37,7 +37,7 @@ public class QuizProvider extends AbstractTestProvider {
         Set<String> alternatives = generateAlternatives(studiedWord, words);
 
         return new Quiz.Question(
-                studiedWord.getWord().getText(),
+                studiedWord.getText(),
                 createAnswer(studiedWord, false),
                 alternatives);
     }
