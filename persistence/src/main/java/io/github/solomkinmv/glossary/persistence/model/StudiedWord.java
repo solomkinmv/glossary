@@ -4,11 +4,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import java.net.URL;
 
 /**
  * Model for the studied word. Should be unique for each user.
@@ -21,14 +21,34 @@ import java.net.URL;
 @NoArgsConstructor
 public class StudiedWord extends AbstractModelClass {
 
+    @NotBlank
     private String text;
 
+    @NotBlank
     private String translation;
 
     @Enumerated(EnumType.STRING)
     private WordStage stage;
 
-    private URL image;
+    private String image;
 
-    private URL sound;
+    private String sound;
+
+    public StudiedWord(String text, String translation) {
+        this(text, translation, WordStage.NOT_LEARNED);
+    }
+
+
+    public StudiedWord(String text, String translation, WordStage stage) {
+        this.text = text;
+        this.translation = translation;
+        this.stage = stage;
+    }
+
+    public StudiedWord(Long id, String text, String translation, WordStage stage) {
+        super(id);
+        this.text = text;
+        this.translation = translation;
+        this.stage = stage;
+    }
 }

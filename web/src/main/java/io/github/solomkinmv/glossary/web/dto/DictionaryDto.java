@@ -1,4 +1,4 @@
-package io.github.solomkinmv.glossary.service.dto;
+package io.github.solomkinmv.glossary.web.dto;
 
 import io.github.solomkinmv.glossary.persistence.model.UserDictionary;
 import io.github.solomkinmv.glossary.persistence.model.WordSet;

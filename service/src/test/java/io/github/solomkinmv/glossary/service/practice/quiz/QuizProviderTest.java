@@ -1,7 +1,6 @@
 package io.github.solomkinmv.glossary.service.practice.quiz;
 
 import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
-import io.github.solomkinmv.glossary.persistence.model.Word;
 import io.github.solomkinmv.glossary.persistence.model.WordSet;
 import io.github.solomkinmv.glossary.persistence.model.WordStage;
 import io.github.solomkinmv.glossary.service.practice.Answer;
@@ -51,19 +50,19 @@ public class QuizProviderTest {
 
     private List<StudiedWord> createStudiedWords() {
         return Arrays.asList(
-                new StudiedWord(1L, new Word("text1", "translation1"), WordStage.NOT_LEARNED),
-                new StudiedWord(2L, new Word("text2", "translation2"), WordStage.NOT_LEARNED),
-                new StudiedWord(3L, new Word("text3", "translation3"), WordStage.LEARNING),
-                new StudiedWord(4L, new Word("text4", "translation4"), WordStage.LEARNING),
-                new StudiedWord(5L, new Word("text5", "translation5"), WordStage.LEARNING),
-                new StudiedWord(6L, new Word("text6", "translation6"), WordStage.LEARNING),
-                new StudiedWord(7L, new Word("text7", "translation7"), WordStage.LEARNING),
-                new StudiedWord(8L, new Word("text8", "translation8"), WordStage.LEARNING),
-                new StudiedWord(9L, new Word("text9", "translation9"), WordStage.LEARNING),
-                new StudiedWord(10L, new Word("text10", "translation10"), WordStage.LEARNING),
-                new StudiedWord(11L, new Word("text11", "translation11"), WordStage.LEARNING),
-                new StudiedWord(12L, new Word("text12", "translation12"), WordStage.LEARNED),
-                new StudiedWord(13L, new Word("text13", "translation13"), WordStage.LEARNED)
+                new StudiedWord(1L, "text1", "translation1", WordStage.NOT_LEARNED),
+                new StudiedWord(2L, "text2", "translation2", WordStage.NOT_LEARNED),
+                new StudiedWord(3L, "text3", "translation3", WordStage.LEARNING),
+                new StudiedWord(4L, "text4", "translation4", WordStage.LEARNING),
+                new StudiedWord(5L, "text5", "translation5", WordStage.LEARNING),
+                new StudiedWord(6L, "text6", "translation6", WordStage.LEARNING),
+                new StudiedWord(7L, "text7", "translation7", WordStage.LEARNING),
+                new StudiedWord(8L, "text8", "translation8", WordStage.LEARNING),
+                new StudiedWord(9L, "text9", "translation9", WordStage.LEARNING),
+                new StudiedWord(10L, "text10", "translation10", WordStage.LEARNING),
+                new StudiedWord(11L, "text11", "translation11", WordStage.LEARNING),
+                new StudiedWord(12L, "text12", "translation12", WordStage.LEARNED),
+                new StudiedWord(13L, "text13", "translation13", WordStage.LEARNED)
         );
     }
 }

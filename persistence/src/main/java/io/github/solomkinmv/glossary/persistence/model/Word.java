@@ -5,7 +5,6 @@ import lombok.*;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import java.net.URL;
 import java.util.List;
 
 @Entity
@@ -22,7 +21,7 @@ public class Word extends AbstractModelClass {
     private List<String> translations;
 
     @ElementCollection
-    private List<URL> images;
+    private List<String> images;
 
-    private URL sound;
+    private String sound;
 }

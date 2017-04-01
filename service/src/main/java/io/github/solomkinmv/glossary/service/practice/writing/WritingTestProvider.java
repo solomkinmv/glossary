@@ -31,7 +31,7 @@ public class WritingTestProvider extends AbstractTestProvider {
 
     private WritingPracticeTest.Question createQuestion(StudiedWord studiedWord) {
         return new WritingPracticeTest.Question(
-                studiedWord.getWord().getTranslation(),
+                studiedWord.getTranslation(),
                 createAnswer(studiedWord, true));
     }
 }
