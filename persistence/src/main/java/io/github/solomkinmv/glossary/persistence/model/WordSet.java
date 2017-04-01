@@ -6,7 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,7 +27,6 @@ public class WordSet extends AbstractModelClass {
     private String description;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
-    @JoinTable
     private List<StudiedWord> studiedWords;
 
 
@@ -37,6 +39,20 @@ public class WordSet extends AbstractModelClass {
         return Objects.equals(name, wordSet.name) &&
                 Objects.equals(description, wordSet.description) &&
                 wordsEquals(studiedWords, wordSet.studiedWords);
+    }
+
+    @Override
+    public int hashCode() {
+        final int PRIME = 59;
+        int result = 1;
+        result = result * PRIME + super.hashCode();
+        final Object $name = this.getName();
+        result = result * PRIME + ($name == null ? 43 : $name.hashCode());
+        final Object $description = this.getDescription();
+        result = result * PRIME + ($description == null ? 43 : $description.hashCode());
+        final Object $words = this.getStudiedWords();
+        result = result * PRIME + ($words == null ? 43 : $words.hashCode());
+        return result;
     }
 
     /* Need to override equals method, because Hibernate supplies PersistentBag
@@ -53,19 +69,5 @@ public class WordSet extends AbstractModelClass {
         }
 
         return true;
-    }
-
-    @Override
-    public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        result = result * PRIME + super.hashCode();
-        final Object $name = this.getName();
-        result = result * PRIME + ($name == null ? 43 : $name.hashCode());
-        final Object $description = this.getDescription();
-        result = result * PRIME + ($description == null ? 43 : $description.hashCode());
-        final Object $words = this.getStudiedWords();
-        result = result * PRIME + ($words == null ? 43 : $words.hashCode());
-        return result;
     }
 }

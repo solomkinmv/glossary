@@ -17,7 +17,7 @@ import java.util.*;
 @Component
 @Profile("dev")
 @Transactional
-public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedEvent> {
+public class SpringModelsBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
     private final UserDao userDao;
     private final RoleDao roleDao;
@@ -26,7 +26,6 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
     private final WordSetDao wordSetDao;
     private final UserDictionaryDao userDictionaryDao;
 
-    private List<Word> words;
     private Role adminRole;
     private Role userRole;
     private List<User> users;
@@ -35,9 +34,9 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
     private HashMap<User, UserDictionary> userDictionaries;
 
     @Autowired
-    public SpringJPABootstrap(UserDao userDao, RoleDao roleDao, WordDao wordDao, StudiedWordDao studiedWordDao,
-                              WordSetDao wordSetDao,
-                              UserDictionaryDao userDictionaryDao) {
+    public SpringModelsBootstrap(UserDao userDao, RoleDao roleDao, WordDao wordDao, StudiedWordDao studiedWordDao,
+                                 WordSetDao wordSetDao,
+                                 UserDictionaryDao userDictionaryDao) {
         this.userDao = userDao;
         this.roleDao = roleDao;
         this.wordDao = wordDao;
@@ -50,7 +49,6 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
     public void onApplicationEvent(ContextRefreshedEvent event) {
         saveRoles();
         saveUsers();
-        saveWords();
         saveStudiedWords();
         saveWordSetForUsers();
         saveUserDictionaries();
@@ -73,15 +71,15 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
 
     private void saveStudiedWords() {
         List<StudiedWord> userOneStudiedWords = new ArrayList<>();
-        userOneStudiedWords.add(new StudiedWord(words.get(0), WordStage.NOT_LEARNED));
-        userOneStudiedWords.add(new StudiedWord(words.get(1), WordStage.NOT_LEARNED));
-        userOneStudiedWords.add(new StudiedWord(words.get(2), WordStage.NOT_LEARNED));
+        userOneStudiedWords.add(new StudiedWord("user", "пользователь"));
+        userOneStudiedWords.add(new StudiedWord("glass", "стекло"));
+        userOneStudiedWords.add(new StudiedWord("potato", "картошка"));
 
         List<StudiedWord> userTwoStudiedWords = new ArrayList<>();
-        userTwoStudiedWords.add(new StudiedWord(words.get(3), WordStage.NOT_LEARNED));
-        userTwoStudiedWords.add(new StudiedWord(words.get(4), WordStage.NOT_LEARNED));
-        userTwoStudiedWords.add(new StudiedWord(words.get(5), WordStage.NOT_LEARNED));
-        userTwoStudiedWords.add(new StudiedWord(words.get(6), WordStage.NOT_LEARNED));
+        userTwoStudiedWords.add(new StudiedWord("teapot", "чайник"));
+        userTwoStudiedWords.add(new StudiedWord("tomato", "помидор"));
+        userTwoStudiedWords.add(new StudiedWord("pocket", "карман"));
+        userTwoStudiedWords.add(new StudiedWord("pen", "ручка"));
 
         userOneStudiedWords.forEach(studiedWordDao::create);
         userTwoStudiedWords.forEach(studiedWordDao::create);
@@ -106,9 +104,9 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
     private void saveUsers() {
         users = new ArrayList<>();
         users.add(new User("user1", "$2a$10$bnC26zz//2cavYoSCrlHdecWF8tkGfPodlHcYwlACBBwJvcEf0p2G", "user1@email.com",
-                Collections.singletonList(userRole)));
+                           Collections.singletonList(userRole)));
         users.add(new User("user2", "$2a$10$bnC26zz//2cavYoSCrlHdecWF8tkGfPodlHcYwlACBBwJvcEf0p2G", "user2@email.com",
-                Collections.singletonList(userRole)));
+                           Collections.singletonList(userRole)));
 
         users.forEach(userDao::create);
     }
@@ -119,18 +117,5 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
 
         roleDao.create(adminRole);
         roleDao.create(userRole);
-    }
-
-    private void saveWords() {
-        words = new ArrayList<>();
-        words.add(new Word("user", "пользователь"));
-        words.add(new Word("glass", "стекло"));
-        words.add(new Word("potato", "картошка"));
-        words.add(new Word("teapot", "чайник"));
-        words.add(new Word("tomato", "помидор"));
-        words.add(new Word("pocket", "карман"));
-        words.add(new Word("pen", "ручка"));
-
-        words.forEach(wordDao::create);
     }
 }
