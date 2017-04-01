@@ -1,7 +1,7 @@
 package io.github.solomkinmv.glossary.web.converter;
 
 import io.github.solomkinmv.glossary.persistence.model.UserDictionary;
-import io.github.solomkinmv.glossary.service.dto.DictionaryDto;
+import io.github.solomkinmv.glossary.web.dto.DictionaryDto;
 import org.springframework.stereotype.Component;
 
 /**

@@ -1,7 +1,6 @@
 package io.github.solomkinmv.glossary.web.controller;
 
 import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
-import io.github.solomkinmv.glossary.persistence.model.Word;
 import io.github.solomkinmv.glossary.persistence.model.WordSet;
 import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.service.domain.WordSetService;
@@ -112,15 +111,15 @@ public class WordSetController {
         WordSet wordSet = wordSetService.getById(wordSetId).orElseThrow(
                 () -> new EntryNotFoundException("Couldn't find wordSet with id: " + wordSetId));
 
-        Word word = wordService.getById(wordId).orElseThrow(
+        StudiedWord word = wordService.getById(wordId).orElseThrow(
                 () -> new EntryNotFoundException("Couldn't find studiedWord with id: " + wordId));
 
         List<StudiedWord> wordSetStudiedWords = wordSet.getStudiedWords();
-        if (wordSetStudiedWords.stream().anyMatch(studiedWord -> studiedWord.getWord().getId().equals(word.getId()))) {
+        if (wordSetStudiedWords.stream().anyMatch(studiedWord -> studiedWord.getId().equals(word.getId()))) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        wordSetStudiedWords.add(new StudiedWord(word));
+        wordSetStudiedWords.add(word);
         WordSet updatedWordSet = wordSetService.update(wordSet);
         WordSetResource wordSetResource = new WordSetResource(updatedWordSet);
         return ResponseEntity.ok().body(wordSetResource);

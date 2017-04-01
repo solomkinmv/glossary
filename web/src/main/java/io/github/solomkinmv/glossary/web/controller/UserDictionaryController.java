@@ -61,14 +61,17 @@ public class UserDictionaryController {
         String username = authenticatedUser.getUsername();
 
         WordSet wordSet = wordSetService.getById(idDto.getId())
-                .orElseThrow(() -> new EntryNotFoundException("Couldn't find wordSet by id: " + idDto.getId()));
+                                        .orElseThrow(() -> new EntryNotFoundException(
+                                                "Couldn't find wordSet by id: " + idDto.getId()));
         UserDictionary userDictionary = userDictionaryService.getByUsername(username)
-                .orElseThrow(() -> new EntryNotFoundException("Couldn't find dictionary by following username: " + username));
+                                                             .orElseThrow(() -> new EntryNotFoundException(
+                                                                     "Couldn't find dictionary by following username: " + username));
 
         userDictionary.getWordSets().add(wordSet);
 
         userDictionaryService.update(userDictionary);
-        UserDictionaryResource userDictionaryResource = new UserDictionaryResource(userDictionaryConverter.toDto(userDictionary));
+        UserDictionaryResource userDictionaryResource = new UserDictionaryResource(
+                userDictionaryConverter.toDto(userDictionary));
 
         return ResponseEntity.ok(userDictionaryResource);
     }

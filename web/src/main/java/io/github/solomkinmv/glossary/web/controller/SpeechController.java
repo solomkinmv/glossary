@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("/api/speech")
@@ -26,7 +25,6 @@ public class SpeechController {
     public ResponseEntity<String> getSpeechRecord(@RequestParam("text") String text) {
         log.info("Getting speech record for the following text: {}", text);
         String recordPath = speechService.getSpeechRecord(text);
-        String uriString = ServletUriComponentsBuilder.fromCurrentContextPath().path(recordPath).toUriString();
-        return ResponseEntity.ok(uriString);
+        return ResponseEntity.ok(recordPath.toString());
     }
 }

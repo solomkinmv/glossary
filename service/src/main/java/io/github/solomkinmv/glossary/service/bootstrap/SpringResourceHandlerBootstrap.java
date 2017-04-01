@@ -19,12 +19,12 @@ import java.nio.file.Paths;
 @Component
 @Profile("dev")
 @Slf4j
-public class SpringServiceBootstrap implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
+public class SpringResourceHandlerBootstrap implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
     private final StorageProperties storageProperties;
 
     @Autowired
-    public SpringServiceBootstrap(StorageProperties storageProperties) {
+    public SpringResourceHandlerBootstrap(StorageProperties storageProperties) {
         this.storageProperties = storageProperties;
     }
 

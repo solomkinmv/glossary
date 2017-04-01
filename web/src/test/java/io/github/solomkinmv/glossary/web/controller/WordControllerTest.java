@@ -3,65 +3,39 @@ package io.github.solomkinmv.glossary.web.controller;
 import io.github.solomkinmv.glossary.persistence.model.*;
 import io.github.solomkinmv.glossary.service.domain.UserDictionaryService;
 import io.github.solomkinmv.glossary.service.domain.WordService;
-import io.github.solomkinmv.glossary.web.Application;
-import io.github.solomkinmv.glossary.web.JsonConverter;
+import io.github.solomkinmv.glossary.web.MockMvcBase;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
-import io.github.solomkinmv.glossary.web.security.model.JsonWebToken;
-import io.github.solomkinmv.glossary.web.security.util.JwtTokenFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.hateoas.MediaTypes;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
-import org.springframework.web.context.WebApplicationContext;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.junit.Assert.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
  * Test for {@link WordController}
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class)
-@WebAppConfiguration
-public class WordControllerTest {
+@Slf4j
+public class WordControllerTest extends MockMvcBase {
 
     private final List<StudiedWord> wordList = new ArrayList<>();
-    private final MediaType contentType = new MediaType(MediaTypes.HAL_JSON,
-                                                        StandardCharsets.UTF_8);
-    private MockMvc mockMvc;
     @Autowired
     private WordService wordService;
     @Autowired
     private UserDictionaryService userDictionaryService;
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-    @Autowired
-    private JsonConverter jsonConverter;
-    @Autowired
-    private JwtTokenFactory tokenFactory;
     private AuthenticatedUser authenticatedUser;
 
     @Before
     public void setUp() throws Exception {
-        mockMvc = webAppContextSetup(webApplicationContext)
-                .apply(springSecurity())
-                .build();
-
+        log.info("Setting up test method");
         wordService.deleteAll();
 
         StudiedWord word1 = new StudiedWord("word1", "translation1");
@@ -130,7 +104,7 @@ public class WordControllerTest {
     public void getWordById() throws Exception {
         StudiedWord word = wordList.get(0);
 
-        mockMvc.perform(get("/api/words/" + word.getId()))
+        mockMvc.perform(get("/api/words/" + word.getId()).with(userToken()))
                .andExpect(status().isOk())
                .andExpect(content().contentType(contentType))
                .andExpect(jsonPath("$.word.id", is(word.getId().intValue())))
@@ -138,21 +112,20 @@ public class WordControllerTest {
                .andExpect(jsonPath("$.word.translation", is(word.getTranslation())));
     }
 
-    protected RequestPostProcessor userToken() {
-        return request -> {
-            // If the tests requires setup logic for users, you can place it here.
-            // Authorization headers or cookies for users should be added here as well.
-            String accessToken = getAccessToken();
-            request.addHeader("X-Authorization", "Bearer " + accessToken);
-            return request;
-        };
+    @Test
+    public void deleteWord() throws Exception {
+        StudiedWord word = wordList.get(0);
+
+        mockMvc.perform(delete("/api/words/" + word.getId()).with(userToken()))
+               .andExpect(status().isOk());
+
+        List<StudiedWord> studiedWords = wordService.listByUsername(authenticatedUser.getUsername());
+        assertEquals(3, studiedWords.size());
     }
 
-    private String getAccessToken() {
-        JsonWebToken accessToken = tokenFactory.createAccessJwtToken(authenticatedUser);
-        return accessToken.getRawToken();
+    protected AuthenticatedUser getAuthenticatedUser() {
+        return authenticatedUser;
     }
-
 
     /*@Test
     public void searchWords() throws Exception {
@@ -191,20 +164,6 @@ public class WordControllerTest {
     }
 
     @Test
-    public void getWords() throws Exception {
-        mockMvc.perform(get("/api/words"))
-               .andExpect(status().isOk())
-               .andExpect(content().contentType(contentType))
-               .andExpect(jsonPath("$.content", hasSize(2)))
-               .andExpect(jsonPath("$.content[0].word.id", is(wordList.get(0).getId().intValue())))
-               .andExpect(jsonPath("$.content[0].word.text", is(wordList.get(0).getText())))
-               .andExpect(jsonPath("$.content[0].word.translation", is(wordList.get(0).getTranslation())))
-               .andExpect(jsonPath("$.content[1].word.id", is(wordList.get(1).getId().intValue())))
-               .andExpect(jsonPath("$.content[1].word.text", is(wordList.get(1).getText())))
-               .andExpect(jsonPath("$.content[1].word.translation", is(wordList.get(1).getTranslation())));
-    }
-
-    @Test
     public void createExistingWord() throws Exception {
         StudiedWord word = wordService.listAll().get(0);
 
@@ -217,18 +176,6 @@ public class WordControllerTest {
     }
 
     @Test
-    public void getWord() throws Exception {
-        StudiedWord word = wordList.get(0);
-
-        mockMvc.perform(get("/api/words/" + word.getId()))
-               .andExpect(status().isOk())
-               .andExpect(content().contentType(contentType))
-               .andExpect(jsonPath("$.word.id", is(word.getId().intValue())))
-               .andExpect(jsonPath("$.word.text", is(word.getText())))
-               .andExpect(jsonPath("$.word.translation", is(word.getTranslation())));
-    }
-
-    @Test
     public void getAbsentWord() throws Exception {
         mockMvc.perform(get("/api/words/0"))
                .andExpect(status().isNotFound());
@@ -238,14 +185,6 @@ public class WordControllerTest {
     public void deleteWords() throws Exception {
         mockMvc.perform(delete("/api/words/"))
                .andExpect(status().isMethodNotAllowed());
-    }
-
-    @Test
-    public void deleteWord() throws Exception {
-        StudiedWord word = wordList.get(0);
-
-        mockMvc.perform(delete("/api/words/" + word.getId()))
-               .andExpect(status().isOk());
     }
 
     @Test
