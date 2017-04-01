@@ -22,7 +22,7 @@ public class Word extends AbstractModelClass {
     private List<String> translations;
 
     @ElementCollection
-    private List<URL> image;
+    private List<URL> images;
 
     private URL sound;
 }

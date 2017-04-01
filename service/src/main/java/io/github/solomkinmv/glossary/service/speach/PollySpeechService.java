@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.function.Supplier;
 
 @Component
@@ -34,11 +36,17 @@ public class PollySpeechService implements SpeechService {
     }
 
     @Override
-    public String getSpeechRecord(String speech) {
+    public URL getSpeechRecord(String speech) {
         log.info("Getting speech record");
         String filename = adaptToFilename(speech);
-        return storageService.getObject(filename, TYPE)
-                             .orElseGet(createSpeechRecordSupplier(speech, filename));
+        try {
+            return new URL(storageService.getObject(filename, TYPE)
+                                         .orElseGet(createSpeechRecordSupplier(speech, filename)));
+        } catch (MalformedURLException e) {
+            String msg = "Can't get URL for the speech record: " + speech;
+            log.error(msg, e);
+            throw new IllegalArgumentException(msg, e);
+        }
     }
 
     private Supplier<String> createSpeechRecordSupplier(String speech, String filename) {

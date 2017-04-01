@@ -1,4 +1,4 @@
-package io.github.solomkinmv.glossary.persistence.bootstrap;
+package io.github.solomkinmv.glossary.service.bootstrap;
 
 import io.github.solomkinmv.glossary.persistence.dao.*;
 import io.github.solomkinmv.glossary.persistence.model.*;
