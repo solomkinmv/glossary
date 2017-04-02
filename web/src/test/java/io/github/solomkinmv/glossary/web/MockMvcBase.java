@@ -30,11 +30,11 @@ public abstract class MockMvcBase {
                                                           StandardCharsets.UTF_8);
     protected MockMvc mockMvc;
     @Autowired
+    protected JsonConverter jsonConverter;
+    @Autowired
     private WebApplicationContext webApplicationContext;
     @Autowired
     private JwtTokenFactory tokenFactory;
-    @Autowired
-    private JsonConverter jsonConverter;
 
     protected RequestPostProcessor userToken() {
         return request -> {

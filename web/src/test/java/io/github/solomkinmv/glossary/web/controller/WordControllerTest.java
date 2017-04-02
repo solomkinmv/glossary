@@ -1,29 +1,32 @@
 package io.github.solomkinmv.glossary.web.controller;
 
+import io.github.solomkinmv.glossary.persistence.dao.WordDao;
 import io.github.solomkinmv.glossary.persistence.model.*;
 import io.github.solomkinmv.glossary.service.domain.UserDictionaryService;
 import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.web.MockMvcBase;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
 import lombok.extern.slf4j.Slf4j;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Test for {@link WordController}
  */
 @Slf4j
+@Transactional
 public class WordControllerTest extends MockMvcBase {
 
     private final List<StudiedWord> wordList = new ArrayList<>();
@@ -31,23 +34,24 @@ public class WordControllerTest extends MockMvcBase {
     private WordService wordService;
     @Autowired
     private UserDictionaryService userDictionaryService;
+    @Autowired
+    private WordDao wordDao;
     private AuthenticatedUser authenticatedUser;
 
     @Before
     public void setUp() throws Exception {
         log.info("Setting up test method");
-        wordService.deleteAll();
 
         StudiedWord word1 = new StudiedWord("word1", "translation1");
         StudiedWord word2 = new StudiedWord("word2", "translation2");
         StudiedWord word3 = new StudiedWord("word3", "translation3");
         StudiedWord word4 = new StudiedWord("word4", "translation4");
         StudiedWord word5 = new StudiedWord("word5", "translation5");
-        wordList.add(word1);
-        wordList.add(word2);
-        wordList.add(word3);
-        wordList.add(word4);
-        wordList.add(word5);
+        wordList.add(wordService.save(word1));
+        wordList.add(wordService.save(word2));
+        wordList.add(wordService.save(word3));
+        wordList.add(wordService.save(word4));
+        wordList.add(wordService.save(word5));
 
         User user1 = new User();
         user1.setUsername("user1");
@@ -77,27 +81,16 @@ public class WordControllerTest extends MockMvcBase {
 
     @Test
     public void getAllWords() throws Exception {
+        Integer[] integers = wordList.stream().map(word -> word.getId().intValue()).limit(4).toArray(Integer[]::new);
+        Matcher<Iterable<? extends Integer>> idMatcher = containsInAnyOrder(integers);
+
         mockMvc.perform(get("/api/words").with(userToken()))
                .andExpect(status().isOk())
                .andExpect(content().contentType(contentType))
                .andExpect(jsonPath("$._embedded.wordResourceList", hasSize(4)))
-               .andExpect(jsonPath("$._embedded.wordResourceList[0].word.id", is(wordList.get(0).getId().intValue())))
-               .andExpect(jsonPath("$._embedded.wordResourceList[0].word.text", is(wordList.get(0).getText())))
-               .andExpect(jsonPath("$._embedded.wordResourceList[0].word.translation",
-                                   is(wordList.get(0).getTranslation())))
-               .andExpect(jsonPath("$._embedded.wordResourceList[1].word.id", is(wordList.get(1).getId().intValue())))
-               .andExpect(jsonPath("$._embedded.wordResourceList[1].word.text", is(wordList.get(1).getText())))
-               .andExpect(jsonPath("$._embedded.wordResourceList[1].word.translation",
-                                   is(wordList.get(1).getTranslation())))
-               .andExpect(jsonPath("$._embedded.wordResourceList[2].word.id", is(wordList.get(2).getId().intValue())))
-               .andExpect(jsonPath("$._embedded.wordResourceList[2].word.text", is(wordList.get(2).getText())))
-               .andExpect(jsonPath("$._embedded.wordResourceList[2].word.translation",
-                                   is(wordList.get(2).getTranslation())))
-               .andExpect(jsonPath("$._embedded.wordResourceList[3].word.id", is(wordList.get(3).getId().intValue())))
-               .andExpect(jsonPath("$._embedded.wordResourceList[3].word.text", is(wordList.get(3).getText())))
-               .andExpect(jsonPath("$._embedded.wordResourceList[3].word.translation",
-                                   is(wordList.get(3).getTranslation())))
-        ;
+               .andExpect(jsonPath("$._embedded.wordResourceList[*].word.id", idMatcher))
+               .andExpect(jsonPath("$._embedded.wordResourceList[*].word.text", not(contains(nullValue()))))
+               .andExpect(jsonPath("$._embedded.wordResourceList[*].word.translation", not(contains(nullValue()))));
     }
 
     @Test
@@ -110,6 +103,21 @@ public class WordControllerTest extends MockMvcBase {
                .andExpect(jsonPath("$.word.id", is(word.getId().intValue())))
                .andExpect(jsonPath("$.word.text", is(word.getText())))
                .andExpect(jsonPath("$.word.translation", is(word.getTranslation())));
+    }
+
+    @Test
+    public void createWord() throws Exception {
+        StudiedWord word = new StudiedWord("word1", "translation11", WordStage.LEARNING);
+        String json = jsonConverter.toJson(word);
+
+        mockMvc.perform(post("/api/words")
+                                .contentType(contentType)
+                                .content(json)
+                                .with(userToken()))
+               .andExpect(status().isCreated());
+
+        assertEquals(5, wordService.listByUsername(authenticatedUser.getUsername()).size());
+        System.out.println();
     }
 
     @Test

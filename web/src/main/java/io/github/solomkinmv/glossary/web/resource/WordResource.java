@@ -1,7 +1,7 @@
 package io.github.solomkinmv.glossary.web.resource;
 
-import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
 import io.github.solomkinmv.glossary.web.controller.WordController;
+import io.github.solomkinmv.glossary.web.dto.WordDto;
 import lombok.Getter;
 import org.springframework.hateoas.ResourceSupport;
 
@@ -13,9 +13,9 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
  */
 @Getter
 public class WordResource extends ResourceSupport {
-    private final StudiedWord word;
+    private final WordDto word;
 
-    public WordResource(StudiedWord word) {
+    public WordResource(WordDto word) {
         this.word = word;
 
         add(linkTo(WordController.class).withRel("words"));

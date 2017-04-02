@@ -3,6 +3,7 @@ package io.github.solomkinmv.glossary.web.controller;
 import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
 import io.github.solomkinmv.glossary.persistence.model.Word;
 import io.github.solomkinmv.glossary.service.domain.WordService;
+import io.github.solomkinmv.glossary.web.converter.WordConverter;
 import io.github.solomkinmv.glossary.web.exception.EntryNotFoundException;
 import io.github.solomkinmv.glossary.web.resource.WordResource;
 import io.github.solomkinmv.glossary.web.security.annotation.CurrentUser;
@@ -24,10 +25,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class WordController {
     private final WordService wordService;
+    private final WordConverter wordConverter;
 
     @Autowired
-    public WordController(WordService wordService) {
+    public WordController(WordService wordService, WordConverter wordConverter) {
         this.wordService = wordService;
+        this.wordConverter = wordConverter;
     }
 
     @GetMapping("")
@@ -36,6 +39,7 @@ public class WordController {
 
         return new Resources<>(wordService.listByUsername(user.getUsername())
                                           .stream()
+                                          .map(wordConverter::toDto)
                                           .map(WordResource::new)
                                           .collect(Collectors.toList()));
     }
@@ -45,6 +49,7 @@ public class WordController {
         log.info("Getting word by id {}", wordId);
 
         return wordService.getById(wordId)
+                          .map(wordConverter::toDto)
                           .map(WordResource::new)
                           .orElseThrow(() -> new EntryNotFoundException("Couldn't find word with id: " + wordId));
     }
@@ -54,12 +59,12 @@ public class WordController {
         log.info("Creating word: {}", word);
 
         StudiedWord studiedWord = wordService.save(word);
-        WordResource wordResource = new WordResource(studiedWord);
+        WordResource wordResource = new WordResource(wordConverter.toDto(studiedWord));
 
         return ResponseEntity.created(URI.create(wordResource.getLink("self").getHref())).build();
     }
 
-    @DeleteMapping("/{wordId}")
+    @RequestMapping(value = "/{wordId}", method = RequestMethod.DELETE)
     public ResponseEntity<Word> delete(@PathVariable Long wordId) {
         log.info("Deleting word with id: {}", wordId);
         wordService.delete(wordId);
