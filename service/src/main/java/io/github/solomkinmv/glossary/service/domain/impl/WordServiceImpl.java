@@ -11,9 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,7 +75,7 @@ public class WordServiceImpl implements WordService {
 
     private void synchronizeWordOnDelete(StudiedWord studiedWord) {
         wordDao.findByText(studiedWord.getText()).ifPresent(word -> {
-            if (CollectionUtils.isEmpty(word.getTranslations())) {
+            if (word.getTranslations().size() == 1) {
                 wordDao.delete(word.getId());
             } else {
                 word.getTranslations().remove(studiedWord.getTranslation());
@@ -104,8 +103,13 @@ public class WordServiceImpl implements WordService {
     }
 
     private void createInitialWord(StudiedWord studiedWord) {
-        List<String> translations = Collections.singletonList(studiedWord.getTranslation());
-        List<String> images = Collections.singletonList(studiedWord.getImage());
+
+        List<String> translations = new ArrayList<>();
+        translations.add(studiedWord.getTranslation());
+        List<String> images = new ArrayList<>();
+        if (studiedWord.getImage() != null) {
+            images.add(studiedWord.getImage());
+        }
         Word word = new Word(studiedWord.getText(), translations, images,
                              speechService.getSpeechRecord(studiedWord.getText()));
         wordDao.create(word);
