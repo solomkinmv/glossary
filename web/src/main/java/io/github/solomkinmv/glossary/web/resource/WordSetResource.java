@@ -1,26 +1,23 @@
 package io.github.solomkinmv.glossary.web.resource;
 
-import io.github.solomkinmv.glossary.persistence.model.WordSet;
 import io.github.solomkinmv.glossary.web.controller.WordSetController;
+import io.github.solomkinmv.glossary.web.dto.WordSetDto;
+import lombok.Getter;
 import org.springframework.hateoas.ResourceSupport;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * HATEOAS resource for WordSet.
  */
+@Getter
 public class WordSetResource extends ResourceSupport {
-    private final WordSet wordSet;
+    private final WordSetDto set;
 
-    public WordSetResource(WordSet wordSet) {
-        this.wordSet = wordSet;
+    public WordSetResource(WordSetDto set) {
+        this.set = set;
 
         add(linkTo(WordSetController.class).withRel("wordSets"));
-        add(linkTo(methodOn(WordSetController.class).get(wordSet.getId())).withSelfRel());
-    }
-
-    public WordSet getWordSet() {
-        return wordSet;
+//        add(linkTo(methodOn(WordSetController.class).getAllWordSets(set.getId())).withSelfRel());
     }
 }
