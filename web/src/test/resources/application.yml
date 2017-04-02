@@ -17,3 +17,5 @@ security.jwt:
   refreshTokenExpTime: 2 # minutes
   tokenIssuer: http://solomkinmv.github.io
   tokenSigningKey: xm8EV6Hy5RMFK4EEACIDAwQus
+
+logging.level.io.github.solomkinmv: DEBUG
