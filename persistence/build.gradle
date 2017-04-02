@@ -11,7 +11,7 @@ dependencies {
     compile beanValidation
     compile hibernateValidation
     compile tomcatEmbedEl
-    runtime hsqldb
+    compile group: 'com.h2database', name: 'h2', version: '1.4.194'
     compile('org.projectlombok:lombok')
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
