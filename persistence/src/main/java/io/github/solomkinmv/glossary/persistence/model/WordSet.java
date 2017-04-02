@@ -29,6 +29,12 @@ public class WordSet extends AbstractModelClass {
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private List<StudiedWord> studiedWords;
 
+    public WordSet(Long id, String name, String description, List<StudiedWord> studiedWords) {
+        super(id);
+        this.name = name;
+        this.description = description;
+        this.studiedWords = studiedWords;
+    }
 
     @Override
     public boolean equals(Object o) {

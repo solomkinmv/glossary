@@ -1,54 +1,51 @@
 package io.github.solomkinmv.glossary.web.controller;
 
-import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
-import io.github.solomkinmv.glossary.persistence.model.WordSet;
 import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.service.domain.WordSetService;
-import io.github.solomkinmv.glossary.web.dto.IdDto;
-import io.github.solomkinmv.glossary.web.exception.EntryNotFoundException;
-import io.github.solomkinmv.glossary.web.resource.StudiedWordResource;
+import io.github.solomkinmv.glossary.web.converter.WordSetConverter;
 import io.github.solomkinmv.glossary.web.resource.WordSetResource;
+import io.github.solomkinmv.glossary.web.security.annotation.CurrentUser;
+import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Endpoint for all operations with wordSet.
  */
 @RestController
-@RequestMapping("/api/wordSets")
+@RequestMapping("/api/sets")
 public class WordSetController {
     private static final Logger LOGGER = LoggerFactory.getLogger(WordSetController.class);
 
     private final WordSetService wordSetService;
     private final WordService wordService;
+    private final WordSetConverter wordSetConverter;
 
     @Autowired
-    public WordSetController(WordSetService wordSetService, WordService wordService) {
+    public WordSetController(WordSetService wordSetService, WordService wordService, WordSetConverter wordSetConverter) {
         this.wordSetService = wordSetService;
         this.wordService = wordService;
+        this.wordSetConverter = wordSetConverter;
     }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public Resources<WordSetResource> wordSets() {
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    public Resources<WordSetResource> getAllWordSets(@CurrentUser AuthenticatedUser user) {
         LOGGER.info("Getting all wordSets.");
-        return new Resources<>(wordSetService.listAll()
+        return new Resources<>(wordSetService.listByUsername(user.getUsername())
                                              .stream()
+                                             .map(wordSetConverter::toDto)
                                              .map(WordSetResource::new)
                                              .collect(Collectors.toList()));
     }
 
-    @RequestMapping(value = "/{wordSetId}", method = RequestMethod.GET)
+    /*@RequestMapping(value = "/{wordSetId}", method = RequestMethod.GET)
     public WordSetResource get(@PathVariable Long wordSetId) {
         LOGGER.info("Getting wordSet with id: {}", wordSetId);
         return wordSetService.getById(wordSetId)
@@ -136,6 +133,6 @@ public class WordSetController {
         wordSet.getStudiedWords().removeIf(word -> word.getId().equals(wordId));
         wordSetService.update(wordSet);
         return ResponseEntity.ok().build();
-    }
+    }*/
 
 }

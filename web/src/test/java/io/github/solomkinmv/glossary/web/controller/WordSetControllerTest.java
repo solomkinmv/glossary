@@ -1,18 +1,107 @@
 package io.github.solomkinmv.glossary.web.controller;
 
-import io.github.solomkinmv.glossary.web.Application;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import io.github.solomkinmv.glossary.persistence.model.*;
+import io.github.solomkinmv.glossary.service.domain.UserDictionaryService;
+import io.github.solomkinmv.glossary.service.domain.WordService;
+import io.github.solomkinmv.glossary.service.domain.WordSetService;
+import io.github.solomkinmv.glossary.web.MockMvcBase;
+import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import javax.transaction.Transactional;
+import java.util.*;
+
+import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Test for {@link WordSetController}
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class)
-@WebAppConfiguration
-public class StudiedWordSetControllerTest {
+@Transactional
+public class WordSetControllerTest extends MockMvcBase {
+
+    private final List<StudiedWord> wordList = new ArrayList<>();
+    private final List<WordSet> wordSets = new ArrayList<>();
+    private int[] wordIds;
+    private int[] wordSetIds;
+    @Autowired
+    private UserDictionaryService userDictionaryService;
+    @Autowired
+    private WordService wordService;
+    @Autowired
+    private WordSetService wordSetService;
+    private AuthenticatedUser authenticatedUser;
+
+    @Before
+    public void setUp() throws Exception {
+        StudiedWord word1 = new StudiedWord("word1", "translation1");
+        StudiedWord word2 = new StudiedWord("word2", "translation2");
+        StudiedWord word3 = new StudiedWord("word3", "translation3");
+        StudiedWord word4 = new StudiedWord("word4", "translation4");
+        StudiedWord word5 = new StudiedWord("word5", "translation5");
+        wordList.add(wordService.save(word1));
+        wordList.add(wordService.save(word2));
+        wordList.add(wordService.save(word3));
+        wordList.add(wordService.save(word4));
+        wordList.add(wordService.save(word5));
+
+        User user1 = new User();
+        user1.setUsername("user1");
+        User user2 = new User();
+        user2.setUsername("user2");
+
+        WordSet ws1 = new WordSet("ws1", "desc", Arrays.asList(word1, word2));
+        WordSet ws2 = new WordSet("ws2", "desc", Arrays.asList(word3, word4));
+        WordSet ws3 = new WordSet("ws3", "desc", Collections.singletonList(word5));
+
+        Set<WordSet> userOneSet = new HashSet<>();
+        userOneSet.add(wordSetService.save(ws1));
+        userOneSet.add(wordSetService.save(ws2));
+        Set<WordSet> userTwoSet = new HashSet<>();
+        userTwoSet.add(wordSetService.save(ws3));
+
+        wordSets.addAll(userOneSet);
+        wordSets.addAll(userTwoSet);
+
+        UserDictionary dict1 = new UserDictionary(userOneSet, user1);
+        UserDictionary dict2 = new UserDictionary(userTwoSet, user2);
+
+        userDictionaryService.save(dict1);
+        userDictionaryService.save(dict2);
+
+        wordIds = wordList.stream().mapToInt(studiedWord -> studiedWord.getId().intValue()).toArray();
+        wordSetIds = wordSets.stream().mapToInt(wordSet -> wordSet.getId().intValue()).toArray();
+        authenticatedUser = new AuthenticatedUser("user1",
+                                                  Collections.singletonList(
+                                                          new SimpleGrantedAuthority(RoleType.USER.authority())));
+    }
+
+    @Test
+    public void getAllWordSets() throws Exception {
+        mockMvc.perform(get("/api/sets").with(userToken()))
+               .andExpect(status().isOk())
+               .andExpect(content().contentType(contentType))
+               .andExpect(jsonPath("$._embedded.wordSetResourceList", hasSize(2)))
+               .andExpect(jsonPath("$._embedded.wordSetResourceList[*].set.id",
+                                   containsInAnyOrder(wordSetIds[0], wordSetIds[1])))
+               .andExpect(jsonPath("$..set[?(@.id==" + wordSetIds[0] + ")].name",
+                                   contains(wordSets.get(0).getName())))
+               .andExpect(jsonPath("$..set[?(@.id==" + wordSetIds[0] + ")].description",
+                                   contains(wordSets.get(0).getDescription())))
+               .andExpect(jsonPath("$..set[?(@.id==" + wordSetIds[0] + ")].words[*].id",
+                                   containsInAnyOrder(wordIds[0], wordIds[1])))
+               .andExpect(jsonPath("$..set[?(@.id==" + wordSetIds[1] + ")].words[*].id",
+                                   containsInAnyOrder(wordIds[2], wordIds[3])));
+    }
+
+    @Override
+    protected AuthenticatedUser getAuthenticatedUser() {
+        return authenticatedUser;
+    }
 
 /*    private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
@@ -114,7 +203,7 @@ public class StudiedWordSetControllerTest {
     }
 
     @Test
-    public void getWordSet() throws Exception {
+    public void getSet() throws Exception {
         WordSet wordSet = wordSetService.listAll().get(0);
 
         mockMvc.perform(get("/api/wordSets/" + wordSet.getId()))

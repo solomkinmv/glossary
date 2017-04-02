@@ -38,6 +38,9 @@ public class StudiedWord extends AbstractModelClass {
         this(text, translation, WordStage.NOT_LEARNED);
     }
 
+    public StudiedWord(Long id, String text, String translation) {
+        this(id, text, translation, WordStage.NOT_LEARNED);
+    }
 
     public StudiedWord(String text, String translation, WordStage stage) {
         this.text = text;
