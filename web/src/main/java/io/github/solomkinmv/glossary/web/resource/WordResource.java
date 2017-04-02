@@ -19,6 +19,6 @@ public class WordResource extends ResourceSupport {
         this.word = word;
 
         add(linkTo(WordController.class).withRel("words"));
-        add(linkTo(methodOn(WordController.class).getWordById(word.getId())).withSelfRel());
+        add(linkTo(methodOn(WordController.class).getWordById(null, word.getId())).withSelfRel());
     }
 }

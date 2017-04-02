@@ -4,6 +4,7 @@ import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
 import io.github.solomkinmv.glossary.persistence.model.Word;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Describes methods to interact with {@link StudiedWord}.
@@ -12,4 +13,6 @@ public interface WordService extends CreateService<StudiedWord>, ReadService<Stu
     List<StudiedWord> listByUsername(String username);
 
     List<Word> search(String query);
+
+    Optional<StudiedWord> getWordByIdAndUsername(Long wordId, String username);
 }

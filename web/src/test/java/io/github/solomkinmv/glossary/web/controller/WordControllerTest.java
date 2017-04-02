@@ -18,8 +18,7 @@ import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -106,6 +105,14 @@ public class WordControllerTest extends MockMvcBase {
     }
 
     @Test
+    public void getOtherUsersWordById() throws Exception {
+        StudiedWord word = wordList.get(wordList.size() - 1);
+
+        mockMvc.perform(get("/api/words/" + word.getId()).with(userToken()))
+               .andExpect(status().isNotFound());
+    }
+
+    /*@Test
     public void createWord() throws Exception {
         StudiedWord word = new StudiedWord("word1", "translation11", WordStage.LEARNING);
         String json = jsonConverter.toJson(word);
@@ -129,7 +136,7 @@ public class WordControllerTest extends MockMvcBase {
 
         List<StudiedWord> studiedWords = wordService.listByUsername(authenticatedUser.getUsername());
         assertEquals(3, studiedWords.size());
-    }
+    }*/
 
     protected AuthenticatedUser getAuthenticatedUser() {
         return authenticatedUser;

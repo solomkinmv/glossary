@@ -126,4 +126,9 @@ public class WordServiceImpl implements WordService {
         log.debug("Searching for words by following query: {}", query);
         return wordDao.search(query);
     }
+
+    @Override
+    public Optional getWordByIdAndUsername(Long wordId, String username) {
+        return studiedWordDao.findByIdAndUsername(wordId, username);
+    }
 }
