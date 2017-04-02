@@ -6,9 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.*;
+import java.util.List;
 
 /**
  * Model for the studied word. Should be unique for each user.
@@ -16,8 +15,8 @@ import javax.persistence.Enumerated;
  */
 @Entity
 @Data
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true, exclude = {"wordSets"})
+@EqualsAndHashCode(callSuper = true, exclude = {"wordSets"})
 @NoArgsConstructor
 public class StudiedWord extends AbstractModelClass {
 
@@ -33,6 +32,9 @@ public class StudiedWord extends AbstractModelClass {
     private String image;
 
     private String sound;
+
+    @ManyToMany(mappedBy = "studiedWords")
+    private List<WordSet> wordSets;
 
     public StudiedWord(String text, String translation) {
         this(text, translation, WordStage.NOT_LEARNED);
@@ -50,5 +52,10 @@ public class StudiedWord extends AbstractModelClass {
         this.text = text;
         this.translation = translation;
         this.stage = stage;
+    }
+
+    @PreRemove
+    private void remoteWordsFromWordSets() {
+        wordSets.forEach(wordSet -> wordSet.getStudiedWords().remove(this));
     }
 }
