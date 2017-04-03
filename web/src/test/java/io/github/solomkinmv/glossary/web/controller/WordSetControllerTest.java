@@ -198,6 +198,24 @@ public class WordSetControllerTest extends MockMvcBase {
         assertFalse(userDictionary.getWordSets().stream().noneMatch(wordSet -> wordSetIds[0] == wordSet.getId()));
     }
 
+    @Test
+    public void deleteWordFromWordSet() throws Exception {
+        mockMvc.perform(delete("/api/sets/{wordSetId}/words/{wordId}", wordSetIds[0], wordIds[0])
+                                .with(userToken()))
+               .andExpect(status().isOk());
+
+        Optional<WordSet> wordSetOptional = wordSetService.getByIdAndUsername((long) wordSetIds[0],
+                                                                              authenticatedUser.getUsername());
+
+        assertTrue(wordSetOptional.isPresent());
+        WordSet wordSet = wordSetOptional.get();
+
+        assertTrue(wordSet.getStudiedWords().stream().noneMatch(word -> word.getId() == wordIds[0]));
+
+        Optional<StudiedWord> wordOptional = wordService.getById((long) wordIds[0]);
+        assertFalse(wordOptional.isPresent());
+    }
+
     @Override
     protected AuthenticatedUser getAuthenticatedUser() {
         return authenticatedUser;

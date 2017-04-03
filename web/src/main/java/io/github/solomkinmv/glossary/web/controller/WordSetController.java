@@ -72,15 +72,16 @@ public class WordSetController {
         return ResponseEntity.ok().build();
     }
 
-    /*@RequestMapping(value = "/{wordSetId}", method = RequestMethod.GET)
-    public WordSetResource get(@PathVariable Long wordSetId) {
-        LOGGER.info("Getting wordSet with id: {}", wordSetId);
-        return wordSetService.getById(wordSetId)
-                             .map(WordSetResource::new)
-                             .orElseThrow(
-                                     () -> new EntryNotFoundException("Couldn't find wordSet with id: " + wordSetId));
+    @RequestMapping(value = "/{wordSetId}/words/{wordId}", method = RequestMethod.DELETE)
+    public ResponseEntity<Void> deleteWordFromWordSet(@CurrentUser AuthenticatedUser user,
+                                                      @PathVariable Long wordSetId,
+                                                      @PathVariable Long wordId) {
+        log.info("Deleting word (id {}) from word set (id {}) for {} user", wordId, wordSetId, user.getUsername());
+        wordSetService.deleteWordFromWordSetByIdAndUsername(wordId, wordSetId, user.getUsername());
+        return ResponseEntity.ok().build();
     }
 
+    /*
     @RequestMapping(value = "/{wordSetId}", method = RequestMethod.POST)
     public ResponseEntity<WordSet> checkIfExist(@PathVariable Long wordSetId) {
         LOGGER.info("Checking if wordSet with id {} exist", wordSetId);

@@ -4,6 +4,7 @@ import io.github.solomkinmv.glossary.persistence.dao.UserDictionaryDao;
 import io.github.solomkinmv.glossary.persistence.dao.WordSetDao;
 import io.github.solomkinmv.glossary.persistence.model.UserDictionary;
 import io.github.solomkinmv.glossary.persistence.model.WordSet;
+import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.service.domain.WordSetService;
 import io.github.solomkinmv.glossary.service.exception.DomainObjectNotFound;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +26,13 @@ public class WordSetServiceImpl implements WordSetService {
 
     private final WordSetDao wordSetDao;
     private final UserDictionaryDao userDictionaryDao;
+    private final WordService wordService;
 
     @Autowired
-    public WordSetServiceImpl(WordSetDao wordSetDao, UserDictionaryDao userDictionaryDao) {
+    public WordSetServiceImpl(WordSetDao wordSetDao, UserDictionaryDao userDictionaryDao, WordService wordService) {
         this.wordSetDao = wordSetDao;
         this.userDictionaryDao = userDictionaryDao;
+        this.wordService = wordService;
     }
 
     @Override
@@ -114,11 +117,16 @@ public class WordSetServiceImpl implements WordSetService {
     @Override
     public void deleteByIdAndUsername(Long id, String username) {
         wordSetDao.deleteByIdAndUsername(id, username);
-        /*WordSet wordSet = wordSetDao.findByIdAndUsername(id, username)
+    }
+
+    @Override
+    public void deleteWordFromWordSetByIdAndUsername(Long wordId, Long wordSetId, String username) {
+        WordSet wordSet = wordSetDao.findByIdAndUsername(wordSetId, username)
                                     .orElseThrow(() -> new DomainObjectNotFound(
-                                            "Can't find WordSet by id " + id + "  and username: " + username));
+                                            "Can't find WordSet by id " + wordSetId + " and username " + username));
 
-        wordSetDao.delete(wordSet.getId());*/
-
+        wordSet.getStudiedWords().removeIf(word -> word.getId().equals(wordId));
+        wordSetDao.update(wordSet);
+        wordService.delete(wordId);
     }
 }
