@@ -54,18 +54,18 @@ public class WordSetControllerTest extends MockMvcBase {
         User user2 = new User();
         user2.setUsername("user2");
 
-        WordSet ws1 = new WordSet("ws1", "desc", Arrays.asList(word1, word2));
-        WordSet ws2 = new WordSet("ws2", "desc", Arrays.asList(word3, word4));
-        WordSet ws3 = new WordSet("ws3", "desc", Collections.singletonList(word5));
+        WordSet ws1 = wordSetService.save(new WordSet("ws1", "desc", Arrays.asList(word1, word2)));
+        WordSet ws2 = wordSetService.save(new WordSet("ws2", "desc", Arrays.asList(word3, word4)));
+        WordSet ws3 = wordSetService.save(new WordSet("ws3", "desc", Collections.singletonList(word5)));
+        wordSets.add(ws1);
+        wordSets.add(ws2);
+        wordSets.add(ws3);
 
         Set<WordSet> userOneSet = new HashSet<>();
-        userOneSet.add(wordSetService.save(ws1));
-        userOneSet.add(wordSetService.save(ws2));
+        userOneSet.add(ws1);
+        userOneSet.add(ws2);
         Set<WordSet> userTwoSet = new HashSet<>();
-        userTwoSet.add(wordSetService.save(ws3));
-
-        wordSets.addAll(userOneSet);
-        wordSets.addAll(userTwoSet);
+        userTwoSet.add(ws3);
 
         UserDictionary dict1 = new UserDictionary(userOneSet, user1);
         UserDictionary dict2 = new UserDictionary(userTwoSet, user2);
@@ -98,25 +98,25 @@ public class WordSetControllerTest extends MockMvcBase {
                                    containsInAnyOrder(wordIds[2], wordIds[3])));
     }
 
+    @Test
+    public void getWordSetById() throws Exception {
+        WordSet wordSet = wordSets.get(0);
+        mockMvc.perform(get("/api/sets/{wordSetId}", wordSetIds[0])
+                                .with(userToken()))
+               .andExpect(status().isOk())
+               .andExpect(content().contentType(contentType))
+               .andExpect(jsonPath("$.set.id", is(wordSetIds[0])))
+               .andExpect(jsonPath("$.set.name", is(wordSet.getName())))
+               .andExpect(jsonPath("$.set.description", is(wordSet.getDescription())))
+               .andExpect(jsonPath("$.set.words[*].id", containsInAnyOrder(wordIds[0], wordIds[1])));
+    }
+
     @Override
     protected AuthenticatedUser getAuthenticatedUser() {
         return authenticatedUser;
     }
 
-/*    private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(),
-            StandardCharsets.UTF_8);
-    private MockMvc mockMvc;
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
-    @Autowired
-    private WordSetService wordSetService;
-    @Autowired
-    private WordService wordService;
-    @Autowired
-    private WordService wordService;
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
+/*
     @Autowired
     public void setConverters(HttpMessageConverter<?>[] converters) {
         mappingJackson2HttpMessageConverter = Arrays.stream(converters)
