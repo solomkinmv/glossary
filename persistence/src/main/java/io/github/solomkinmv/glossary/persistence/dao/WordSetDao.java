@@ -12,4 +12,6 @@ public interface WordSetDao extends CRUDDao<WordSet, Long> {
     List<WordSet> listByUsername(String username);
 
     Optional<WordSet> findByIdAndUsername(long id, String username);
+
+    void deleteByIdAndUsername(long id, String username);
 }

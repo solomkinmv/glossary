@@ -15,4 +15,6 @@ public interface WordSetService extends CRUDService<WordSet, Long> {
     Optional<WordSet> getByIdAndUsername(Long id, String username);
 
     WordSet saveForUser(String username, WordSet wordSet);
+
+    void deleteByIdAndUsername(Long wordSetId, String username);
 }

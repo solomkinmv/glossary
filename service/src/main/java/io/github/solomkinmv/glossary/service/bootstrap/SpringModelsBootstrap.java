@@ -104,9 +104,9 @@ public class SpringModelsBootstrap implements ApplicationListener<ContextRefresh
     private void saveUsers() {
         users = new ArrayList<>();
         users.add(new User("user1", "$2a$10$bnC26zz//2cavYoSCrlHdecWF8tkGfPodlHcYwlACBBwJvcEf0p2G", "user1@email.com",
-                           Collections.singletonList(userRole)));
+                           Collections.singleton(userRole)));
         users.add(new User("user2", "$2a$10$bnC26zz//2cavYoSCrlHdecWF8tkGfPodlHcYwlACBBwJvcEf0p2G", "user2@email.com",
-                           Collections.singletonList(userRole)));
+                           Collections.singleton(userRole)));
 
         users.forEach(userDao::create);
     }

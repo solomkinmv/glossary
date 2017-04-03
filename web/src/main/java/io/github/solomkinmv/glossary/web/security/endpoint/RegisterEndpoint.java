@@ -51,7 +51,7 @@ public class RegisterEndpoint {
 
         Role role = roleService.getByRoleType(RoleType.USER);
         User user = new User(registrationRequest.getUsername(), pass, registrationRequest.getDetails(),
-                Collections.singletonList(role));
+                             Collections.singleton(role));
 
         userService.save(user);
 

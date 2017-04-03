@@ -44,4 +44,17 @@ public class WordSetJpaDao extends AbstractJpaDao<WordSet> implements WordSetDao
             return Optional.empty();
         }
     }
+
+    @Override
+    public void deleteByIdAndUsername(long id, String username) {
+        entityManager.createQuery(
+                "DELETE FROM WordSet w " +
+                        "WHERE w IN" +
+                        "(SELECT ws FROM UserDictionary u " +
+                        "JOIN u.wordSets ws " +
+                        "WHERE u.user.username = :username AND ws.id = :id)")
+                     .setParameter("id", id)
+                     .setParameter("username", username)
+                     .executeUpdate();
+    }
 }

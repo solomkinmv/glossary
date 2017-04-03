@@ -110,4 +110,15 @@ public class WordSetServiceImpl implements WordSetService {
         userDictionaryDao.update(userDictionary);
         return wordSet;
     }
+
+    @Override
+    public void deleteByIdAndUsername(Long id, String username) {
+        wordSetDao.deleteByIdAndUsername(id, username);
+        /*WordSet wordSet = wordSetDao.findByIdAndUsername(id, username)
+                                    .orElseThrow(() -> new DomainObjectNotFound(
+                                            "Can't find WordSet by id " + id + "  and username: " + username));
+
+        wordSetDao.delete(wordSet.getId());*/
+
+    }
 }
