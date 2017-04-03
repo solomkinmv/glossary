@@ -82,4 +82,10 @@ public class WordSetServiceImpl implements WordSetService {
         log.debug("Listing all wordSets by username {}", username);
         return wordSetDao.listByUsername(username);
     }
+
+    @Override
+    public Optional<WordSet> getByIdAndUsername(Long id, String username) {
+        log.debug("Getting word set by id {} and username {}", id, username);
+        return wordSetDao.findByIdAndUsername(id, username);
+    }
 }
