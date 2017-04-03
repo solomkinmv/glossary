@@ -5,18 +5,23 @@ import io.github.solomkinmv.glossary.service.domain.UserDictionaryService;
 import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.service.domain.WordSetService;
 import io.github.solomkinmv.glossary.web.MockMvcBase;
+import io.github.solomkinmv.glossary.web.dto.WordSetDto;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.web.servlet.MvcResult;
 
 import javax.transaction.Transactional;
 import java.util.*;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 
 /**
  * Test for {@link WordSetController}
@@ -54,9 +59,12 @@ public class WordSetControllerTest extends MockMvcBase {
         User user2 = new User();
         user2.setUsername("user2");
 
-        WordSet ws1 = wordSetService.save(new WordSet("ws1", "desc", Arrays.asList(word1, word2)));
-        WordSet ws2 = wordSetService.save(new WordSet("ws2", "desc", Arrays.asList(word3, word4)));
-        WordSet ws3 = wordSetService.save(new WordSet("ws3", "desc", Collections.singletonList(word5)));
+        WordSet ws1 = wordSetService.save(
+                new WordSet("ws1", "desc", new ArrayList<>(Arrays.asList(word1, word2))));
+        WordSet ws2 = wordSetService.save(
+                new WordSet("ws2", "desc", new ArrayList<>(Arrays.asList(word3, word4))));
+        WordSet ws3 = wordSetService.save(
+                new WordSet("ws3", "desc", new ArrayList<>(Collections.singletonList(word5))));
         wordSets.add(ws1);
         wordSets.add(ws2);
         wordSets.add(ws3);
@@ -111,48 +119,41 @@ public class WordSetControllerTest extends MockMvcBase {
                .andExpect(jsonPath("$.set.words[*].id", containsInAnyOrder(wordIds[0], wordIds[1])));
     }
 
+    @Test
+    public void createEmptyWordSet() throws Exception {
+        String name = "createdWs";
+        String description = "some desc";
+        WordSetDto wordSetDto = new WordSetDto(null, name, description, Collections.emptyList());
+
+        MvcResult mvcResult = mockMvc.perform(post("/api/sets")
+                                                      .with(userToken())
+                                                      .contentType(contentType)
+                                                      .content(jsonConverter.toJson(wordSetDto)))
+                                     .andExpect(status().isCreated())
+                                     .andExpect(header().string("Location", is(notNullValue())))
+                                     .andReturn();
+
+        String location = mvcResult.getResponse().getHeader("Location");
+        String[] urlChunks = location.split("/");
+        long id = Long.parseLong(urlChunks[urlChunks.length - 1]);
+        Optional<WordSet> wordSetOptional = wordSetService.getByIdAndUsername(id, authenticatedUser.getUsername());
+
+        assertTrue(wordSetOptional.isPresent());
+
+        WordSet wordSet = wordSetOptional.get();
+
+        assertEquals(id, wordSet.getId().longValue());
+        assertEquals(name, wordSet.getName());
+        assertEquals(description, wordSet.getDescription());
+        assertThat(wordSet.getStudiedWords(), emptyCollectionOf(StudiedWord.class));
+    }
+
     @Override
     protected AuthenticatedUser getAuthenticatedUser() {
         return authenticatedUser;
     }
 
 /*
-    @Autowired
-    public void setConverters(HttpMessageConverter<?>[] converters) {
-        mappingJackson2HttpMessageConverter = Arrays.stream(converters)
-                                                    .filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter)
-                                                    .findAny()
-                                                    .orElse(null);
-
-        assertNotNull("The JSON message converter must not be null");
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        mockMvc = webAppContextSetup(webApplicationContext).build();
-
-        wordService.save(new Word("word1", "translation1"));
-        wordService.save(new Word("word2", "translation2"));
-        wordService.save(new Word("word3", "translation3"));
-        wordService.save(new Word("word4", "translation4"));
-
-        wordSetService.save(new WordSet("wordSet1", "description1",
-                Arrays.asList(
-                        new StudiedWord(wordService.listAll().get(0)),
-                        new StudiedWord(wordService.listAll().get(1)))));
-
-        wordSetService.save(new WordSet("wordSet2", "description2",
-                Arrays.asList(
-                        new StudiedWord(wordService.listAll().get(2)),
-                        new StudiedWord(wordService.listAll().get(3)))));
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        wordSetService.deleteAll();
-        wordService.deleteAll();
-    }
-
     @Test
     public void createWordSet() throws Exception {
         String wordSetJson = json(new WordSet(
