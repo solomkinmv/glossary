@@ -216,6 +216,28 @@ public class WordSetControllerTest extends MockMvcBase {
         assertFalse(wordOptional.isPresent());
     }
 
+    @Test
+    public void addWordToWordSet() throws Exception {
+        WordDto wordDto = new WordDto(null, "book1", "книга1", WordStage.LEARNING, "img1", "sound1");
+
+        MvcResult mvcResult = mockMvc.perform(post("/api/sets/{wordSetId}/words", wordSetIds[0])
+                                                      .with(userToken())
+                                                      .contentType(contentType)
+                                                      .content(jsonConverter.toJson(wordDto)))
+                                     .andExpect(status().isCreated())
+                                     .andExpect(header().string("Location", is(notNullValue())))
+                                     .andReturn();
+
+        long id = extractIdFromLocationHeader(mvcResult);
+        Optional<WordSet> wordSetOptional = wordSetService.getByIdAndUsername((long) wordSetIds[0],
+                                                                              authenticatedUser.getUsername());
+
+        assertTrue(wordSetOptional.isPresent());
+        WordSet wordSet = wordSetOptional.get();
+
+        assertTrue(wordSet.getStudiedWords().stream().anyMatch(word -> word.getId() == id));
+    }
+
     @Override
     protected AuthenticatedUser getAuthenticatedUser() {
         return authenticatedUser;
