@@ -13,8 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class UserDictionary extends AbstractModelClass {
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "userDictionary")
     private Set<WordSet> wordSets;
 
     @OneToOne(cascade = CascadeType.ALL)

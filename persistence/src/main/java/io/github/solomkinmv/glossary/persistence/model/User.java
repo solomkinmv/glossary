@@ -4,9 +4,8 @@ import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Model, which represents user.
@@ -26,8 +25,8 @@ public class User extends AbstractModelClass {
     private String email;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable
+//    @JoinTable
     // ~ defaults to @JoinTable(name = "USER_ROLE", joinColumns = @JoinColumn(name = "user_id"),
     //     inverseJoinColumns = @joinColumn(name = "role_id"))
-    private List<Role> roles;
+    private Set<Role> roles;
 }

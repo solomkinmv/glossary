@@ -65,6 +65,13 @@ public class WordSetController {
         return ResponseEntity.created(URI.create(self.getHref())).build();
     }
 
+    @RequestMapping(value = "/{wordSetId}", method = RequestMethod.DELETE)
+    public ResponseEntity<Void> deleteWordSet(@CurrentUser AuthenticatedUser user, @PathVariable Long wordSetId) {
+        log.info("Deleting word set with id {} for user {}", wordSetId, user.getUsername());
+        wordSetService.deleteByIdAndUsername(wordSetId, user.getUsername());
+        return ResponseEntity.ok().build();
+    }
+
     /*@RequestMapping(value = "/{wordSetId}", method = RequestMethod.GET)
     public WordSetResource get(@PathVariable Long wordSetId) {
         LOGGER.info("Getting wordSet with id: {}", wordSetId);

@@ -19,8 +19,7 @@ import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -182,6 +181,21 @@ public class WordSetControllerTest extends MockMvcBase {
         assertEquals(description, wordSet.getDescription());
         List<StudiedWord> studiedWords = wordSet.getStudiedWords();
         assertThat(studiedWords, hasSize(2));
+    }
+
+    @Test
+    public void deleteWordSet() throws Exception {
+        mockMvc.perform(delete("/api/sets/{wordSetId}", wordSetIds[0])
+                                .with(userToken()))
+               .andExpect(status().isOk());
+
+        Optional<UserDictionary> dictionaryOptional = userDictionaryService.getByUsername(
+                authenticatedUser.getUsername());
+
+        assertTrue(dictionaryOptional.isPresent());
+        UserDictionary userDictionary = dictionaryOptional.get();
+
+        assertFalse(userDictionary.getWordSets().stream().noneMatch(wordSet -> wordSetIds[0] == wordSet.getId()));
     }
 
     @Override
