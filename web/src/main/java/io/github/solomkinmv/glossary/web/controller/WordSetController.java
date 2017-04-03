@@ -1,20 +1,22 @@
 package io.github.solomkinmv.glossary.web.controller;
 
+import io.github.solomkinmv.glossary.persistence.model.WordSet;
 import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.service.domain.WordSetService;
 import io.github.solomkinmv.glossary.web.converter.WordSetConverter;
+import io.github.solomkinmv.glossary.web.dto.WordSetDto;
 import io.github.solomkinmv.glossary.web.exception.EntryNotFoundException;
 import io.github.solomkinmv.glossary.web.resource.WordSetResource;
 import io.github.solomkinmv.glossary.web.security.annotation.CurrentUser;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.stream.Collectors;
 
 /**
@@ -55,6 +57,14 @@ public class WordSetController {
                                      "Can't find word set for " + user.getUsername() + " username and id " + wordSetId));
     }
 
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public ResponseEntity<Void> createWordSet(@CurrentUser AuthenticatedUser user, @RequestBody WordSetDto wordSetDto) {
+        log.info("Creating word set for user {}: {}", user.getUsername(), wordSetDto);
+        WordSet wordSet = wordSetService.saveForUser(user.getUsername(), wordSetConverter.toModel(wordSetDto));
+        Link self = new WordSetResource(wordSetConverter.toDto(wordSet)).getLink("self");
+        return ResponseEntity.created(URI.create(self.getHref())).build();
+    }
+
     /*@RequestMapping(value = "/{wordSetId}", method = RequestMethod.GET)
     public WordSetResource get(@PathVariable Long wordSetId) {
         LOGGER.info("Getting wordSet with id: {}", wordSetId);
@@ -62,14 +72,6 @@ public class WordSetController {
                              .map(WordSetResource::new)
                              .orElseThrow(
                                      () -> new EntryNotFoundException("Couldn't find wordSet with id: " + wordSetId));
-    }
-
-    @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<WordSet> add(@RequestBody WordSet wordSet) {
-        LOGGER.info("Creating wordSet: {}", wordSet);
-        WordSet savedWordSet = wordSetService.save(wordSet);
-        Link wordSetResource = new WordSetResource(savedWordSet).getLink("self");
-        return ResponseEntity.created(URI.create(wordSetResource.getHref())).build();
     }
 
     @RequestMapping(value = "/{wordSetId}", method = RequestMethod.POST)

@@ -1,6 +1,8 @@
 package io.github.solomkinmv.glossary.service.domain.impl;
 
+import io.github.solomkinmv.glossary.persistence.dao.UserDictionaryDao;
 import io.github.solomkinmv.glossary.persistence.dao.WordSetDao;
+import io.github.solomkinmv.glossary.persistence.model.UserDictionary;
 import io.github.solomkinmv.glossary.persistence.model.WordSet;
 import io.github.solomkinmv.glossary.service.domain.WordSetService;
 import io.github.solomkinmv.glossary.service.exception.DomainObjectNotFound;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,10 +24,12 @@ import java.util.Optional;
 public class WordSetServiceImpl implements WordSetService {
 
     private final WordSetDao wordSetDao;
+    private final UserDictionaryDao userDictionaryDao;
 
     @Autowired
-    public WordSetServiceImpl(WordSetDao wordSetDao) {
+    public WordSetServiceImpl(WordSetDao wordSetDao, UserDictionaryDao userDictionaryDao) {
         this.wordSetDao = wordSetDao;
+        this.userDictionaryDao = userDictionaryDao;
     }
 
     @Override
@@ -87,5 +92,22 @@ public class WordSetServiceImpl implements WordSetService {
     public Optional<WordSet> getByIdAndUsername(Long id, String username) {
         log.debug("Getting word set by id {} and username {}", id, username);
         return wordSetDao.findByIdAndUsername(id, username);
+    }
+
+    @Override
+    public WordSet saveForUser(String username, WordSet wordSet) {
+        UserDictionary userDictionary = userDictionaryDao
+                .findByUsername(username)
+                .orElseThrow(() -> new DomainObjectNotFound("Can't find UserDictionary by username: " + username));
+        wordSet.setUserDictionary(userDictionary);
+        wordSetDao.create(wordSet);
+
+        log.debug("Updating user dictionary before saving word set: ", wordSet);
+        if (userDictionary.getWordSets() == null) {
+            userDictionary.setWordSets(new HashSet<>());
+        }
+        userDictionary.getWordSets().add(wordSet);
+        userDictionaryDao.update(userDictionary);
+        return wordSet;
     }
 }

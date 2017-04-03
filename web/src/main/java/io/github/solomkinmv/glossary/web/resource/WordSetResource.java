@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.springframework.hateoas.ResourceSupport;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * HATEOAS resource for WordSet.
@@ -18,6 +19,6 @@ public class WordSetResource extends ResourceSupport {
         this.set = set;
 
         add(linkTo(WordSetController.class).withRel("wordSets"));
-//        add(linkTo(methodOn(WordSetController.class).getAllWordSets(set.getId())).withSelfRel());
+        add(linkTo(methodOn(WordSetController.class).getWordSetById(null, set.getId())).withSelfRel());
     }
 }
