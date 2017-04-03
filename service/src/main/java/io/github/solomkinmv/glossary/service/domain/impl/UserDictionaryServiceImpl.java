@@ -46,6 +46,7 @@ public class UserDictionaryServiceImpl implements UserDictionaryService {
 
         userDictionaryDao.create(userDictionary);
 
+
         return userDictionary;
     }
 
@@ -66,14 +67,14 @@ public class UserDictionaryServiceImpl implements UserDictionaryService {
     }
 
     @Override
-    public Optional<UserDictionary> getByUsername(String username) {
-        LOGGER.debug("Getting userDictionary by username: {}", username);
-        return userDictionaryDao.findByUsername(username);
-    }
-
-    @Override
     public void deleteAll() {
         LOGGER.debug("Deleting all userDictionarys");
         userDictionaryDao.deleteAll();
+    }
+
+    @Override
+    public Optional<UserDictionary> getByUsername(String username) {
+        LOGGER.debug("Getting userDictionary by username: {}", username);
+        return userDictionaryDao.findByUsername(username);
     }
 }

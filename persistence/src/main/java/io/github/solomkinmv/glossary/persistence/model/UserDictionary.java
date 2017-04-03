@@ -18,4 +18,9 @@ public class UserDictionary extends AbstractModelClass {
 
     @OneToOne(cascade = CascadeType.ALL)
     private User user;
+
+    @PrePersist
+    private void addDictionaryToWordSets() {
+        wordSets.forEach(wordSet -> wordSet.setUserDictionary(this));
+    }
 }

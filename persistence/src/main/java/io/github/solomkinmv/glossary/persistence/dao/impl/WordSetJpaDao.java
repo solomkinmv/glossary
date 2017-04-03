@@ -23,9 +23,9 @@ public class WordSetJpaDao extends AbstractJpaDao<WordSet> implements WordSetDao
     @Override
     public List<WordSet> listByUsername(String username) {
         return entityManager.createQuery(
-                "SELECT w FROM UserDictionary u " +
-                        "JOIN u.wordSets w " +
-                        "WHERE u.user.username = :username", WordSet.class)
+                "SELECT w FROM WordSet w " +
+                        "" +
+                        "WHERE w.userDictionary.user.username = :username", WordSet.class)
                             .setParameter("username", username)
                             .getResultList();
     }
@@ -34,8 +34,8 @@ public class WordSetJpaDao extends AbstractJpaDao<WordSet> implements WordSetDao
     public Optional<WordSet> findByIdAndUsername(long id, String username) {
         try {
             return Optional.of(entityManager.createQuery(
-                    "SELECT w FROM UserDictionary u JOIN u.wordSets w " +
-                            "WHERE u.user.username = :username AND w.id = :id", WordSet.class)
+                    "SELECT w FROM WordSet w " +
+                            "WHERE w.userDictionary.user.username = :username AND w.id = :id", WordSet.class)
                                             .setParameter("id", id)
                                             .setParameter("username", username)
                                             .getSingleResult());
