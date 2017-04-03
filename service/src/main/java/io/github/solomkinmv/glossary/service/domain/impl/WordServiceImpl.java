@@ -50,8 +50,10 @@ public class WordServiceImpl implements WordService {
     public StudiedWord save(StudiedWord studiedWord) {
         log.debug("Saving studiedWord: {}", studiedWord);
 
+        Word associatedWord = getSynchronizedAssociatedWord(studiedWord);
+
+        studiedWord.setSound(associatedWord.getSound());
         studiedWordDao.create(studiedWord);
-        synchronizeWord(studiedWord);
 
         return studiedWord;
     }
@@ -62,7 +64,7 @@ public class WordServiceImpl implements WordService {
         StudiedWord studiedWord = getById(id)
                 .orElseThrow(
                         () -> new DomainObjectNotFound("Can't get studied word with id " + id));
-        synchronizeWordOnDelete(studiedWord);
+        synchronizeAssociatedWordOnDelete(studiedWord);
         studiedWordDao.delete(id);
     }
 
@@ -73,7 +75,7 @@ public class WordServiceImpl implements WordService {
         wordDao.deleteAll();
     }
 
-    private void synchronizeWordOnDelete(StudiedWord studiedWord) {
+    private void synchronizeAssociatedWordOnDelete(StudiedWord studiedWord) {
         wordDao.findByText(studiedWord.getText()).ifPresent(word -> {
             if (word.getTranslations().size() == 1) {
                 wordDao.delete(word.getId());
@@ -85,7 +87,7 @@ public class WordServiceImpl implements WordService {
         });
     }
 
-    private void synchronizeWord(StudiedWord studiedWord) {
+    private Word getSynchronizedAssociatedWord(StudiedWord studiedWord) {
         Optional<Word> wordOptional = wordDao.findByText(studiedWord.getText());
         if (wordOptional.isPresent()) {
             Word word = wordOptional.get();
@@ -97,12 +99,14 @@ public class WordServiceImpl implements WordService {
             if (!images.contains(studiedWord.getImage())) {
                 word.getImages().add(studiedWord.getImage());
             }
+            wordDao.update(word);
+            return word;
         } else {
-            createInitialWord(studiedWord);
+            return createInitialWord(studiedWord);
         }
     }
 
-    private void createInitialWord(StudiedWord studiedWord) {
+    private Word createInitialWord(StudiedWord studiedWord) {
 
         List<String> translations = new ArrayList<>();
         translations.add(studiedWord.getTranslation());
@@ -113,6 +117,7 @@ public class WordServiceImpl implements WordService {
         Word word = new Word(studiedWord.getText(), translations, images,
                              speechService.getSpeechRecord(studiedWord.getText()));
         wordDao.create(word);
+        return word;
     }
 
     @Override
@@ -128,7 +133,7 @@ public class WordServiceImpl implements WordService {
     }
 
     @Override
-    public Optional getWordByIdAndUsername(Long wordId, String username) {
+    public Optional<StudiedWord> getWordByIdAndUsername(Long wordId, String username) {
         return studiedWordDao.findByIdAndUsername(wordId, username);
     }
 }

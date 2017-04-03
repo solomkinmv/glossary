@@ -218,7 +218,7 @@ public class WordSetControllerTest extends MockMvcBase {
 
     @Test
     public void addWordToWordSet() throws Exception {
-        WordDto wordDto = new WordDto(null, "book1", "книга1", WordStage.LEARNING, "img1", "sound1");
+        WordDto wordDto = new WordDto(null, "book1", "книга1", WordStage.LEARNING, "img1", null);
 
         MvcResult mvcResult = mockMvc.perform(post("/api/sets/{wordSetId}/words", wordSetIds[0])
                                                       .with(userToken())
@@ -229,13 +229,20 @@ public class WordSetControllerTest extends MockMvcBase {
                                      .andReturn();
 
         long id = extractIdFromLocationHeader(mvcResult);
-        Optional<WordSet> wordSetOptional = wordSetService.getByIdAndUsername((long) wordSetIds[0],
-                                                                              authenticatedUser.getUsername());
+        Optional<StudiedWord> studiedWordOptional = wordSetService
+                .getByIdAndUsername((long) wordSetIds[0], authenticatedUser.getUsername())
+                .map(WordSet::getStudiedWords)
+                .flatMap(words -> words.stream()
+                                       .filter(word -> word.getId() == id)
+                                       .findAny());
 
-        assertTrue(wordSetOptional.isPresent());
-        WordSet wordSet = wordSetOptional.get();
+        assertTrue(studiedWordOptional.isPresent());
 
-        assertTrue(wordSet.getStudiedWords().stream().anyMatch(word -> word.getId() == id));
+        StudiedWord studiedWord = studiedWordOptional.get();
+        assertEquals(studiedWord.getId(), (Long) id);
+        assertEquals("book1", studiedWord.getText());
+        assertEquals("книга1", studiedWord.getTranslation());
+        assertNotNull(studiedWord.getSound());
     }
 
     @Override
