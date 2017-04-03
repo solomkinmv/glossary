@@ -1,11 +1,14 @@
 package io.github.solomkinmv.glossary.web.controller;
 
+import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
 import io.github.solomkinmv.glossary.persistence.model.WordSet;
-import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.service.domain.WordSetService;
+import io.github.solomkinmv.glossary.web.converter.WordConverter;
 import io.github.solomkinmv.glossary.web.converter.WordSetConverter;
+import io.github.solomkinmv.glossary.web.dto.WordDto;
 import io.github.solomkinmv.glossary.web.dto.WordSetDto;
 import io.github.solomkinmv.glossary.web.exception.EntryNotFoundException;
+import io.github.solomkinmv.glossary.web.resource.WordResource;
 import io.github.solomkinmv.glossary.web.resource.WordSetResource;
 import io.github.solomkinmv.glossary.web.security.annotation.CurrentUser;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
@@ -27,14 +30,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class WordSetController {
     private final WordSetService wordSetService;
-    private final WordService wordService;
     private final WordSetConverter wordSetConverter;
+    private final WordConverter wordConverter;
 
     @Autowired
-    public WordSetController(WordSetService wordSetService, WordService wordService, WordSetConverter wordSetConverter) {
+    public WordSetController(WordSetService wordSetService, WordSetConverter wordSetConverter, WordConverter wordConverter) {
         this.wordSetService = wordSetService;
-        this.wordService = wordService;
         this.wordSetConverter = wordSetConverter;
+        this.wordConverter = wordConverter;
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
@@ -79,6 +82,18 @@ public class WordSetController {
         log.info("Deleting word (id {}) from word set (id {}) for {} user", wordId, wordSetId, user.getUsername());
         wordSetService.deleteWordFromWordSetByIdAndUsername(wordId, wordSetId, user.getUsername());
         return ResponseEntity.ok().build();
+    }
+
+    @RequestMapping(value = "/{wordSetId}/words", method = RequestMethod.POST)
+    public ResponseEntity<Void> createWordByAddingToWordSet(@CurrentUser AuthenticatedUser user,
+                                                            @PathVariable Long wordSetId,
+                                                            @RequestBody WordDto wordDto) {
+        log.info("Adding word to word set (id {}) for user {}: {}", wordSetId, user.getUsername(), wordDto);
+        StudiedWord studiedWord = wordConverter.toModel(wordDto);
+        StudiedWord savedWord = wordSetService.addWordToWordSet(studiedWord, wordSetId, user.getUsername());
+        Link self = new WordResource(wordConverter.toDto(savedWord)).getLink("self");
+
+        return ResponseEntity.created(URI.create(self.getHref())).build();
     }
 
     /*

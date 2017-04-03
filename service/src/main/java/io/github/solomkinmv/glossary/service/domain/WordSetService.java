@@ -19,4 +19,6 @@ public interface WordSetService extends CRUDService<WordSet, Long> {
     void deleteByIdAndUsername(Long wordSetId, String username);
 
     void deleteWordFromWordSetByIdAndUsername(Long wordId, Long wordSetId, String username);
+
+    StudiedWord addWordToWordSet(StudiedWord word, Long wordSetId, String username);
 }

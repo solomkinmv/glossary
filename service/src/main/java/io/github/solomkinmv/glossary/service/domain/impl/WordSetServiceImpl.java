@@ -2,6 +2,7 @@ package io.github.solomkinmv.glossary.service.domain.impl;
 
 import io.github.solomkinmv.glossary.persistence.dao.UserDictionaryDao;
 import io.github.solomkinmv.glossary.persistence.dao.WordSetDao;
+import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
 import io.github.solomkinmv.glossary.persistence.model.UserDictionary;
 import io.github.solomkinmv.glossary.persistence.model.WordSet;
 import io.github.solomkinmv.glossary.service.domain.WordService;
@@ -121,12 +122,25 @@ public class WordSetServiceImpl implements WordSetService {
 
     @Override
     public void deleteWordFromWordSetByIdAndUsername(Long wordId, Long wordSetId, String username) {
-        WordSet wordSet = wordSetDao.findByIdAndUsername(wordSetId, username)
-                                    .orElseThrow(() -> new DomainObjectNotFound(
-                                            "Can't find WordSet by id " + wordSetId + " and username " + username));
+        WordSet wordSet = checkedGetByIdAndUsername(wordSetId, username);
 
         wordSet.getStudiedWords().removeIf(word -> word.getId().equals(wordId));
         wordSetDao.update(wordSet);
         wordService.delete(wordId);
+    }
+
+    @Override
+    public StudiedWord addWordToWordSet(StudiedWord word, Long wordSetId, String username) {
+        StudiedWord savedWord = wordService.save(word);
+        WordSet wordSet = checkedGetByIdAndUsername(wordSetId, username);
+        wordSet.getStudiedWords().add(savedWord);
+        wordSetDao.update(wordSet);
+        return word;
+    }
+
+    private WordSet checkedGetByIdAndUsername(Long id, String username) {
+        return getByIdAndUsername(id, username)
+                .orElseThrow(() -> new DomainObjectNotFound(
+                        "Can't find WordSet by id " + id + " and username " + username));
     }
 }
