@@ -5,6 +5,7 @@ import io.github.solomkinmv.glossary.service.domain.UserDictionaryService;
 import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.service.domain.WordSetService;
 import io.github.solomkinmv.glossary.web.MockMvcBase;
+import io.github.solomkinmv.glossary.web.dto.WordDto;
 import io.github.solomkinmv.glossary.web.dto.WordSetDto;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
 import org.junit.Before;
@@ -133,9 +134,7 @@ public class WordSetControllerTest extends MockMvcBase {
                                      .andExpect(header().string("Location", is(notNullValue())))
                                      .andReturn();
 
-        String location = mvcResult.getResponse().getHeader("Location");
-        String[] urlChunks = location.split("/");
-        long id = Long.parseLong(urlChunks[urlChunks.length - 1]);
+        long id = extractIdFromLocationHeader(mvcResult);
         Optional<WordSet> wordSetOptional = wordSetService.getByIdAndUsername(id, authenticatedUser.getUsername());
 
         assertTrue(wordSetOptional.isPresent());
@@ -148,25 +147,49 @@ public class WordSetControllerTest extends MockMvcBase {
         assertThat(wordSet.getStudiedWords(), emptyCollectionOf(StudiedWord.class));
     }
 
+    private long extractIdFromLocationHeader(MvcResult mvcResult) {
+        String location = mvcResult.getResponse().getHeader("Location");
+        String[] urlChunks = location.split("/");
+        return Long.parseLong(urlChunks[urlChunks.length - 1]);
+    }
+
+    @Test
+    public void createWordSetWithWords() throws Exception {
+        String name = "createdWs";
+        String description = "some desc";
+        WordSetDto wordSetDto = new WordSetDto(null, name, description, new ArrayList<>(Arrays.asList(
+                new WordDto(null, "book1", "книга1", WordStage.LEARNING, "img1", "sound1"),
+                new WordDto(null, "book2", "книга2", WordStage.LEARNING, "img2", "sound2")
+        )));
+
+        MvcResult mvcResult = mockMvc.perform(post("/api/sets")
+                                                      .with(userToken())
+                                                      .contentType(contentType)
+                                                      .content(jsonConverter.toJson(wordSetDto)))
+                                     .andExpect(status().isCreated())
+                                     .andExpect(header().string("Location", is(notNullValue())))
+                                     .andReturn();
+
+        long id = extractIdFromLocationHeader(mvcResult);
+        Optional<WordSet> wordSetOptional = wordSetService.getByIdAndUsername(id, authenticatedUser.getUsername());
+
+        assertTrue(wordSetOptional.isPresent());
+
+        WordSet wordSet = wordSetOptional.get();
+
+        assertEquals(id, wordSet.getId().longValue());
+        assertEquals(name, wordSet.getName());
+        assertEquals(description, wordSet.getDescription());
+        List<StudiedWord> studiedWords = wordSet.getStudiedWords();
+        assertThat(studiedWords, hasSize(2));
+    }
+
     @Override
     protected AuthenticatedUser getAuthenticatedUser() {
         return authenticatedUser;
     }
 
 /*
-    @Test
-    public void createWordSet() throws Exception {
-        String wordSetJson = json(new WordSet(
-                "wordSet3",
-                "description3",
-                Collections.emptyList()));
-
-        mockMvc.perform(post("/api/wordSets")
-                .contentType(contentType)
-                .content(wordSetJson))
-               .andExpect(status().isCreated());
-    }
-
     @Test
     public void createExistingWordSet() throws Exception {
         WordSet wordSet = wordSetService.listAll().get(0);
