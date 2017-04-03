@@ -138,6 +138,18 @@ public class WordSetServiceImpl implements WordSetService {
         return word;
     }
 
+    @Override
+    public void updateWordSetMeta(WordSet wordSet, String name, String description) {
+        if (name != null) {
+            wordSet.setName(name);
+        }
+
+        if (description != null) {
+            wordSet.setDescription(description);
+        }
+        wordSetDao.update(wordSet);
+    }
+
     private WordSet checkedGetByIdAndUsername(Long id, String username) {
         return getByIdAndUsername(id, username)
                 .orElseThrow(() -> new DomainObjectNotFound(

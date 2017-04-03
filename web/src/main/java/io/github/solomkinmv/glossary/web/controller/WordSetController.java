@@ -7,6 +7,7 @@ import io.github.solomkinmv.glossary.web.converter.WordConverter;
 import io.github.solomkinmv.glossary.web.converter.WordSetConverter;
 import io.github.solomkinmv.glossary.web.dto.WordDto;
 import io.github.solomkinmv.glossary.web.dto.WordSetDto;
+import io.github.solomkinmv.glossary.web.dto.WordSetMetaDto;
 import io.github.solomkinmv.glossary.web.exception.EntryNotFoundException;
 import io.github.solomkinmv.glossary.web.resource.WordResource;
 import io.github.solomkinmv.glossary.web.resource.WordSetResource;
@@ -43,6 +44,7 @@ public class WordSetController {
     @RequestMapping(value = "", method = RequestMethod.GET)
     public Resources<WordSetResource> getAllWordSets(@CurrentUser AuthenticatedUser user) {
         log.info("Getting all wordSets.");
+
         return new Resources<>(wordSetService.listByUsername(user.getUsername())
                                              .stream()
                                              .map(wordSetConverter::toDto)
@@ -53,6 +55,7 @@ public class WordSetController {
     @RequestMapping(value = "/{wordSetId}", method = RequestMethod.GET)
     public WordSetResource getWordSetById(@CurrentUser AuthenticatedUser user, @PathVariable Long wordSetId) {
         log.info("Getting wordSet by id {}", wordSetId);
+
         return wordSetService.getByIdAndUsername(wordSetId, user.getUsername())
                              .map(wordSetConverter::toDto)
                              .map(WordSetResource::new)
@@ -72,6 +75,7 @@ public class WordSetController {
     public ResponseEntity<Void> deleteWordSet(@CurrentUser AuthenticatedUser user, @PathVariable Long wordSetId) {
         log.info("Deleting word set with id {} for user {}", wordSetId, user.getUsername());
         wordSetService.deleteByIdAndUsername(wordSetId, user.getUsername());
+
         return ResponseEntity.ok().build();
     }
 
@@ -81,6 +85,7 @@ public class WordSetController {
                                                       @PathVariable Long wordId) {
         log.info("Deleting word (id {}) from word set (id {}) for {} user", wordId, wordSetId, user.getUsername());
         wordSetService.deleteWordFromWordSetByIdAndUsername(wordId, wordSetId, user.getUsername());
+
         return ResponseEntity.ok().build();
     }
 
@@ -94,6 +99,22 @@ public class WordSetController {
         Link self = new WordResource(wordConverter.toDto(savedWord)).getLink("self");
 
         return ResponseEntity.created(URI.create(self.getHref())).build();
+    }
+
+    @RequestMapping(value = "/{wordSetId}", method = RequestMethod.PATCH)
+    public ResponseEntity<Void> updateWordSetMetaInformation(@CurrentUser AuthenticatedUser user,
+                                                             @PathVariable Long wordSetId,
+                                                             @RequestBody WordSetMetaDto wordSetMetaDto) {
+        log.info("Updating word set (id {}) meta information for user {}: {}",
+                 wordSetId, user.getUsername(), wordSetMetaDto);
+
+        WordSet wordSet = wordSetService
+                .getByIdAndUsername(wordSetId, user.getUsername())
+                .orElseThrow(() -> new EntryNotFoundException(
+                        "Can't find word set with id " + wordSetId + " for user " + user.getUsername()));
+        wordSetService.updateWordSetMeta(wordSet, wordSetMetaDto.getName(), wordSetMetaDto.getDescription());
+
+        return ResponseEntity.ok().build();
     }
 
     /*

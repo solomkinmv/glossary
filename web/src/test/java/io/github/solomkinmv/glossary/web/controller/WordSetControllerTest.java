@@ -7,6 +7,7 @@ import io.github.solomkinmv.glossary.service.domain.WordSetService;
 import io.github.solomkinmv.glossary.web.MockMvcBase;
 import io.github.solomkinmv.glossary.web.dto.WordDto;
 import io.github.solomkinmv.glossary.web.dto.WordSetDto;
+import io.github.solomkinmv.glossary.web.dto.WordSetMetaDto;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
 import org.junit.Before;
 import org.junit.Test;
@@ -243,6 +244,27 @@ public class WordSetControllerTest extends MockMvcBase {
         assertEquals("book1", studiedWord.getText());
         assertEquals("книга1", studiedWord.getTranslation());
         assertNotNull(studiedWord.getSound());
+    }
+
+    @Test
+    public void updateWordSetMetaInformation() throws Exception {
+        String name = "updated name";
+        String description = "updated description";
+        WordSetMetaDto metaDto = new WordSetMetaDto(name, description);
+
+        mockMvc.perform(patch("/api/sets/{wordSetId}", wordSetIds[0])
+                                .with(userToken())
+                                .contentType(contentType)
+                                .content(jsonConverter.toJson(metaDto)))
+               .andExpect(status().isOk());
+
+        Optional<WordSet> wordSetOptional = wordSetService.getById((long) wordSetIds[0]);
+
+        assertTrue(wordSetOptional.isPresent());
+
+        WordSet wordSet = wordSetOptional.get();
+        assertEquals(name, wordSet.getName());
+        assertEquals(description, wordSet.getDescription());
     }
 
     @Override
