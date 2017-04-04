@@ -1,8 +1,10 @@
 package io.github.solomkinmv.glossary.web.controller;
 
 import io.github.solomkinmv.glossary.service.domain.WordService;
+import io.github.solomkinmv.glossary.service.search.SearchService;
 import io.github.solomkinmv.glossary.web.converter.WordConverter;
 import io.github.solomkinmv.glossary.web.exception.EntryNotFoundException;
+import io.github.solomkinmv.glossary.web.resource.SearchResource;
 import io.github.solomkinmv.glossary.web.resource.WordResource;
 import io.github.solomkinmv.glossary.web.security.annotation.CurrentUser;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
@@ -21,15 +23,17 @@ import java.util.stream.Collectors;
 @Slf4j
 public class WordController {
     private final WordService wordService;
+    private final SearchService searchService;
     private final WordConverter wordConverter;
 
     @Autowired
-    public WordController(WordService wordService, WordConverter wordConverter) {
+    public WordController(WordService wordService, SearchService searchService, WordConverter wordConverter) {
         this.wordService = wordService;
+        this.searchService = searchService;
         this.wordConverter = wordConverter;
     }
 
-    @GetMapping("")
+    @RequestMapping(value = "", method = RequestMethod.GET)
     public Resources<WordResource> getAllWords(@CurrentUser AuthenticatedUser user) {
         log.info("Getting all words for user {}", user.getUsername());
 
@@ -48,5 +52,12 @@ public class WordController {
                           .map(wordConverter::toDto)
                           .map(WordResource::new)
                           .orElseThrow(() -> new EntryNotFoundException("Couldn't find word with id: " + wordId));
+    }
+
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    public SearchResource searchWords(@RequestParam String text) {
+        log.info("Looking for words by following text: {}", text);
+
+        return new SearchResource(searchService.executeSearch(text));
     }
 }

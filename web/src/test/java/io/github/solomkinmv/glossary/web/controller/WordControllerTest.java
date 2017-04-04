@@ -46,11 +46,13 @@ public class WordControllerTest extends MockMvcBase {
         StudiedWord word3 = new StudiedWord("word3", "translation3");
         StudiedWord word4 = new StudiedWord("word4", "translation4");
         StudiedWord word5 = new StudiedWord("word5", "translation5");
+        StudiedWord word6 = new StudiedWord("word5", "translation55");
         wordList.add(wordService.save(word1));
         wordList.add(wordService.save(word2));
         wordList.add(wordService.save(word3));
         wordList.add(wordService.save(word4));
         wordList.add(wordService.save(word5));
+        wordList.add(wordService.save(word6));
 
         User user1 = new User();
         user1.setUsername("user1");
@@ -58,8 +60,8 @@ public class WordControllerTest extends MockMvcBase {
         user2.setUsername("user2");
 
         WordSet ws1 = new WordSet("ws1", "desc", Arrays.asList(word1, word2));
-        WordSet ws2 = new WordSet("ws2", "desc", Arrays.asList(word3, word4));
-        WordSet ws3 = new WordSet("ws3", "desc", Collections.singletonList(word5));
+        WordSet ws2 = new WordSet("ws2", "desc", Arrays.asList(word3, word4, word5));
+        WordSet ws3 = new WordSet("ws3", "desc", Collections.singletonList(word6));
 
         Set<WordSet> userOneSet = new HashSet<>();
         userOneSet.add(ws1);
@@ -110,6 +112,25 @@ public class WordControllerTest extends MockMvcBase {
 
         mockMvc.perform(get("/api/words/" + word.getId()).with(userToken()))
                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void searchForPresentWords() throws Exception {
+        mockMvc.perform(get("/api/words/search")
+                                .param("text", "word")
+                                .with(userToken()))
+               .andExpect(status().isOk())
+               .andExpect(content().contentType(contentType))
+               .andExpect(jsonPath("$.result.records", hasSize(5)))
+               .andExpect(jsonPath("$.result.records[0].text", is(wordList.get(0).getText())))
+               .andExpect(jsonPath("$.result.records[0].translations", hasSize(1)))
+               .andExpect(jsonPath("$.result.records[0].translations[0]", is(wordList.get(0).getTranslation())))
+               .andExpect(jsonPath("$.result.records[4].text", is(wordList.get(4).getText())))
+               .andExpect(jsonPath("$.result.records[4].translations", hasSize(2)))
+               .andExpect(jsonPath("$.result.records[4].translations",
+                                   containsInAnyOrder(wordList.get(4).getTranslation(),
+                                                      wordList.get(5).getTranslation())));
+
     }
 
     /*@Test
