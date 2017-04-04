@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Optional;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -23,14 +25,14 @@ public class YandexTranslatorTest {
     public void execute() {
         String expectedTranslation = "Привет мир";
 
-        String actualTranslation = translator.execute("Hello world", Language.ENGLISH, Language.RUSSIAN);
+        Optional<String> actualTranslation = translator.execute("Hello world", Language.ENGLISH, Language.RUSSIAN);
 
         assertEquals(expectedTranslation, actualTranslation);
     }
 
     @Test
     public void returnsEmptyStringIfTextIsNull() {
-        String actualTranslation = translator.execute(null, Language.ENGLISH, Language.RUSSIAN);
+        Optional<String> actualTranslation = translator.execute(null, Language.ENGLISH, Language.RUSSIAN);
 
         assertEquals("", actualTranslation);
     }

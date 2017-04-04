@@ -1,6 +1,5 @@
 package io.github.solomkinmv.glossary.service.search;
 
-import io.github.solomkinmv.glossary.persistence.model.Word;
 import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.service.translate.Language;
 import io.github.solomkinmv.glossary.service.translate.Translator;
@@ -9,10 +8,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static java.util.Collections.singletonList;
+import java.util.stream.Stream;
 
 @Service
 public class SearchServiceImpl implements SearchService {
@@ -30,30 +29,50 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public SearchResult executeSearch(String text) {
-        List<Word> similarWords = wordService.search(text);
-        if (similarWords.isEmpty()) {
-            return prepareTheOnlySuggestion(text);
+        Optional<SearchResult.Record> wordFromDb = wordService.findByText(text)
+                                                              .map(searchConverter::toSearchRecord);
+        Optional<SearchResult.Record> translatedWord = prepareTranslatedRecord(text);
+
+        // generate stream for the first elements
+        // if word from db and translated word
+        Stream<SearchResult.Record> initialStream;
+        if (wordFromDb.isPresent() && translatedWord.isPresent()) {
+            initialStream = generateInitialStream(wordFromDb.get(), translatedWord.get());
+        } else {
+            initialStream = Stream.concat(wordFromDb.map(Stream::of).orElseGet(Stream::empty),
+                                          translatedWord.map(Stream::of).orElseGet(Stream::empty));
         }
 
         Comparator<SearchResult.Record> byText = (r1, r2) -> r1.getText().compareToIgnoreCase(r2.getText());
+        Stream<SearchResult.Record> similarWords = wordService.search(text)
+                                                              .stream()
+                                                              .limit(SearchService.SEARCH_LIMIT)
+                                                              .map(searchConverter::toSearchRecord)
+                                                              .sorted(byText);
 
-        return new SearchResult(similarWords.stream()
-                                            .map(searchConverter::toSearchRecord)
-                                            .sorted(byText)
-                                            .collect(Collectors.toList()));
+        return new SearchResult(
+                Stream.concat(initialStream, similarWords)
+                      .distinct()
+                      .limit(SearchService.SEARCH_LIMIT)
+                      .collect(Collectors.toList()));
     }
 
-    private SearchResult prepareTheOnlySuggestion(String text) {
-        List<String> singleTranslation = translator.execute(text, Language.RUSSIAN, Language.ENGLISH)
-                                                   .map(Collections::singletonList)
-                                                   .orElse(Collections.emptyList());
-        return new SearchResult(
-                singletonList(new SearchResult.Record(
+    private Stream<SearchResult.Record> generateInitialStream(SearchResult.Record wordFromDb, SearchResult.Record translatedWord) {
+        if (wordFromDb.getTranslations().equals(translatedWord.getTranslations())) {
+            return Stream.of(wordFromDb);
+        }
+        return Stream.of(wordFromDb, translatedWord);
+    }
+
+    private Optional<SearchResult.Record> prepareTranslatedRecord(String text) {
+        Function<String, SearchResult.Record> translationToRecord = translation ->
+                new SearchResult.Record(
                         text,
-                        singleTranslation,
-                        null,
+                        Collections.singletonList(translation),
+                        Collections.emptyList(),
                         null
-                ))
-        );
+                );
+        return translator.execute(text, Language.ENGLISH, Language.RUSSIAN)
+                         .map(translationToRecord);
     }
 }
