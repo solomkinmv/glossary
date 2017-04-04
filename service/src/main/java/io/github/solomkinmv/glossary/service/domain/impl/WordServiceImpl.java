@@ -133,6 +133,12 @@ public class WordServiceImpl implements WordService {
     }
 
     @Override
+    public Optional<Word> findByText(String text) {
+        log.debug("Looking for words by text {}", text);
+        return wordDao.findByText(text);
+    }
+
+    @Override
     public Optional<StudiedWord> getWordByIdAndUsername(Long wordId, String username) {
         return studiedWordDao.findByIdAndUsername(wordId, username);
     }

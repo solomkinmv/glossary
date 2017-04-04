@@ -1,5 +1,7 @@
 package io.github.solomkinmv.glossary.service.translate;
 
+import java.util.Optional;
+
 /**
  * Interface describes methods to interact with Translate service.
  */
@@ -13,5 +15,5 @@ public interface Translator {
      * @param target {@link Language} of the target text
      * @return translated text
      */
-    String execute(String text, Language source, Language target);
+    Optional<String> execute(String text, Language source, Language target);
 }

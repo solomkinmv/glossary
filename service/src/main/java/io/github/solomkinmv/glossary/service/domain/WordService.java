@@ -14,5 +14,7 @@ public interface WordService extends CreateService<StudiedWord>, ReadService<Stu
 
     List<Word> search(String query);
 
+    Optional<Word> findByText(String text);
+
     Optional<StudiedWord> getWordByIdAndUsername(Long wordId, String username);
 }

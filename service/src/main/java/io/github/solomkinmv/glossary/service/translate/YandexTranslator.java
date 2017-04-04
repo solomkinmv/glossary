@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
 
 /**
  * Implementation of {@link Translator} for the Yandex Translate service.
@@ -31,10 +32,20 @@ public class YandexTranslator implements Translator {
     }
 
     @Override
-    public String execute(String text, Language source, Language target) {
+    public Optional<String> execute(String text, Language source, Language target) {
         if (StringUtils.isEmpty(text)) {
-            return "";
+            return Optional.empty();
         }
+        String translationResult = callExternalService(text, source, target);
+
+        if (translationResult.equals(text)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(translationResult);
+    }
+
+    private String callExternalService(String text, Language source, Language target) {
         try {
             URI uri = new URIBuilder(YANDEX_TRANSLATE_ENDPOINT)
                     .addParameter("key", key)
