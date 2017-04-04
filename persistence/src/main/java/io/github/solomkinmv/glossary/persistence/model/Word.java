@@ -5,7 +5,7 @@ import lombok.*;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -18,10 +18,10 @@ public class Word extends AbstractModelClass {
     private String text;
 
     @ElementCollection
-    private List<String> translations;
+    private Set<String> translations;
 
     @ElementCollection
-    private List<String> images;
+    private Set<String> images;
 
     private String sound;
 }
