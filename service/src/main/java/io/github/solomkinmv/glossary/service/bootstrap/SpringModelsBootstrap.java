@@ -1,7 +1,7 @@
 package io.github.solomkinmv.glossary.service.bootstrap;
 
-import io.github.solomkinmv.glossary.persistence.dao.*;
 import io.github.solomkinmv.glossary.persistence.model.*;
+import io.github.solomkinmv.glossary.service.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
@@ -19,12 +19,11 @@ import java.util.*;
 @Transactional
 public class SpringModelsBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
-    private final UserDao userDao;
-    private final RoleDao roleDao;
-    private final WordDao wordDao;
-    private final StudiedWordDao studiedWordDao;
-    private final WordSetDao wordSetDao;
-    private final UserDictionaryDao userDictionaryDao;
+    private final UserService userService;
+    private final RoleService roleService;
+    private final WordService wordService;
+    private final WordSetService wordSetService;
+    private final UserDictionaryService userDictionaryService;
 
     private Role adminRole;
     private Role userRole;
@@ -34,15 +33,16 @@ public class SpringModelsBootstrap implements ApplicationListener<ContextRefresh
     private HashMap<User, UserDictionary> userDictionaries;
 
     @Autowired
-    public SpringModelsBootstrap(UserDao userDao, RoleDao roleDao, WordDao wordDao, StudiedWordDao studiedWordDao,
-                                 WordSetDao wordSetDao,
-                                 UserDictionaryDao userDictionaryDao) {
-        this.userDao = userDao;
-        this.roleDao = roleDao;
-        this.wordDao = wordDao;
-        this.studiedWordDao = studiedWordDao;
-        this.wordSetDao = wordSetDao;
-        this.userDictionaryDao = userDictionaryDao;
+    public SpringModelsBootstrap(UserService userService,
+                                 RoleService roleService,
+                                 WordService wordService,
+                                 WordSetService wordSetService,
+                                 UserDictionaryService userDictionaryService) {
+        this.userService = userService;
+        this.roleService = roleService;
+        this.wordService = wordService;
+        this.wordSetService = wordSetService;
+        this.userDictionaryService = userDictionaryService;
     }
 
     @Override
@@ -61,8 +61,8 @@ public class SpringModelsBootstrap implements ApplicationListener<ContextRefresh
         User user1 = users.get(1);
         UserDictionary userDictionary1 = new UserDictionary(wordSets.get(user1), user1);
 
-        userDictionaryDao.create(userDictionary0);
-        userDictionaryDao.create(userDictionary1);
+        userDictionaryService.save(userDictionary0);
+        userDictionaryService.save(userDictionary1);
 
         userDictionaries = new HashMap<>();
         userDictionaries.put(user0, userDictionary0);
@@ -81,8 +81,8 @@ public class SpringModelsBootstrap implements ApplicationListener<ContextRefresh
         userTwoStudiedWords.add(new StudiedWord("pocket", "карман"));
         userTwoStudiedWords.add(new StudiedWord("pen", "ручка"));
 
-        userOneStudiedWords.forEach(studiedWordDao::create);
-        userTwoStudiedWords.forEach(studiedWordDao::create);
+        userOneStudiedWords.forEach(wordService::save);
+        userTwoStudiedWords.forEach(wordService::save);
 
         studiedWords = new HashMap<>();
         studiedWords.put(users.get(0), userOneStudiedWords);
@@ -93,8 +93,8 @@ public class SpringModelsBootstrap implements ApplicationListener<ContextRefresh
         WordSet wordSet1 = new WordSet("Basic", "description", studiedWords.get(users.get(0)));
         WordSet wordSet2 = new WordSet("Advanced", "description", studiedWords.get(users.get(1)));
 
-        wordSetDao.create(wordSet1);
-        wordSetDao.create(wordSet2);
+        wordSetService.save(wordSet1);
+        wordSetService.save(wordSet2);
 
         wordSets = new HashMap<>();
         wordSets.put(users.get(0), Collections.singleton(wordSet1));
@@ -108,14 +108,14 @@ public class SpringModelsBootstrap implements ApplicationListener<ContextRefresh
         users.add(new User("user2", "$2a$10$bnC26zz//2cavYoSCrlHdecWF8tkGfPodlHcYwlACBBwJvcEf0p2G", "user2@email.com",
                            Collections.singleton(userRole)));
 
-        users.forEach(userDao::create);
+        users.forEach(userService::save);
     }
 
     private void saveRoles() {
         adminRole = new Role(RoleType.ADMIN);
         userRole = new Role(RoleType.USER);
 
-        roleDao.create(adminRole);
-        roleDao.create(userRole);
+        roleService.save(adminRole);
+        roleService.save(userRole);
     }
 }
