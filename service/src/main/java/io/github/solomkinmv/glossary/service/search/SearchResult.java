@@ -3,6 +3,7 @@ package io.github.solomkinmv.glossary.service.search;
 import lombok.Value;
 
 import java.util.List;
+import java.util.Set;
 
 @Value
 public class SearchResult {
@@ -11,8 +12,8 @@ public class SearchResult {
     @Value
     static class Record {
         String text;
-        List<String> translations;
-        List<String> images;
+        Set<String> translations;
+        Set<String> images;
         String sound;
     }
 }

@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class SearchServiceImpl implements SearchService {
@@ -29,47 +29,40 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public SearchResult executeSearch(String text) {
-        Optional<SearchResult.Record> wordFromDb = wordService.findByText(text)
-                                                              .map(searchConverter::toSearchRecord);
-        Optional<SearchResult.Record> translatedWord = prepareTranslatedRecord(text);
+        Comparator<SearchResult.Record> byText = (r1, r2) -> r1.getText().compareToIgnoreCase(r2.getText());
+        List<SearchResult.Record> similarWords = wordService.search(text)
+                                                            .stream()
+                                                            .map(searchConverter::toSearchRecord)
+                                                            .sorted(byText)
+                                                            .limit(SearchService.SEARCH_LIMIT)
+                                                            .collect(Collectors.toList());
 
-        // generate stream for the first elements
-        // if word from db and translated word
-        Stream<SearchResult.Record> initialStream;
-        if (wordFromDb.isPresent() && translatedWord.isPresent()) {
-            initialStream = generateInitialStream(wordFromDb.get(), translatedWord.get());
-        } else {
-            initialStream = Stream.concat(wordFromDb.map(Stream::of).orElseGet(Stream::empty),
-                                          translatedWord.map(Stream::of).orElseGet(Stream::empty));
+        if (containsText(similarWords, text)) {
+            return new SearchResult(similarWords);
         }
 
-        Comparator<SearchResult.Record> byText = (r1, r2) -> r1.getText().compareToIgnoreCase(r2.getText());
-        Stream<SearchResult.Record> similarWords = wordService.search(text)
-                                                              .stream()
-                                                              .limit(SearchService.SEARCH_LIMIT)
-                                                              .map(searchConverter::toSearchRecord)
-                                                              .sorted(byText);
-
-        return new SearchResult(
-                Stream.concat(initialStream, similarWords)
-                      .distinct()
-                      .limit(SearchService.SEARCH_LIMIT)
-                      .collect(Collectors.toList()));
+        return new SearchResult(insertTranslatedRecord(similarWords, text));
     }
 
-    private Stream<SearchResult.Record> generateInitialStream(SearchResult.Record wordFromDb, SearchResult.Record translatedWord) {
-        if (wordFromDb.getTranslations().equals(translatedWord.getTranslations())) {
-            return Stream.of(wordFromDb);
+    private List<SearchResult.Record> insertTranslatedRecord(List<SearchResult.Record> similarWords, String text) {
+        Optional<SearchResult.Record> translatedRecord = prepareTranslatedRecord(text);
+        if (translatedRecord.isPresent()) {
+            similarWords.add(0, translatedRecord.get());
+            similarWords.remove(similarWords.size() - 1);
         }
-        return Stream.of(wordFromDb, translatedWord);
+        return similarWords;
+    }
+
+    private boolean containsText(List<SearchResult.Record> similarWords, String text) {
+        return similarWords.stream().anyMatch(record -> record.getText().equals(text));
     }
 
     private Optional<SearchResult.Record> prepareTranslatedRecord(String text) {
         Function<String, SearchResult.Record> translationToRecord = translation ->
                 new SearchResult.Record(
                         text,
-                        Collections.singletonList(translation),
-                        Collections.emptyList(),
+                        Collections.singleton(translation),
+                        Collections.emptySet(),
                         null
                 );
         return translator.execute(text, Language.ENGLISH, Language.RUSSIAN)

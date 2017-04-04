@@ -7,14 +7,17 @@ import io.github.solomkinmv.glossary.persistence.model.Word;
 import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.service.exception.DomainObjectNotFound;
 import io.github.solomkinmv.glossary.service.speach.SpeechService;
+import io.github.solomkinmv.glossary.service.translate.Language;
+import io.github.solomkinmv.glossary.service.translate.Translator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Implementation of {@link WordService}.
@@ -26,12 +29,14 @@ public class WordServiceImpl implements WordService {
     private final StudiedWordDao studiedWordDao;
     private final WordDao wordDao;
     private final SpeechService speechService;
+    private final Translator translator;
 
     @Autowired
-    public WordServiceImpl(StudiedWordDao studiedWordDao, WordDao wordDao, SpeechService speechService) {
+    public WordServiceImpl(StudiedWordDao studiedWordDao, WordDao wordDao, SpeechService speechService, Translator translator) {
         this.studiedWordDao = studiedWordDao;
         this.wordDao = wordDao;
         this.speechService = speechService;
+        this.translator = translator;
     }
 
     @Override
@@ -91,11 +96,11 @@ public class WordServiceImpl implements WordService {
         Optional<Word> wordOptional = wordDao.findByText(studiedWord.getText());
         if (wordOptional.isPresent()) {
             Word word = wordOptional.get();
-            List<String> translations = word.getTranslations();
+            Set<String> translations = word.getTranslations();
             if (!translations.contains(studiedWord.getTranslation())) {
                 translations.add(studiedWord.getTranslation());
             }
-            List<String> images = word.getImages();
+            Set<String> images = word.getImages();
             if (!images.contains(studiedWord.getImage())) {
                 word.getImages().add(studiedWord.getImage());
             }
@@ -108,9 +113,12 @@ public class WordServiceImpl implements WordService {
 
     private Word createInitialWord(StudiedWord studiedWord) {
 
-        List<String> translations = new ArrayList<>();
+        Set<String> translations = new HashSet<>();
         translations.add(studiedWord.getTranslation());
-        List<String> images = new ArrayList<>();
+        translator.execute(studiedWord.getText(), Language.ENGLISH, Language.RUSSIAN)
+                  .ifPresent(translations::add);
+
+        Set<String> images = new HashSet<>();
         if (studiedWord.getImage() != null) {
             images.add(studiedWord.getImage());
         }
