@@ -7,6 +7,7 @@ import io.github.solomkinmv.glossary.service.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,11 +44,13 @@ public class SearchServiceImpl implements SearchService {
     }
 
     private SearchResult prepareTheOnlySuggestion(String text) {
-        String translation = translator.execute(text, Language.RUSSIAN, Language.ENGLISH);
+        List<String> singleTranslation = translator.execute(text, Language.RUSSIAN, Language.ENGLISH)
+                                                   .map(Collections::singletonList)
+                                                   .orElse(Collections.emptyList());
         return new SearchResult(
                 singletonList(new SearchResult.Record(
                         text,
-                        singletonList(translation),
+                        singleTranslation,
                         null,
                         null
                 ))
