@@ -124,7 +124,7 @@ public class WordSetControllerTest extends MockMvcBase {
     public void createEmptyWordSet() throws Exception {
         String name = "createdWs";
         String description = "some desc";
-        WordSetDto wordSetDto = new WordSetDto(null, name, description, Collections.emptyList());
+        WordSetDto wordSetDto = new WordSetDto(null, name, description, null);
 
         MvcResult mvcResult = mockMvc.perform(post("/api/sets")
                                                       .with(userToken())
