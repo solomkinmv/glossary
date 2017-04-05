@@ -24,19 +24,19 @@ public class PracticeController {
         this.writingPracticeService = writingPracticeService;
     }
 
-    @GetMapping("/quizzes")
+    @RequestMapping(value = "/quizzes", method = RequestMethod.GET)
     public QuizResource getQuiz(@RequestParam("wordSetId") Long wordSetId) {
         log.info("Getting quiz for word set with id {}", wordSetId);
         return new QuizResource(quizPracticeService.generateTest(wordSetId), wordSetId);
     }
 
-    @RequestMapping("/writings")
+    @RequestMapping(value = "/writings", method = RequestMethod.GET)
     public WritingPracticeTestResource getWritingTest(@RequestParam("wordSetId") Long wordSetId) {
         log.info("Getting writing practice test for word set with id {}", wordSetId);
         return new WritingPracticeTestResource(writingPracticeService.generateTest(wordSetId), wordSetId);
     }
 
-    @PostMapping("")
+    @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<Void> handleResults(@RequestBody PracticeResults practiceResults) {
         log.info("Handling quiz results");
         quizPracticeService.handle(practiceResults);
