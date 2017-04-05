@@ -158,8 +158,8 @@ public class WordSetControllerTest extends MockMvcBase {
         String name = "createdWs";
         String description = "some desc";
         WordSetDto wordSetDto = new WordSetDto(null, name, description, new ArrayList<>(Arrays.asList(
-                new WordDto(null, "book1", "книга1", WordStage.LEARNING, "img1", "sound1"),
-                new WordDto(null, "book2", "книга2", WordStage.LEARNING, "img2", "sound2")
+                new WordDto(null, "book1", "книга1", null, "img1", null),
+                new WordDto(null, "book2", "книга2", null, "img2", null)
         )));
 
         MvcResult mvcResult = mockMvc.perform(post("/api/sets")
@@ -182,6 +182,12 @@ public class WordSetControllerTest extends MockMvcBase {
         assertEquals(description, wordSet.getDescription());
         List<StudiedWord> studiedWords = wordSet.getStudiedWords();
         assertThat(studiedWords, hasSize(2));
+
+        for (StudiedWord book : studiedWords) {
+            assertNotNull(book.getId());
+            assertNotNull(book.getSound());
+            assertEquals(WordStage.NOT_LEARNED, book.getStage());
+        }
     }
 
     @Test

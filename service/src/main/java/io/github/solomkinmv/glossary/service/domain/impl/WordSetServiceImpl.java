@@ -109,6 +109,8 @@ public class WordSetServiceImpl implements WordSetService {
         if (wordSet.getStudiedWords() == null) {
             wordSet.setStudiedWords(new ArrayList<>());
         }
+
+        wordSet.getStudiedWords().forEach(wordService::save);
         wordSetDao.create(wordSet);
 
         log.debug("Updating user dictionary before saving word set: ", wordSet);
