@@ -44,11 +44,11 @@ public class WordSetControllerTest extends MockMvcBase {
 
     @Before
     public void setUp() throws Exception {
-        StudiedWord word1 = new StudiedWord("word1", "translation1");
-        StudiedWord word2 = new StudiedWord("word2", "translation2");
-        StudiedWord word3 = new StudiedWord("word3", "translation3");
-        StudiedWord word4 = new StudiedWord("word4", "translation4");
-        StudiedWord word5 = new StudiedWord("word5", "translation5");
+        StudiedWord word1 = new StudiedWord("word1", "слово1");
+        StudiedWord word2 = new StudiedWord("word2", "слово2");
+        StudiedWord word3 = new StudiedWord("word3", "слово3");
+        StudiedWord word4 = new StudiedWord("word4", "слово4");
+        StudiedWord word5 = new StudiedWord("word5", "слово5");
         wordList.add(wordService.save(word1));
         wordList.add(wordService.save(word2));
         wordList.add(wordService.save(word3));
@@ -250,6 +250,17 @@ public class WordSetControllerTest extends MockMvcBase {
         assertEquals("book1", studiedWord.getText());
         assertEquals("книга1", studiedWord.getTranslation());
         assertNotNull(studiedWord.getSound());
+    }
+
+    @Test
+    public void addTheSameWordToWordSet() throws Exception {
+        WordDto wordDto = new WordDto(null, "word1", "слово1", null, null, null);
+
+        mockMvc.perform(post("/api/sets/{wordSetId}/words", wordSetIds[0])
+                                .with(userToken())
+                                .contentType(contentType)
+                                .content(jsonConverter.toJson(wordDto)))
+               .andExpect(status().isConflict());
     }
 
     @Test
