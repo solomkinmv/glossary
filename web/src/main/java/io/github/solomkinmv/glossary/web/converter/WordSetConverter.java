@@ -33,10 +33,12 @@ public class WordSetConverter {
     public WordSet toModel(WordSetDto wordSetDto) {
         WordSet wordSet = new WordSet();
         BeanUtils.copyProperties(wordSetDto, wordSet);
-        List<StudiedWord> wordList = wordSetDto.getWords().stream()
-                                               .map(wordConverter::toModel)
-                                               .collect(Collectors.toList());
-        wordSet.setStudiedWords(wordList);
+        if (wordSetDto.getWords() != null) {
+            List<StudiedWord> wordList = wordSetDto.getWords().stream()
+                                                   .map(wordConverter::toModel)
+                                                   .collect(Collectors.toList());
+            wordSet.setStudiedWords(wordList);
+        }
         return wordSet;
     }
 }
