@@ -4,6 +4,7 @@ import io.github.solomkinmv.glossary.persistence.dao.StudiedWordDao;
 import io.github.solomkinmv.glossary.persistence.dao.WordDao;
 import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
 import io.github.solomkinmv.glossary.persistence.model.Word;
+import io.github.solomkinmv.glossary.persistence.model.WordStage;
 import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.service.exception.DomainObjectNotFound;
 import io.github.solomkinmv.glossary.service.speach.SpeechService;
@@ -57,6 +58,7 @@ public class WordServiceImpl implements WordService {
 
         Word associatedWord = getSynchronizedAssociatedWord(studiedWord);
 
+        studiedWord.setStage(WordStage.NOT_LEARNED);
         studiedWord.setSound(associatedWord.getSound());
         studiedWordDao.create(studiedWord);
 
