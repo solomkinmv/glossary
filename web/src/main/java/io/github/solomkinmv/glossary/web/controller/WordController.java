@@ -1,8 +1,10 @@
 package io.github.solomkinmv.glossary.web.controller;
 
+import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
 import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.service.search.SearchService;
 import io.github.solomkinmv.glossary.web.converter.WordConverter;
+import io.github.solomkinmv.glossary.web.dto.WordMetaDto;
 import io.github.solomkinmv.glossary.web.exception.EntryNotFoundException;
 import io.github.solomkinmv.glossary.web.resource.SearchResource;
 import io.github.solomkinmv.glossary.web.resource.WordResource;
@@ -11,6 +13,7 @@ import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resources;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.stream.Collectors;
@@ -59,5 +62,19 @@ public class WordController {
         log.info("Looking for words by following text: {}", text);
 
         return new SearchResource(searchService.executeSearch(text));
+    }
+
+    @RequestMapping(value = "/{wordId}", method = RequestMethod.PATCH)
+    public ResponseEntity<Void> updateWordMetaInformation(@CurrentUser AuthenticatedUser user,
+                                                          @PathVariable Long wordId,
+                                                          @RequestBody WordMetaDto wordMetaDto) {
+        log.info("Updating word (id {}) meta information for user {}: {}", wordId, user.getUsername(), wordMetaDto);
+
+        StudiedWord word = wordService.getWordByIdAndUsername(wordId, user.getUsername())
+                                      .orElseThrow(() -> new EntryNotFoundException(
+                                              "Can't find word with id " + wordId + " for user " + user.getUsername()));
+        wordService.updateWordMeta(word, wordMetaDto.getStage(), wordMetaDto.getImage());
+
+        return ResponseEntity.ok().build();
     }
 }
