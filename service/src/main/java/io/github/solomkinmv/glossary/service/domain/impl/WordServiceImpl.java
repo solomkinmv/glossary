@@ -152,4 +152,16 @@ public class WordServiceImpl implements WordService {
     public Optional<StudiedWord> getWordByIdAndUsername(Long wordId, String username) {
         return studiedWordDao.findByIdAndUsername(wordId, username);
     }
+
+    @Override
+    public void updateWordMeta(StudiedWord word, WordStage stage, String image) {
+        if (stage != null) {
+            word.setStage(stage);
+        }
+
+        if (image != null) {
+            word.setImage(image);
+        }
+        studiedWordDao.update(word);
+    }
 }

@@ -5,6 +5,7 @@ import io.github.solomkinmv.glossary.service.domain.UserDictionaryService;
 import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.service.search.SearchService;
 import io.github.solomkinmv.glossary.web.MockMvcBase;
+import io.github.solomkinmv.glossary.web.dto.WordMetaDto;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
 import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.Matcher;
@@ -19,7 +20,10 @@ import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -153,7 +157,27 @@ public class WordControllerTest extends MockMvcBase {
                .andExpect(jsonPath("$.result.records[0].translations", hasSize(1)))
                .andExpect(jsonPath("$.result.records[0].translations[0]", is(expectedTranslation)))
                .andExpect(jsonPath("$.result.records[1].text", is(wordList.get(0).getText())));
+    }
 
+    @Test
+    public void updateWordMetaInformation() throws Exception {
+        WordStage stage = WordStage.LEARNED;
+        String image = "image42";
+        WordMetaDto metaDto = new WordMetaDto(stage, image);
+
+        mockMvc.perform(patch("/api/words/{wordId}", wordList.get(0).getId())
+                                .with(userToken())
+                                .contentType(contentType)
+                                .content(jsonConverter.toJson(metaDto)))
+               .andExpect(status().isOk());
+
+        Optional<StudiedWord> optionalUpdatedWord = wordService.getById(wordList.get(0).getId());
+
+        assertTrue(optionalUpdatedWord.isPresent());
+
+        StudiedWord updatedWord = optionalUpdatedWord.get();
+        assertEquals(stage, updatedWord.getStage());
+        assertEquals(image, updatedWord.getImage());
     }
 
     /*@Test
