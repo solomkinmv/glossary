@@ -6,7 +6,6 @@ import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
 import io.github.solomkinmv.glossary.persistence.model.Word;
 import io.github.solomkinmv.glossary.persistence.model.WordStage;
 import io.github.solomkinmv.glossary.service.domain.WordService;
-import io.github.solomkinmv.glossary.service.exception.DomainObjectNotFound;
 import io.github.solomkinmv.glossary.service.speach.SpeechService;
 import io.github.solomkinmv.glossary.service.translate.Language;
 import io.github.solomkinmv.glossary.service.translate.Translator;
@@ -68,10 +67,6 @@ public class WordServiceImpl implements WordService {
     @Override
     public void delete(Long id) {
         log.debug("Deleting studiedWord with id: {}", id);
-        StudiedWord studiedWord = getById(id)
-                .orElseThrow(
-                        () -> new DomainObjectNotFound("Can't get studied word with id " + id));
-        synchronizeAssociatedWordOnDelete(studiedWord);
         studiedWordDao.delete(id);
     }
 
@@ -80,18 +75,6 @@ public class WordServiceImpl implements WordService {
         log.debug("Deleting all words");
         studiedWordDao.deleteAll();
         wordDao.deleteAll();
-    }
-
-    private void synchronizeAssociatedWordOnDelete(StudiedWord studiedWord) {
-        wordDao.findByText(studiedWord.getText()).ifPresent(word -> {
-            if (word.getTranslations().size() == 1) {
-                wordDao.delete(word.getId());
-            } else {
-                word.getTranslations().remove(studiedWord.getTranslation());
-                word.getImages().remove(studiedWord.getImage());
-                wordDao.update(word);
-            }
-        });
     }
 
     private Word getSynchronizedAssociatedWord(StudiedWord studiedWord) {
