@@ -7,6 +7,7 @@ import io.github.solomkinmv.glossary.persistence.model.UserDictionary;
 import io.github.solomkinmv.glossary.persistence.model.WordSet;
 import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.service.domain.WordSetService;
+import io.github.solomkinmv.glossary.service.exception.DomainObjectAlreadyExistException;
 import io.github.solomkinmv.glossary.service.exception.DomainObjectNotFound;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,6 +141,12 @@ public class WordSetServiceImpl implements WordSetService {
     public StudiedWord addWordToWordSet(StudiedWord word, Long wordSetId, String username) {
         StudiedWord savedWord = wordService.save(word);
         WordSet wordSet = checkedGetByIdAndUsername(wordSetId, username);
+        if (containsWord(wordSet, word)) {
+            String msg = "Specified word " + word.getText() + " has been already added to the word set " + wordSet.getName();
+            log.error(msg);
+            throw new DomainObjectAlreadyExistException(msg);
+        }
+
         wordSet.getStudiedWords().add(savedWord);
         wordSetDao.update(wordSet);
         return word;
@@ -155,6 +162,12 @@ public class WordSetServiceImpl implements WordSetService {
             wordSet.setDescription(description);
         }
         wordSetDao.update(wordSet);
+    }
+
+    private boolean containsWord(WordSet wordSet, StudiedWord word) {
+        return wordSet.getStudiedWords()
+                      .stream()
+                      .anyMatch(w -> w.getText().equals(word.getText()));
     }
 
     private WordSet checkedGetByIdAndUsername(Long id, String username) {
