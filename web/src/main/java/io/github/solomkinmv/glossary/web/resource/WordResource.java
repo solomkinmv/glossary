@@ -20,5 +20,6 @@ public class WordResource extends ResourceSupport {
 
         add(linkTo(WordController.class).withRel("words"));
         add(linkTo(methodOn(WordController.class).getWordById(null, word.getId())).withSelfRel());
+        add(linkTo(methodOn(WordController.class).searchWords(word.getText())).withRel("similarWords"));
     }
 }
