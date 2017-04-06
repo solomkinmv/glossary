@@ -3,10 +3,11 @@ package io.github.solomkinmv.glossary.web.controller;
 import io.github.solomkinmv.glossary.service.images.ImageService;
 import io.github.solomkinmv.glossary.web.dto.ImageDto;
 import io.github.solomkinmv.glossary.web.exception.UploadException;
+import io.github.solomkinmv.glossary.web.resource.ImageSearchResource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -29,15 +30,14 @@ public class ImageController {
         this.imageService = imageService;
     }
 
-    // TODO: replace String with HATEAOS resource
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public Resources<String> search(@RequestParam("query") String query) {
+    public ImageSearchResource search(@RequestParam("query") String query) {
         log.info("Searching for images by following query: {}", query);
-        return new Resources<>(imageService.search(query.split(",")));
+        return new ImageSearchResource(query, imageService.search(query.split(",")));
     }
 
-    @PostMapping("")
-    public ResponseEntity<?> uploadImage(@RequestParam(UPLOAD_IMG_KEY) MultipartFile file) {
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public ResponseEntity<Void> uploadImage(@RequestParam(UPLOAD_IMG_KEY) MultipartFile file) {
         log.info("Uploading file with name: {}", file.getOriginalFilename());
         if (file.isEmpty()) {
             String message = "Failed to store empty file: {}" + file.getOriginalFilename();
@@ -56,8 +56,8 @@ public class ImageController {
         return ResponseEntity.created(URI.create(uriString)).build();
     }
 
-    @DeleteMapping("")
-    public ResponseEntity<?> deleteUploadedImage(@RequestBody ImageDto imageDto) {
+    @RequestMapping(value = "", method = RequestMethod.DELETE)
+    public ResponseEntity<Void> deleteUploadedImage(@Validated @RequestBody ImageDto imageDto) {
         String imgFilename = imageDto.getImage();
         log.info("Deleting image by filename {}", imgFilename);
         imageService.deleteImg(imgFilename);
