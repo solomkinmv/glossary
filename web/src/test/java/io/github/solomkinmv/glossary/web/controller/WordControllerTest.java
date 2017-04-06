@@ -6,13 +6,11 @@ import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.service.search.SearchService;
 import io.github.solomkinmv.glossary.web.MockMvcBase;
 import io.github.solomkinmv.glossary.web.dto.WordMetaDto;
-import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
 import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import javax.transaction.Transactional;
@@ -38,7 +36,6 @@ public class WordControllerTest extends MockMvcBase {
     private WordService wordService;
     @Autowired
     private UserDictionaryService userDictionaryService;
-    private AuthenticatedUser authenticatedUser;
 
     @Before
     public void setUp() throws Exception {
@@ -77,10 +74,6 @@ public class WordControllerTest extends MockMvcBase {
 
         userDictionaryService.save(dict1);
         userDictionaryService.save(dict2);
-
-        authenticatedUser = new AuthenticatedUser("user1",
-                                                  Collections.singletonList(
-                                                          new SimpleGrantedAuthority(RoleType.USER.authority())));
     }
 
     @Test
@@ -205,10 +198,6 @@ public class WordControllerTest extends MockMvcBase {
         List<StudiedWord> studiedWords = wordService.listByUsername(authenticatedUser.getUsername());
         assertEquals(3, studiedWords.size());
     }*/
-
-    protected AuthenticatedUser getAuthenticatedUser() {
-        return authenticatedUser;
-    }
 
     /*@Test
     public void searchWords() throws Exception {
