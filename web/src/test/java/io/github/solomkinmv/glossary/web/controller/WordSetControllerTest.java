@@ -191,6 +191,22 @@ public class WordSetControllerTest extends MockMvcBase {
     }
 
     @Test
+    public void createWordSetWithIllegalWords() throws Exception {
+        String name = "createdWs";
+        String description = "some desc";
+        WordSetDto wordSetDto = new WordSetDto(null, name, description, new ArrayList<>(Arrays.asList(
+                new WordDto(null, "book1", "книга1", null, "img1", null),
+                new WordDto(null, "book2", "книга2", WordStage.LEARNING, "img2", null)
+        )));
+
+        mockMvc.perform(post("/api/sets")
+                                .with(userToken())
+                                .contentType(contentType)
+                                .content(jsonConverter.toJson(wordSetDto)))
+               .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void deleteWordSet() throws Exception {
         mockMvc.perform(delete("/api/sets/{wordSetId}", wordSetIds[0])
                                 .with(userToken()))
@@ -225,7 +241,7 @@ public class WordSetControllerTest extends MockMvcBase {
 
     @Test
     public void addWordToWordSet() throws Exception {
-        WordDto wordDto = new WordDto(null, "book1", "книга1", WordStage.LEARNING, "img1", null);
+        WordDto wordDto = new WordDto(null, "book1", "книга1", null, "img1", null);
 
         MvcResult mvcResult = mockMvc.perform(post("/api/sets/{wordSetId}/words", wordSetIds[0])
                                                       .with(userToken())
@@ -250,6 +266,18 @@ public class WordSetControllerTest extends MockMvcBase {
         assertEquals("book1", studiedWord.getText());
         assertEquals("книга1", studiedWord.getTranslation());
         assertNotNull(studiedWord.getSound());
+    }
+
+
+    @Test
+    public void addIllegalWordToWordSet() throws Exception {
+        WordDto wordDto = new WordDto(null, "book1", "книга1", WordStage.LEARNING, "img1", null);
+
+        mockMvc.perform(post("/api/sets/{wordSetId}/words", wordSetIds[0])
+                                .with(userToken())
+                                .contentType(contentType)
+                                .content(jsonConverter.toJson(wordDto)))
+               .andExpect(status().isBadRequest());
     }
 
     @Test

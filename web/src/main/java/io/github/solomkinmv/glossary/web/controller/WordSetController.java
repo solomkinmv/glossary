@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -64,7 +65,8 @@ public class WordSetController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<Void> createWordSet(@CurrentUser AuthenticatedUser user, @RequestBody WordSetDto wordSetDto) {
+    public ResponseEntity<Void> createWordSet(@CurrentUser AuthenticatedUser user,
+                                              @Validated @RequestBody WordSetDto wordSetDto) {
         log.info("Creating word set for user {}: {}", user.getUsername(), wordSetDto);
         WordSet wordSet = wordSetService.saveForUser(user.getUsername(), wordSetConverter.toModel(wordSetDto));
         Link self = new WordSetResource(wordSetConverter.toDto(wordSet)).getLink("self");
@@ -92,7 +94,7 @@ public class WordSetController {
     @RequestMapping(value = "/{wordSetId}/words", method = RequestMethod.POST)
     public ResponseEntity<Void> createWordByAddingToWordSet(@CurrentUser AuthenticatedUser user,
                                                             @PathVariable Long wordSetId,
-                                                            @RequestBody WordDto wordDto) {
+                                                            @Validated @RequestBody WordDto wordDto) {
         log.info("Adding word to word set (id {}) for user {}: {}", wordSetId, user.getUsername(), wordDto);
         StudiedWord studiedWord = wordConverter.toModel(wordDto);
         StudiedWord savedWord = wordSetService.addWordToWordSet(studiedWord, wordSetId, user.getUsername());
