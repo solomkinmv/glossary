@@ -10,6 +10,7 @@ import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -43,7 +44,7 @@ public class PracticeController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<Void> handleResults(@RequestBody PracticeResults practiceResults) {
+    public ResponseEntity<Void> handleResults(@Validated @RequestBody PracticeResults practiceResults) {
         log.info("Handling quiz results");
         quizPracticeService.handle(practiceResults);
         return ResponseEntity.ok().build();
