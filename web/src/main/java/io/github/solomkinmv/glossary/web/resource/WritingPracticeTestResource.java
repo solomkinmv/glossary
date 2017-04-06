@@ -15,8 +15,8 @@ public class WritingPracticeTestResource extends ResourceSupport {
     public WritingPracticeTestResource(WritingPracticeTest writingPracticeTest, long wordSetId) {
         this.writingPracticeTest = writingPracticeTest;
 
-        add(linkTo(methodOn(PracticeController.class).getWritingTest(wordSetId)).withSelfRel());
-        add(linkTo(methodOn(PracticeController.class).getQuiz(wordSetId)).withRel("quiz"));
+        add(linkTo(methodOn(PracticeController.class).getWritingTest(null, wordSetId)).withSelfRel());
+        add(linkTo(methodOn(PracticeController.class).getQuiz(null, wordSetId)).withRel("quiz"));
         add(linkTo(methodOn(PracticeController.class).handleResults(null)).withRel("handleResults"));
 
     }

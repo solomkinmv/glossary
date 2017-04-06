@@ -5,6 +5,8 @@ import io.github.solomkinmv.glossary.service.practice.quiz.QuizPracticeService;
 import io.github.solomkinmv.glossary.service.practice.writing.WritingPracticeService;
 import io.github.solomkinmv.glossary.web.resource.QuizResource;
 import io.github.solomkinmv.glossary.web.resource.WritingPracticeTestResource;
+import io.github.solomkinmv.glossary.web.security.annotation.CurrentUser;
+import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,15 +27,19 @@ public class PracticeController {
     }
 
     @RequestMapping(value = "/quizzes", method = RequestMethod.GET)
-    public QuizResource getQuiz(@RequestParam("wordSetId") Long wordSetId) {
-        log.info("Getting quiz for word set with id {}", wordSetId);
-        return new QuizResource(quizPracticeService.generateTest(wordSetId), wordSetId);
+    public QuizResource getQuiz(
+            @CurrentUser AuthenticatedUser user,
+            @RequestParam("setId") Long setId) {
+        log.info("Getting quiz for word set with id {}", setId);
+        return new QuizResource(quizPracticeService.generateTest(user.getUsername(), setId), setId);
     }
 
     @RequestMapping(value = "/writings", method = RequestMethod.GET)
-    public WritingPracticeTestResource getWritingTest(@RequestParam("wordSetId") Long wordSetId) {
-        log.info("Getting writing practice test for word set with id {}", wordSetId);
-        return new WritingPracticeTestResource(writingPracticeService.generateTest(wordSetId), wordSetId);
+    public WritingPracticeTestResource getWritingTest(
+            @CurrentUser AuthenticatedUser user,
+            @RequestParam("setId") Long setId) {
+        log.info("Getting writing practice test for word set with id {}", setId);
+        return new WritingPracticeTestResource(writingPracticeService.generateTest(user.getUsername(), setId), setId);
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
