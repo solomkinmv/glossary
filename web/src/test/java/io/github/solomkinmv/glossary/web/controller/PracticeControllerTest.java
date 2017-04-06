@@ -113,8 +113,23 @@ public class PracticeControllerTest extends MockMvcBase {
                .andExpect(status().isOk())
                .andExpect(jsonPath("$.writingPracticeTest.questions", hasSize(AbstractTestProvider.TEST_SIZE)))
                .andExpect(jsonPath("$.writingPracticeTest.questions[?(@.questionText=='слово1')].answer.answerText",
-                                   containsInAnyOrder(wordList.get(0).getText())))
-        ;
+                                   containsInAnyOrder(wordList.get(0).getText())));
+    }
+
+    @Test
+    public void getQuizForIllegalWordSet() throws Exception {
+        mockMvc.perform(get("/api/practices/quizzes")
+                                .param("setId", wordSets.get(1).getId().toString())
+                                .with(userToken()))
+               .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getWritingTestForIllegalWordSet() throws Exception {
+        mockMvc.perform(get("/api/practices/writings")
+                                .param("setId", wordSets.get(1).getId().toString())
+                                .with(userToken()))
+               .andExpect(status().isNotFound());
     }
 
     @Test
