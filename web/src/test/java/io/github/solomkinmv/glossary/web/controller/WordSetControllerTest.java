@@ -8,11 +8,9 @@ import io.github.solomkinmv.glossary.web.MockMvcBase;
 import io.github.solomkinmv.glossary.web.dto.WordDto;
 import io.github.solomkinmv.glossary.web.dto.WordSetDto;
 import io.github.solomkinmv.glossary.web.dto.WordSetMetaDto;
-import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MvcResult;
 
 import javax.transaction.Transactional;
@@ -40,7 +38,6 @@ public class WordSetControllerTest extends MockMvcBase {
     private WordService wordService;
     @Autowired
     private WordSetService wordSetService;
-    private AuthenticatedUser authenticatedUser;
 
     @Before
     public void setUp() throws Exception {
@@ -84,9 +81,6 @@ public class WordSetControllerTest extends MockMvcBase {
 
         wordIds = wordList.stream().mapToInt(studiedWord -> studiedWord.getId().intValue()).toArray();
         wordSetIds = wordSets.stream().mapToInt(wordSet -> wordSet.getId().intValue()).toArray();
-        authenticatedUser = new AuthenticatedUser("user1",
-                                                  Collections.singletonList(
-                                                          new SimpleGrantedAuthority(RoleType.USER.authority())));
     }
 
     @Test
@@ -135,7 +129,7 @@ public class WordSetControllerTest extends MockMvcBase {
                                      .andReturn();
 
         long id = extractIdFromLocationHeader(mvcResult);
-        Optional<WordSet> wordSetOptional = wordSetService.getByIdAndUsername(id, authenticatedUser.getUsername());
+        Optional<WordSet> wordSetOptional = wordSetService.getByIdAndUsername(id, getAuthenticatedUser().getUsername());
 
         assertTrue(wordSetOptional.isPresent());
 
@@ -171,7 +165,7 @@ public class WordSetControllerTest extends MockMvcBase {
                                      .andReturn();
 
         long id = extractIdFromLocationHeader(mvcResult);
-        Optional<WordSet> wordSetOptional = wordSetService.getByIdAndUsername(id, authenticatedUser.getUsername());
+        Optional<WordSet> wordSetOptional = wordSetService.getByIdAndUsername(id, getAuthenticatedUser().getUsername());
 
         assertTrue(wordSetOptional.isPresent());
 
@@ -213,7 +207,7 @@ public class WordSetControllerTest extends MockMvcBase {
                .andExpect(status().isOk());
 
         Optional<UserDictionary> dictionaryOptional = userDictionaryService.getByUsername(
-                authenticatedUser.getUsername());
+                getAuthenticatedUser().getUsername());
 
         assertTrue(dictionaryOptional.isPresent());
         UserDictionary userDictionary = dictionaryOptional.get();
@@ -228,7 +222,7 @@ public class WordSetControllerTest extends MockMvcBase {
                .andExpect(status().isOk());
 
         Optional<WordSet> wordSetOptional = wordSetService.getByIdAndUsername((long) wordSetIds[0],
-                                                                              authenticatedUser.getUsername());
+                                                                              getAuthenticatedUser().getUsername());
 
         assertTrue(wordSetOptional.isPresent());
         WordSet wordSet = wordSetOptional.get();
@@ -253,7 +247,7 @@ public class WordSetControllerTest extends MockMvcBase {
 
         long id = extractIdFromLocationHeader(mvcResult);
         Optional<StudiedWord> studiedWordOptional = wordSetService
-                .getByIdAndUsername((long) wordSetIds[0], authenticatedUser.getUsername())
+                .getByIdAndUsername((long) wordSetIds[0], getAuthenticatedUser().getUsername())
                 .map(WordSet::getStudiedWords)
                 .flatMap(words -> words.stream()
                                        .filter(word -> word.getId() == id)
@@ -310,11 +304,6 @@ public class WordSetControllerTest extends MockMvcBase {
         WordSet wordSet = wordSetOptional.get();
         assertEquals(name, wordSet.getName());
         assertEquals(description, wordSet.getDescription());
-    }
-
-    @Override
-    protected AuthenticatedUser getAuthenticatedUser() {
-        return authenticatedUser;
     }
 
 /*

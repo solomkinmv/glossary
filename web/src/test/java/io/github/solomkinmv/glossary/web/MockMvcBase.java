@@ -1,5 +1,6 @@
 package io.github.solomkinmv.glossary.web;
 
+import io.github.solomkinmv.glossary.persistence.model.RoleType;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
 import io.github.solomkinmv.glossary.web.security.model.JsonWebToken;
 import io.github.solomkinmv.glossary.web.security.util.JwtTokenFactory;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -17,6 +19,7 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -31,6 +34,9 @@ public abstract class MockMvcBase {
     protected MockMvc mockMvc;
     @Autowired
     protected JsonConverter jsonConverter;
+    private AuthenticatedUser authenticatedUser = new AuthenticatedUser(
+            "user1",
+            Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.authority())));
     @Autowired
     private WebApplicationContext webApplicationContext;
     @Autowired
@@ -51,7 +57,9 @@ public abstract class MockMvcBase {
         return accessToken.getRawToken();
     }
 
-    abstract protected AuthenticatedUser getAuthenticatedUser();
+    protected AuthenticatedUser getAuthenticatedUser() {
+        return authenticatedUser;
+    }
 
     @Before
     public void setUpMockMvc() throws Exception {
