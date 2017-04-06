@@ -134,7 +134,6 @@ public class PracticeControllerTest extends MockMvcBase {
 
     @Test
     public void handlesTestResults() throws Exception {
-
         PracticeResults results = new PracticeResults(
                 ImmutableMap.<Long, Boolean>builder()
                         .put(wordList.get(0).getId(), true)
@@ -157,6 +156,15 @@ public class PracticeControllerTest extends MockMvcBase {
         assertEquals(WordStage.LEARNED, getStageByWordIndex(3));
         assertEquals(WordStage.NOT_LEARNED, getStageByWordIndex(4));
         assertEquals(WordStage.NOT_LEARNED, getStageByWordIndex(5));
+    }
+
+    @Test
+    public void failsToHandleTestResultsWithIllegalContent() throws Exception {
+        mockMvc.perform(post("/api/practices")
+                                .content(jsonConverter.toJson(new PracticeResults(null)))
+                                .contentType(contentType)
+                                .with(userToken()))
+               .andExpect(status().isBadRequest());
     }
 
     private WordStage getStageByWordIndex(int index) {
