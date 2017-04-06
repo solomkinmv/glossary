@@ -6,7 +6,7 @@ import lombok.Value;
 @Value
 public class Answer {
     long wordId;
-    String answer;
+    String answerText;
     WordStage stage;
     String image;
     String pronunciation;
