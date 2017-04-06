@@ -48,6 +48,7 @@ public class PracticeControllerTest extends MockMvcBase {
         StudiedWord word9 = new StudiedWord("word9", "слово9");
         StudiedWord word0 = new StudiedWord("word0", "слово0");
         StudiedWord word10 = new StudiedWord("word10", "слово10");
+        StudiedWord word11 = new StudiedWord("word11", "слово11");
         wordList.add(wordService.save(word1));
         wordList.add(wordService.save(word2));
         wordList.add(wordService.save(word3));
@@ -59,6 +60,7 @@ public class PracticeControllerTest extends MockMvcBase {
         wordList.add(wordService.save(word9));
         wordList.add(wordService.save(word0));
         wordList.add(wordService.save(word10));
+        wordList.add(wordService.save(word11));
 
         wordService.updateWordMeta(word2, WordStage.LEARNING, null);
         wordService.updateWordMeta(word3, WordStage.LEARNING, null);
@@ -72,7 +74,7 @@ public class PracticeControllerTest extends MockMvcBase {
 
         WordSet ws1 = new WordSet("ws1", "desc",
                                   Arrays.asList(word1, word2, word3, word4, word5, word6, word7, word8, word9, word0,
-                                                word10));
+                                                word10, word11));
         WordSet ws2 = new WordSet("ws2", "desc", null);
 
         wordSets.add(ws1);
@@ -101,6 +103,18 @@ public class PracticeControllerTest extends MockMvcBase {
                .andExpect(jsonPath("$.quiz.questions[*].alternatives", everyItem(hasSize(5))))
                .andExpect(jsonPath("$.quiz.questions[?(@.questionText=='word1')].answer.answerText",
                                    containsInAnyOrder(wordList.get(0).getTranslation())));
+    }
+
+    @Test
+    public void getWritingTestWorksProperly() throws Exception {
+        mockMvc.perform(get("/api/practices/writings")
+                                .param("setId", wordSets.get(0).getId().toString())
+                                .with(userToken()))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.writingPracticeTest.questions", hasSize(AbstractTestProvider.TEST_SIZE)))
+               .andExpect(jsonPath("$.writingPracticeTest.questions[?(@.questionText=='слово1')].answer.answerText",
+                                   containsInAnyOrder(wordList.get(0).getText())))
+        ;
     }
 
     @Test
