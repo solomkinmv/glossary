@@ -1,57 +1,29 @@
 package io.github.solomkinmv.glossary.web.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.solomkinmv.glossary.service.images.ImageService;
 import io.github.solomkinmv.glossary.service.storage.StorageProperties;
-import io.github.solomkinmv.glossary.web.Application;
+import io.github.solomkinmv.glossary.web.MockMvcBase;
 import io.github.solomkinmv.glossary.web.dto.ImageDto;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.WebApplicationContext;
-
-import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
  * Test for {@link ImageController}.
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class)
-@WebAppConfiguration
-public class ImageControllerTest {
+public class ImageControllerTest extends MockMvcBase {
 
-    private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-                                                        MediaType.APPLICATION_JSON.getSubtype(),
-                                                        StandardCharsets.UTF_8);
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-    @Autowired
-    private ObjectMapper objectMapper;
     @Autowired
     private ImageService imageService;
     private String imgPathPrefix;
-    private MockMvc mockMvc;
-
-    @Before
-    public void setUp() throws Exception {
-        mockMvc = webAppContextSetup(webApplicationContext).build();
-    }
 
     @After
     public void tearDown() throws Exception {
@@ -66,7 +38,8 @@ public class ImageControllerTest {
                                                        "nonsensecontent".getBytes());
         mockMvc.perform(fileUpload("/api/images")
                                 .file(file)
-                                .accept(MediaType.APPLICATION_JSON))
+                                .accept(MediaType.APPLICATION_JSON)
+                                .with(userToken()))
                .andExpect(status().isCreated())
                .andExpect(header().string("Location", containsString(imgPathPrefix + "/" + expectedFilename)));
     }
@@ -78,20 +51,29 @@ public class ImageControllerTest {
                                                        "nonsensecontent".getBytes());
         mockMvc.perform(fileUpload("/api/images")
                                 .file(file)
-                                .accept(MediaType.APPLICATION_JSON));
+                                .accept(MediaType.APPLICATION_JSON)
+                                .with(userToken()));
 
+        ImageDto imageDto = new ImageDto(originalFilename);
         mockMvc.perform(delete("/api/images")
                                 .contentType(contentType)
-                                .content(json(new ImageDto(originalFilename))))
+                                .content(jsonConverter.toJson(imageDto))
+                                .with(userToken()))
                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void failsToDeleteImageWithInvalidDto() throws Exception {
+        ImageDto imageDto = new ImageDto("");
+        mockMvc.perform(delete("/api/images")
+                                .contentType(contentType)
+                                .content(jsonConverter.toJson(imageDto))
+                                .with(userToken()))
+               .andExpect(status().isBadRequest());
     }
 
     @Autowired
     public void setImgUploadDir(StorageProperties storageProperties) {
         imgPathPrefix = storageProperties.getImgUrlPrefix();
-    }
-
-    private String json(Object object) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(object);
     }
 }

@@ -1,11 +1,13 @@
 package io.github.solomkinmv.glossary.web.dto;
 
-import lombok.Data;
+import lombok.Value;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * Represents request with specified file name.
  */
-@Data
+@Value
 public class ImageDto {
-    private final String image;
+    @NotBlank
+    String image;
 }
