@@ -1,6 +1,28 @@
+plugins {
+    id "org.asciidoctor.convert" version "1.5.2"
+}
+
+ext {
+    snippetsDir = file('build/generated-snippets')
+}
+
+test {
+    outputs.dir snippetsDir
+}
+
+asciidoctor {
+    attributes 'snippets': snippetsDir
+    inputs.dir snippetsDir
+    dependsOn test
+}
+
 jar {
     baseName = "glossary"
     version = null
+    dependsOn asciidoctor
+    from ("${asciidoctor.outputDir}/html5") {
+        into 'static/docs'
+    }
 }
 
 dependencies {
@@ -8,6 +30,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-security")
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile group: 'org.springframework.security', name: 'spring-security-test'
+    testCompile 'org.springframework.restdocs:spring-restdocs-mockmvc'
     compile('org.projectlombok:lombok')
     compile("org.springframework.boot:spring-boot-starter-hateoas")
     compile hateoas

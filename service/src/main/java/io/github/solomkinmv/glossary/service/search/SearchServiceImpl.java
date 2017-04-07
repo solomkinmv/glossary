@@ -27,6 +27,10 @@ public class SearchServiceImpl implements SearchService {
         this.translator = translator;
     }
 
+    /**
+     * Search tries to find word by query or translate specified text and then adds
+     * info about similar words till the {@link #SEARCH_LIMIT}.
+     */
     @Override
     public SearchResult executeSearch(String text) {
         Comparator<SearchResult.Record> byText = (r1, r2) -> r1.getText().compareToIgnoreCase(r2.getText());

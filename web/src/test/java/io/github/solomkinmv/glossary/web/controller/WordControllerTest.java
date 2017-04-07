@@ -20,8 +20,12 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -87,19 +91,44 @@ public class WordControllerTest extends MockMvcBase {
                .andExpect(jsonPath("$._embedded.wordResourceList", hasSize(5)))
                .andExpect(jsonPath("$._embedded.wordResourceList[*].word.id", idMatcher))
                .andExpect(jsonPath("$._embedded.wordResourceList[*].word.text", not(contains(nullValue()))))
-               .andExpect(jsonPath("$._embedded.wordResourceList[*].word.translation", not(contains(nullValue()))));
+               .andExpect(jsonPath("$._embedded.wordResourceList[*].word.translation", not(contains(nullValue()))))
+               .andDo(documentationHandler.document(
+                       responseFields(
+                               fieldWithPath("_embedded.wordResourceList[].word").description(
+                                       "Information about the word"),
+                               fieldWithPath("_embedded.wordResourceList[]._links").description("Word's links")
+                       ), headersSnippet));
     }
 
     @Test
     public void getWordById() throws Exception {
         StudiedWord word = wordList.get(0);
 
-        mockMvc.perform(get("/api/words/" + word.getId()).with(userToken()))
+        mockMvc.perform(get("/api/words/{wordId}", word.getId()).with(userToken()))
                .andExpect(status().isOk())
                .andExpect(content().contentType(contentType))
                .andExpect(jsonPath("$.word.id", is(word.getId().intValue())))
                .andExpect(jsonPath("$.word.text", is(word.getText())))
-               .andExpect(jsonPath("$.word.translation", is(word.getTranslation())));
+               .andExpect(jsonPath("$.word.translation", is(word.getTranslation())))
+               .andDo(documentationHandler.document(
+                       responseFields(
+                               fieldWithPath("word").description("Information about the word"),
+                               fieldWithPath("word.id").description("Word's id"),
+                               fieldWithPath("word.text").description("Word's text in English"),
+                               fieldWithPath("word.translation").description("Word's translation"),
+                               fieldWithPath("word.stage").description(
+                                       "Word's learning level. Can be NOT_LEARNED, LEARNING, LEARNED"),
+                               fieldWithPath("word.image").description("Path to the word's image"),
+                               fieldWithPath("word.sound").description("Path to the word's pronunciation sound"),
+                               fieldWithPath("_links").ignored()
+                       ), links(
+                               linkWithRel("self").description("Link to the word"),
+                               linkWithRel("words").description("Link to get all words for the user"),
+                               linkWithRel("similarWords").description("Link to search for the similar words")
+                       ), pathParameters(
+                               parameterWithName("wordId").description("The word's id")
+                       ), headersSnippet
+               ));
     }
 
     @Test
@@ -121,7 +150,23 @@ public class WordControllerTest extends MockMvcBase {
                .andExpect(jsonPath("$.result.records", hasSize(1)))
                .andExpect(jsonPath("$.result.records[0].text", is(wordList.get(0).getText())))
                .andExpect(jsonPath("$.result.records[0].translations", hasSize(1)))
-               .andExpect(jsonPath("$.result.records[0].translations[0]", is(wordList.get(0).getTranslation())));
+               .andExpect(jsonPath("$.result.records[0].translations[0]", is(wordList.get(0).getTranslation())))
+               .andDo(documentationHandler.document(
+                       responseFields(
+                               fieldWithPath("result.records[]").description("Array of search records"),
+                               fieldWithPath("result.records[].text").description("Word's text in English"),
+                               fieldWithPath("result.records[].translations[]")
+                                       .description("Array of word's translations"),
+                               fieldWithPath("result.records[].images").description("Array of word's images"),
+                               fieldWithPath("result.records[].sound")
+                                       .description("Path to the word's pronunciation sound"),
+                               fieldWithPath("_links").ignored()
+                       ), links(
+                               linkWithRel("words").description("Link to get all words for the user")
+                       ), requestParameters(
+                               parameterWithName("text").description("Search query for the word")
+                       ), headersSnippet
+               ));
     }
 
     @Test
@@ -142,7 +187,6 @@ public class WordControllerTest extends MockMvcBase {
         mockMvc.perform(get("/api/words/search")
                                 .param("text", word)
                                 .with(userToken()))
-               .andDo(MockMvcResultHandlers.print())
                .andExpect(status().isOk())
                .andExpect(content().contentType(contentType))
                .andExpect(jsonPath("$.result.records", hasSize(SearchService.SEARCH_LIMIT)))
@@ -162,7 +206,15 @@ public class WordControllerTest extends MockMvcBase {
                                 .with(userToken())
                                 .contentType(contentType)
                                 .content(jsonConverter.toJson(metaDto)))
-               .andExpect(status().isOk());
+               .andExpect(status().isOk())
+               .andDo(documentationHandler.document(
+                       requestFields(
+                               fieldWithPath("stage").description("New word's stage"),
+                               fieldWithPath("image").description("New word's image")
+                       ), pathParameters(
+                               parameterWithName("wordId").description("The word's id")
+                       ), headersSnippet
+               ));
 
         Optional<StudiedWord> optionalUpdatedWord = wordService.getById(wordList.get(0).getId());
 
