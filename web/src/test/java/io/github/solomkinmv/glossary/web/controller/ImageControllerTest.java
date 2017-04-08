@@ -11,6 +11,10 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -41,7 +45,12 @@ public class ImageControllerTest extends MockMvcBase {
                                 .accept(MediaType.APPLICATION_JSON)
                                 .with(userToken()))
                .andExpect(status().isCreated())
-               .andExpect(header().string("Location", containsString(imgPathPrefix + "/" + expectedFilename)));
+               .andExpect(header().string("Location", containsString(imgPathPrefix + "/" + expectedFilename)))
+               .andDo(documentationHandler.document(
+                       requestParts(
+                               partWithName("file").description("An image to upload")
+                       ), headersSnippet
+               ));
     }
 
     @Test
@@ -59,7 +68,12 @@ public class ImageControllerTest extends MockMvcBase {
                                 .contentType(contentType)
                                 .content(jsonConverter.toJson(imageDto))
                                 .with(userToken()))
-               .andExpect(status().isOk());
+               .andExpect(status().isOk())
+               .andDo(documentationHandler.document(
+                       requestFields(
+                               fieldWithPath("image").description("Image file name")
+                       ), headersSnippet
+               ));
     }
 
     @Test

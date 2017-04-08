@@ -71,3 +71,5 @@ use of HTTP status codes.
 include::words.adoc[]
 
 include::sets.adoc[]
+
+include::images.adoc[]
