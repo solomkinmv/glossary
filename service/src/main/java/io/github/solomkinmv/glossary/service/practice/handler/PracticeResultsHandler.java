@@ -9,7 +9,10 @@ import io.github.solomkinmv.glossary.service.practice.StatusUpdater;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
+
 @Component
+@Transactional
 @Slf4j
 public class PracticeResultsHandler {
     private final WordService wordService;
