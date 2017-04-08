@@ -69,3 +69,5 @@ use of HTTP status codes.
 = Resources
 
 include::words.adoc[]
+
+include::sets.adoc[]

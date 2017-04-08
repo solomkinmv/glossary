@@ -18,7 +18,12 @@ import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -98,20 +103,45 @@ public class WordSetControllerTest extends MockMvcBase {
                .andExpect(jsonPath("$..set[?(@.id==" + wordSetIds[0] + ")].words[*].id",
                                    containsInAnyOrder(wordIds[0], wordIds[1])))
                .andExpect(jsonPath("$..set[?(@.id==" + wordSetIds[1] + ")].words[*].id",
-                                   containsInAnyOrder(wordIds[2], wordIds[3])));
+                                   containsInAnyOrder(wordIds[2], wordIds[3])))
+               .andDo(documentationHandler.document(
+                       responseFields(
+                               fieldWithPath("_embedded.wordSetResourceList[].set.id").description("Word set's id"),
+                               fieldWithPath("_embedded.wordSetResourceList[].set.name").description("Word set's name"),
+                               fieldWithPath("_embedded.wordSetResourceList[].set.description")
+                                       .description("Word set's description"),
+                               fieldWithPath("_embedded.wordSetResourceList[].set.words[]")
+                                       .description("Array of words"),
+                               fieldWithPath("_embedded.wordSetResourceList[]._links").ignored()
+                       ), headersSnippet
+               ));
     }
 
     @Test
     public void getWordSetById() throws Exception {
         WordSet wordSet = wordSets.get(0);
-        mockMvc.perform(get("/api/sets/{wordSetId}", wordSetIds[0])
+        mockMvc.perform(get("/api/sets/{id}", wordSetIds[0])
                                 .with(userToken()))
                .andExpect(status().isOk())
                .andExpect(content().contentType(contentType))
                .andExpect(jsonPath("$.set.id", is(wordSetIds[0])))
                .andExpect(jsonPath("$.set.name", is(wordSet.getName())))
                .andExpect(jsonPath("$.set.description", is(wordSet.getDescription())))
-               .andExpect(jsonPath("$.set.words[*].id", containsInAnyOrder(wordIds[0], wordIds[1])));
+               .andExpect(jsonPath("$.set.words[*].id", containsInAnyOrder(wordIds[0], wordIds[1])))
+               .andDo(documentationHandler.document(
+                       responseFields(
+                               fieldWithPath("set.id").description("Word set's id"),
+                               fieldWithPath("set.name").description("Word set's name"),
+                               fieldWithPath("set.description").description("Word set's description"),
+                               fieldWithPath("set.words").description("Array of words"),
+                               fieldWithPath("_links").ignored()
+                       ), links(
+                               linkWithRel("self").description("Link to the word set"),
+                               linkWithRel("wordSets").description("Link to get all word sets for the user")
+                       ), pathParameters(
+                               parameterWithName("id").description("The word set's id")
+                       ), headersSnippet
+               ));
     }
 
     @Test
@@ -141,12 +171,6 @@ public class WordSetControllerTest extends MockMvcBase {
         assertThat(wordSet.getStudiedWords(), emptyCollectionOf(StudiedWord.class));
     }
 
-    private long extractIdFromLocationHeader(MvcResult mvcResult) {
-        String location = mvcResult.getResponse().getHeader("Location");
-        String[] urlChunks = location.split("/");
-        return Long.parseLong(urlChunks[urlChunks.length - 1]);
-    }
-
     @Test
     public void createWordSetWithWords() throws Exception {
         String name = "createdWs";
@@ -162,7 +186,14 @@ public class WordSetControllerTest extends MockMvcBase {
                                                       .content(jsonConverter.toJson(wordSetDto)))
                                      .andExpect(status().isCreated())
                                      .andExpect(header().string("Location", is(notNullValue())))
-                                     .andReturn();
+                                     .andDo(documentationHandler.document(
+                                             requestFields(
+                                                     fieldWithPath("id").ignored(),
+                                                     fieldWithPath("name").description("Word set's name"),
+                                                     fieldWithPath("description").description("Word set's description"),
+                                                     fieldWithPath("words").description("Array of words")
+                                             ), headersSnippet
+                                     )).andReturn();
 
         long id = extractIdFromLocationHeader(mvcResult);
         Optional<WordSet> wordSetOptional = wordSetService.getByIdAndUsername(id, getAuthenticatedUser().getUsername());
@@ -202,9 +233,14 @@ public class WordSetControllerTest extends MockMvcBase {
 
     @Test
     public void deleteWordSet() throws Exception {
-        mockMvc.perform(delete("/api/sets/{wordSetId}", wordSetIds[0])
+        mockMvc.perform(delete("/api/sets/{id}", wordSetIds[0])
                                 .with(userToken()))
-               .andExpect(status().isOk());
+               .andExpect(status().isOk())
+               .andDo(documentationHandler.document(
+                       pathParameters(
+                               parameterWithName("id").description("Word set's id")
+                       ), headersSnippet
+               ));
 
         Optional<UserDictionary> dictionaryOptional = userDictionaryService.getByUsername(
                 getAuthenticatedUser().getUsername());
@@ -219,7 +255,13 @@ public class WordSetControllerTest extends MockMvcBase {
     public void deleteWordFromWordSet() throws Exception {
         mockMvc.perform(delete("/api/sets/{wordSetId}/words/{wordId}", wordSetIds[0], wordIds[0])
                                 .with(userToken()))
-               .andExpect(status().isOk());
+               .andExpect(status().isOk())
+               .andDo(documentationHandler.document(
+                       pathParameters(
+                               parameterWithName("wordSetId").description("Word set's id"),
+                               parameterWithName("wordId").description("Word's id")
+                       ), headersSnippet
+               ));
 
         Optional<WordSet> wordSetOptional = wordSetService.getByIdAndUsername((long) wordSetIds[0],
                                                                               getAuthenticatedUser().getUsername());
@@ -237,12 +279,24 @@ public class WordSetControllerTest extends MockMvcBase {
     public void addWordToWordSet() throws Exception {
         WordDto wordDto = new WordDto(null, "book1", "книга1", null, "img1", null);
 
-        MvcResult mvcResult = mockMvc.perform(post("/api/sets/{wordSetId}/words", wordSetIds[0])
+        MvcResult mvcResult = mockMvc.perform(post("/api/sets/{id}/words", wordSetIds[0])
                                                       .with(userToken())
                                                       .contentType(contentType)
                                                       .content(jsonConverter.toJson(wordDto)))
                                      .andExpect(status().isCreated())
                                      .andExpect(header().string("Location", is(notNullValue())))
+                                     .andDo(documentationHandler.document(
+                                             pathParameters(
+                                                     parameterWithName("id").description("Word set's id")
+                                             ), requestFields(
+                                                     fieldWithPath("id").ignored(),
+                                                     fieldWithPath("text").description("Word's text in English"),
+                                                     fieldWithPath("translation").description("Word's translation"),
+                                                     fieldWithPath("stage").ignored(),
+                                                     fieldWithPath("image").description("Path to the word's image"),
+                                                     fieldWithPath("sound").ignored()
+                                             ), headersSnippet
+                                     ))
                                      .andReturn();
 
         long id = extractIdFromLocationHeader(mvcResult);
@@ -261,7 +315,6 @@ public class WordSetControllerTest extends MockMvcBase {
         assertEquals("книга1", studiedWord.getTranslation());
         assertNotNull(studiedWord.getSound());
     }
-
 
     @Test
     public void addIllegalWordToWordSet() throws Exception {
@@ -291,11 +344,19 @@ public class WordSetControllerTest extends MockMvcBase {
         String description = "updated description";
         WordSetMetaDto metaDto = new WordSetMetaDto(name, description);
 
-        mockMvc.perform(patch("/api/sets/{wordSetId}", wordSetIds[0])
+        mockMvc.perform(patch("/api/sets/{id}", wordSetIds[0])
                                 .with(userToken())
                                 .contentType(contentType)
                                 .content(jsonConverter.toJson(metaDto)))
-               .andExpect(status().isOk());
+               .andExpect(status().isOk())
+               .andDo(documentationHandler.document(
+                       pathParameters(
+                               parameterWithName("id").description("Word set's id")
+                       ), requestFields(
+                               fieldWithPath("name").description("New word set's name"),
+                               fieldWithPath("description").description("New word set's description")
+                       ), headersSnippet
+               ));
 
         Optional<WordSet> wordSetOptional = wordSetService.getById((long) wordSetIds[0]);
 
@@ -304,5 +365,11 @@ public class WordSetControllerTest extends MockMvcBase {
         WordSet wordSet = wordSetOptional.get();
         assertEquals(name, wordSet.getName());
         assertEquals(description, wordSet.getDescription());
+    }
+
+    private long extractIdFromLocationHeader(MvcResult mvcResult) {
+        String location = mvcResult.getResponse().getHeader("Location");
+        String[] urlChunks = location.split("/");
+        return Long.parseLong(urlChunks[urlChunks.length - 1]);
     }
 }
