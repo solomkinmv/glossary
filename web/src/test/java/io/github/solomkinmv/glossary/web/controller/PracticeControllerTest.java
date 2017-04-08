@@ -17,6 +17,11 @@ import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -93,7 +98,7 @@ public class PracticeControllerTest extends MockMvcBase {
     }
 
     @Test
-    public void getQuizWorksProperly() throws Exception {
+    public void getPracticeQuiz() throws Exception {
         mockMvc.perform(get("/api/practices/quizzes")
                                 .param("setId", wordSets.get(0).getId().toString())
                                 .with(userToken()))
@@ -102,18 +107,62 @@ public class PracticeControllerTest extends MockMvcBase {
                .andExpect(jsonPath("$.quiz.questions", hasSize(AbstractTestProvider.TEST_SIZE)))
                .andExpect(jsonPath("$.quiz.questions[*].alternatives", everyItem(hasSize(5))))
                .andExpect(jsonPath("$.quiz.questions[?(@.questionText=='word1')].answer.answerText",
-                                   containsInAnyOrder(wordList.get(0).getTranslation())));
+                                   containsInAnyOrder(wordList.get(0).getTranslation())))
+               .andDo(documentationHandler.document(
+                       responseFields(
+                               fieldWithPath("quiz.questions[].questionText").description("A quiz test question"),
+                               fieldWithPath("quiz.questions[].answer.wordId").description("An id of the correct word"),
+                               fieldWithPath("quiz.questions[].answer.answerText").description("A quiz answer text"),
+                               fieldWithPath("quiz.questions[].answer.stage").description("Learning stage of the word"),
+                               fieldWithPath("quiz.questions[].answer.image").description("Word's image"),
+                               fieldWithPath("quiz.questions[].answer.pronunciation")
+                                       .description("Path to the word's pronunciation sound"),
+                               fieldWithPath("quiz.questions[].alternatives")
+                                       .description("Alternative answers to the test"),
+                               fieldWithPath("_links").ignored()
+                       ), links(
+                               linkWithRel("self").description("Link to generate quiz"),
+                               linkWithRel("writingTest").description("Link to generate writing practice"),
+                               linkWithRel("handleResults").description("Link to handle practice results")
+                       ),
+                       requestParameters(
+                               parameterWithName("setId").description("Word set's id")
+                       ), headersSnippet
+               ));
     }
 
     @Test
-    public void getWritingTestWorksProperly() throws Exception {
+    public void getWritingPractice() throws Exception {
         mockMvc.perform(get("/api/practices/writings")
                                 .param("setId", wordSets.get(0).getId().toString())
                                 .with(userToken()))
                .andExpect(status().isOk())
                .andExpect(jsonPath("$.writingPracticeTest.questions", hasSize(AbstractTestProvider.TEST_SIZE)))
                .andExpect(jsonPath("$.writingPracticeTest.questions[?(@.questionText=='слово1')].answer.answerText",
-                                   containsInAnyOrder(wordList.get(0).getText())));
+                                   containsInAnyOrder(wordList.get(0).getText())))
+               .andDo(documentationHandler.document(
+                       responseFields(
+                               fieldWithPath("writingPracticeTest.questions[].questionText")
+                                       .description("A practice test question"),
+                               fieldWithPath("writingPracticeTest.questions[].answer.wordId")
+                                       .description("An id of the correct word"),
+                               fieldWithPath("writingPracticeTest.questions[].answer.answerText")
+                                       .description("A quiz answer text"),
+                               fieldWithPath("writingPracticeTest.questions[].answer.stage")
+                                       .description("Learning stage of the word"),
+                               fieldWithPath("writingPracticeTest.questions[].answer.image")
+                                       .description("Word's image"),
+                               fieldWithPath("writingPracticeTest.questions[].answer.pronunciation")
+                                       .description("Path to the word's pronunciation sound"),
+                               fieldWithPath("_links").ignored()
+                       ), links(
+                               linkWithRel("self").description("Link to generate writing practice"),
+                               linkWithRel("quiz").description("Link to generate quiz"),
+                               linkWithRel("handleResults").description("Link to handle practice results")
+                       ), requestParameters(
+                               parameterWithName("setId").description("Word set's id")
+                       ), headersSnippet
+               ));
     }
 
     @Test
@@ -148,7 +197,13 @@ public class PracticeControllerTest extends MockMvcBase {
                                 .content(jsonConverter.toJson(results))
                                 .contentType(contentType)
                                 .with(userToken()))
-               .andExpect(status().isOk());
+               .andExpect(status().isOk())
+               .andDo(documentationHandler.document(
+                       requestFields(
+                               fieldWithPath("wordAnswers")
+                                       .description("Map of answers. wordId -> boolean value, true if correct value")
+                       ), headersSnippet
+               ));
 
         assertEquals(WordStage.LEARNING, getStageByWordIndex(0));
         assertEquals(WordStage.LEARNED, getStageByWordIndex(1));

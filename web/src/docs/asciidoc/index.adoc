@@ -73,3 +73,5 @@ include::words.adoc[]
 include::sets.adoc[]
 
 include::images.adoc[]
+
+include::practices.adoc[]

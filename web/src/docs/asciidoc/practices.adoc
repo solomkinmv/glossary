@@ -1,0 +1,75 @@
+[[resources-practices]]
+== Practices
+The Practices resource is used to get practice tests and handle results.
+
+[[resource-practices-quizzes]]
+=== Get practice quiz
+A `GET` request generates quiz for the specified word set.
+
+include::{snippets}/practice-controller-test/get-practice-quiz/response-fields.adoc[]
+
+==== Headers
+
+include::{snippets}/practice-controller-test/get-practice-quiz/request-headers.adoc[]
+
+==== Request parameters
+
+include::{snippets}/practice-controller-test/get-practice-quiz/request-parameters.adoc[]
+
+==== Example request
+
+include::{snippets}/practice-controller-test/get-practice-quiz/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/practice-controller-test/get-practice-quiz/http-response.adoc[]
+
+==== Links
+
+include::{snippets}/practice-controller-test/get-practice-quiz/links.adoc[]
+
+[[resource-writing-practice]]
+=== Get writing practice
+A `GET` request generates writing practice for the specified word set.
+
+include::{snippets}/practice-controller-test/get-writing-practice/response-fields.adoc[]
+
+==== Headers
+
+include::{snippets}/practice-controller-test/get-writing-practice/request-headers.adoc[]
+
+==== Request parameters
+
+include::{snippets}/practice-controller-test/get-writing-practice/request-parameters.adoc[]
+
+==== Example request
+
+include::{snippets}/practice-controller-test/get-writing-practice/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/practice-controller-test/get-writing-practice/http-response.adoc[]
+
+==== Links
+
+include::{snippets}/practice-controller-test/get-writing-practice/links.adoc[]
+
+[[resource-handle-results]]
+=== Handle results
+A `POST` request handles word practice answers.
+
+==== Headers
+
+include::{snippets}/word-controller-test/update-word-meta-information/request-headers.adoc[]
+
+==== Request fields
+
+include::{snippets}/word-controller-test/update-word-meta-information/request-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/word-controller-test/update-word-meta-information/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/word-controller-test/update-word-meta-information/http-response.adoc[]
