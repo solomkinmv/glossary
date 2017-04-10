@@ -21,7 +21,6 @@ import java.util.stream.IntStream;
 @Service
 @Slf4j
 public class ImageServiceImpl implements ImageService {
-    private static final int PAGE_SIZE = 10;
 
     private final Flickr flickr;
     private final StorageService storageService;

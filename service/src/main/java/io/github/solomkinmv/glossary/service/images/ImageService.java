@@ -7,6 +7,7 @@ import java.util.List;
  * Describes all operations with images.
  */
 public interface ImageService {
+    int PAGE_SIZE = 10;
 
     /**
      * Returns list of the images by the specified {@code tags}.

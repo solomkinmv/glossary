@@ -11,14 +11,13 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.*;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Test for {@link ImageController}.
@@ -32,6 +31,29 @@ public class ImageControllerTest extends MockMvcBase {
     @After
     public void tearDown() throws Exception {
         imageService.deleteImgDir();
+    }
+
+    @Test
+    public void searchImages() throws Exception {
+        String searchQuery = "potato";
+        mockMvc.perform(get("/api/images")
+                                .with(userToken())
+                                .param("query", searchQuery))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.query", is(searchQuery)))
+               .andExpect(jsonPath("$.images", hasSize(ImageService.PAGE_SIZE)))
+               .andExpect(jsonPath("$.images", not(contains(nullValue()))))
+               .andDo(documentationHandler.document(
+                       responseFields(
+                               fieldWithPath("query").description("The search query"),
+                               fieldWithPath("images").description("Array of urls for images"),
+                               fieldWithPath("_links").ignored()
+                       ), requestParameters(
+                               parameterWithName("query").description("The search query")
+                       ), links(
+                               linkWithRel("self").description("The same search request")
+                       ), headersSnippet
+               ));
     }
 
     @Test

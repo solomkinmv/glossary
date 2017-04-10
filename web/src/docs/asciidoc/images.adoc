@@ -2,6 +2,33 @@
 == Images
 The Images resource is used to upload and search for images.
 
+[[resource-search-images]]
+=== Search images
+A `GET` request searches for images by query.
+
+include::{snippets}/image-controller-test/search-images/response-fields.adoc[]
+
+==== Headers
+
+include::{snippets}/image-controller-test/search-images/request-headers.adoc[]
+
+==== Request parameters
+
+include::{snippets}/image-controller-test/search-images/request-parameters.adoc[]
+
+==== Example request
+
+include::{snippets}/image-controller-test/search-images/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/image-controller-test/search-images/http-response.adoc[]
+
+==== Links
+
+include::{snippets}/image-controller-test/search-images/links.adoc[]
+
+
 [[resource-upload-image]]
 === Upload images
 A `POST` request uploads an image.
@@ -21,6 +48,7 @@ include::{snippets}/image-controller-test/uploads-image/curl-request.adoc[]
 ==== Example response
 
 include::{snippets}/image-controller-test/uploads-image/http-response.adoc[]
+
 
 [[resource-delete-image]]
 === Delete image

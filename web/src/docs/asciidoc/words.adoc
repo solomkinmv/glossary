@@ -20,6 +20,7 @@ include::{snippets}/word-controller-test/get-all-words/curl-request.adoc[]
 
 include::{snippets}/word-controller-test/get-all-words/http-response.adoc[]
 
+
 [[resource-word-get-by-id]]
 === Getting word by id
 A `GET` request gets word by id.
@@ -45,6 +46,7 @@ include::{snippets}/word-controller-test/get-word-by-id/http-response.adoc[]
 ==== Links
 
 include::{snippets}/word-controller-test/get-word-by-id/links.adoc[]
+
 
 [[resource-word-search]]
 === Word search
@@ -73,6 +75,7 @@ include::{snippets}/word-controller-test/search-for-present-word/http-response.a
 ==== Links
 
 include::{snippets}/word-controller-test/search-for-present-word/links.adoc[]
+
 
 [[resource-update-word]]
 === Update word
