@@ -3,7 +3,6 @@ package io.github.solomkinmv.glossary.web.controller;
 import io.github.solomkinmv.glossary.persistence.model.*;
 import io.github.solomkinmv.glossary.service.domain.UserDictionaryService;
 import io.github.solomkinmv.glossary.service.domain.WordService;
-import io.github.solomkinmv.glossary.service.search.SearchService;
 import io.github.solomkinmv.glossary.web.MockMvcBase;
 import io.github.solomkinmv.glossary.web.dto.WordMetaDto;
 import lombok.extern.slf4j.Slf4j;
@@ -47,25 +46,21 @@ public class WordControllerTest extends MockMvcBase {
 
         StudiedWord word1 = new StudiedWord("word1", "слово1");
         StudiedWord word2 = new StudiedWord("word2", "слово2");
-        StudiedWord word3 = new StudiedWord("word3", "слово3");
+        StudiedWord word3 = new StudiedWord("word2", "слово22");
         StudiedWord word4 = new StudiedWord("word4", "слово4");
-        StudiedWord word5 = new StudiedWord("word5", "слово5");
-        StudiedWord word6 = new StudiedWord("word5", "слово55");
         wordList.add(wordService.save(word1));
         wordList.add(wordService.save(word2));
         wordList.add(wordService.save(word3));
         wordList.add(wordService.save(word4));
-        wordList.add(wordService.save(word5));
-        wordList.add(wordService.save(word6));
 
         User user1 = new User();
         user1.setUsername("user1");
         User user2 = new User();
         user2.setUsername("user2");
 
-        WordSet ws1 = new WordSet("ws1", "desc", Arrays.asList(word1, word2));
-        WordSet ws2 = new WordSet("ws2", "desc", Arrays.asList(word3, word4, word5));
-        WordSet ws3 = new WordSet("ws3", "desc", Collections.singletonList(word6));
+        WordSet ws1 = new WordSet("ws1", "desc", Collections.singletonList(word1));
+        WordSet ws2 = new WordSet("ws2", "desc", Collections.singletonList(word2));
+        WordSet ws3 = new WordSet("ws3", "desc", Arrays.asList(word3, word4));
 
         Set<WordSet> userOneSet = new HashSet<>();
         userOneSet.add(ws1);
@@ -82,13 +77,13 @@ public class WordControllerTest extends MockMvcBase {
 
     @Test
     public void getAllWords() throws Exception {
-        Integer[] integers = wordList.stream().map(word -> word.getId().intValue()).limit(5).toArray(Integer[]::new);
+        Integer[] integers = wordList.stream().map(word -> word.getId().intValue()).limit(2).toArray(Integer[]::new);
         Matcher<Iterable<? extends Integer>> idMatcher = containsInAnyOrder(integers);
 
         mockMvc.perform(get("/api/words").with(userToken()))
                .andExpect(status().isOk())
                .andExpect(content().contentType(contentType))
-               .andExpect(jsonPath("$._embedded.wordResourceList", hasSize(5)))
+               .andExpect(jsonPath("$._embedded.wordResourceList", hasSize(2)))
                .andExpect(jsonPath("$._embedded.wordResourceList[*].word.id", idMatcher))
                .andExpect(jsonPath("$._embedded.wordResourceList[*].word.text", not(contains(nullValue()))))
                .andExpect(jsonPath("$._embedded.wordResourceList[*].word.translation", not(contains(nullValue()))))
@@ -189,11 +184,15 @@ public class WordControllerTest extends MockMvcBase {
                                 .with(userToken()))
                .andExpect(status().isOk())
                .andExpect(content().contentType(contentType))
-               .andExpect(jsonPath("$.result.records", hasSize(SearchService.SEARCH_LIMIT)))
+               .andExpect(jsonPath("$.result.records", hasSize(4)))
                .andExpect(jsonPath("$.result.records[0].text", is(word)))
                .andExpect(jsonPath("$.result.records[0].translations", hasSize(1)))
                .andExpect(jsonPath("$.result.records[0].translations[0]", is(expectedTranslation)))
-               .andExpect(jsonPath("$.result.records[1].text", is(wordList.get(0).getText())));
+               .andExpect(jsonPath("$.result.records[1].text", is(wordList.get(0).getText())))
+               .andExpect(jsonPath("$.result.records[2].text", is(wordList.get(1).getText())))
+               .andExpect(jsonPath("$.result.records[2].translations",
+                                   containsInAnyOrder(wordList.get(1).getTranslation(),
+                                                      wordList.get(2).getTranslation())));
     }
 
     @Test

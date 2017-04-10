@@ -50,8 +50,9 @@ public class SearchServiceImpl implements SearchService {
 
     private List<SearchResult.Record> insertTranslatedRecord(List<SearchResult.Record> similarWords, String text) {
         Optional<SearchResult.Record> translatedRecord = prepareTranslatedRecord(text);
-        if (translatedRecord.isPresent()) {
-            similarWords.add(0, translatedRecord.get());
+        translatedRecord.ifPresent(record -> similarWords.add(0, record));
+
+        if (similarWords.size() > SEARCH_LIMIT) {
             similarWords.remove(similarWords.size() - 1);
         }
         return similarWords;
