@@ -86,25 +86,25 @@ include::{snippets}/word-set-controller-test/delete-word-set/curl-request.adoc[]
 
 include::{snippets}/word-set-controller-test/delete-word-set/http-response.adoc[]
 
-[[resource-delete-word-set]]
+[[resource-delete-word-from-word-set]]
 === Delete word form word set
 A `DELETE` request deletes word  set.
 
 ==== Headers
 
-include::{snippets}/word-set-controller-test/delete-word-set/request-headers.adoc[]
+include::{snippets}/word-set-controller-test/delete-word-from-word-set/request-headers.adoc[]
 
 ==== Path parameters
 
-include::{snippets}/word-set-controller-test/delete-word-set/path-parameters.adoc[]
+include::{snippets}/word-set-controller-test/delete-word-from-word-set/path-parameters.adoc[]
 
 ==== Example request
 
-include::{snippets}/word-set-controller-test/delete-word-set/curl-request.adoc[]
+include::{snippets}/word-set-controller-test/delete-word-from-word-set/curl-request.adoc[]
 
 ==== Example response
 
-include::{snippets}/word-set-controller-test/delete-word-set/http-response.adoc[]
+include::{snippets}/word-set-controller-test/delete-word-from-word-set/http-response.adoc[]
 
 [[resource-add-word-to-word-set]]
 === Add word to word set
