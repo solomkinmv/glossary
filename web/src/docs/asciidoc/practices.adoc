@@ -60,16 +60,16 @@ A `POST` request handles word practice answers.
 
 ==== Headers
 
-include::{snippets}/word-controller-test/update-word-meta-information/request-headers.adoc[]
+include::{snippets}/practice-controller-test/handles-test-results/request-headers.adoc[]
 
 ==== Request fields
 
-include::{snippets}/word-controller-test/update-word-meta-information/request-fields.adoc[]
+include::{snippets}/practice-controller-test/handles-test-results/request-fields.adoc[]
 
 ==== Example request
 
-include::{snippets}/word-controller-test/update-word-meta-information/curl-request.adoc[]
+include::{snippets}/practice-controller-test/handles-test-results/curl-request.adoc[]
 
 ==== Example response
 
-include::{snippets}/word-controller-test/update-word-meta-information/http-response.adoc[]
+include::{snippets}/practice-controller-test/handles-test-results/http-response.adoc[]
