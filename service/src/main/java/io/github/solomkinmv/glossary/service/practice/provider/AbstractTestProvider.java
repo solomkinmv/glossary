@@ -29,7 +29,9 @@ public abstract class AbstractTestProvider {
         if (wordList.size() < NUMBER_OF_CHOICES) {
             return generateAlternatives(wordList.stream());
         }
-        return generateAlternatives(Stream.generate(() -> getOtherRandomWord(wordList, word)));
+        Stream<StudiedWord> originalWord = Stream.of(word);
+        Stream<StudiedWord> randomWords = Stream.generate(() -> getOtherRandomWord(wordList, word));
+        return generateAlternatives(Stream.concat(originalWord, randomWords));
     }
 
     private Set<String> generateAlternatives(Stream<StudiedWord> wordStream) {
