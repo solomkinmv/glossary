@@ -3,8 +3,9 @@ package io.github.solomkinmv.glossary.web.security.endpoint;
 import io.github.solomkinmv.glossary.persistence.model.Role;
 import io.github.solomkinmv.glossary.persistence.model.RoleType;
 import io.github.solomkinmv.glossary.persistence.model.User;
+import io.github.solomkinmv.glossary.persistence.model.UserDictionary;
 import io.github.solomkinmv.glossary.service.domain.RoleService;
-import io.github.solomkinmv.glossary.service.domain.UserService;
+import io.github.solomkinmv.glossary.service.domain.UserDictionaryService;
 import io.github.solomkinmv.glossary.web.dto.RegistrationRequest;
 import io.github.solomkinmv.glossary.web.security.config.WebSecurityConfig;
 import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -30,18 +32,17 @@ import java.util.Map;
 @RestController
 public class RegisterEndpoint {
     private final PasswordEncoder passwordEncoder;
-    private final UserService userService;
+    private final UserDictionaryService userDictionaryService;
     private final RoleService roleService;
     private final JwtTokenFactory tokenFactory;
 
     @Autowired
-    public RegisterEndpoint(PasswordEncoder passwordEncoder, UserService userService, RoleService roleService,
-                            JwtTokenFactory tokenFactory) {
+    public RegisterEndpoint(PasswordEncoder passwordEncoder, UserDictionaryService userDictionaryService,
+                            RoleService roleService, JwtTokenFactory tokenFactory) {
+        this.userDictionaryService = userDictionaryService;
         this.roleService = roleService;
         this.tokenFactory = tokenFactory;
         Assert.notNull(passwordEncoder);
-        Assert.notNull(userService);
-        this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -53,10 +54,12 @@ public class RegisterEndpoint {
         User user = new User(registrationRequest.getUsername(), pass, registrationRequest.getDetails(),
                              Collections.singleton(role));
 
-        userService.save(user);
+        userDictionaryService.save(new UserDictionary(new HashSet<>(), user));
 
         AuthenticatedUser authenticatedUser = new AuthenticatedUser(registrationRequest.getUsername(),
-                Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.authority())));
+                                                                    Collections.singletonList(
+                                                                            new SimpleGrantedAuthority(
+                                                                                    RoleType.USER.authority())));
 
         JsonWebToken accessToken = tokenFactory.createAccessJwtToken(authenticatedUser);
         JsonWebToken refreshToken = tokenFactory.createRefreshToken(authenticatedUser);
