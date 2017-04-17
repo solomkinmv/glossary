@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,16 +48,16 @@ public class RegisterEndpoint {
     }
 
     @RequestMapping(value = WebSecurityConfig.FORM_BASED_REGISTER_ENTRY_POINT, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, String> register(@RequestBody RegistrationRequest registrationRequest) {
-        String pass = passwordEncoder.encode(registrationRequest.getPassword());
+    public Map<String, String> register(@Validated @RequestBody RegistrationRequest request) {
+        String pass = passwordEncoder.encode(request.getPassword());
 
         Role role = roleService.getByRoleType(RoleType.USER);
-        User user = new User(registrationRequest.getUsername(), pass, registrationRequest.getDetails(),
+        User user = new User(request.getName(), request.getUsername(), pass, request.getEmail(),
                              Collections.singleton(role));
 
         userDictionaryService.save(new UserDictionary(new HashSet<>(), user));
 
-        AuthenticatedUser authenticatedUser = new AuthenticatedUser(registrationRequest.getUsername(),
+        AuthenticatedUser authenticatedUser = new AuthenticatedUser(request.getUsername(),
                                                                     Collections.singletonList(
                                                                             new SimpleGrantedAuthority(
                                                                                     RoleType.USER.authority())));
