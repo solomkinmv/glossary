@@ -127,7 +127,7 @@ public class PracticeControllerTest extends MockMvcBase {
                                linkWithRel("handleResults").description("Link to handle practice results")
                        ),
                        requestParameters(
-                               parameterWithName("setId").description("Word set's id"),
+                               parameterWithName("setId").description("Optional word set's id"),
                                parameterWithName("originQuestions")
                                        .description("Signals if questions should be in original language")
                        ), headersSnippet
@@ -164,7 +164,7 @@ public class PracticeControllerTest extends MockMvcBase {
                                linkWithRel("quiz").description("Link to generate quiz"),
                                linkWithRel("handleResults").description("Link to handle practice results")
                        ), requestParameters(
-                               parameterWithName("setId").description("Word set's id"),
+                               parameterWithName("setId").description("Optional word set's id"),
                                parameterWithName("originQuestions")
                                        .description("Signals if questions should be in original language")
                        ), headersSnippet

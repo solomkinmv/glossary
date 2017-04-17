@@ -12,7 +12,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 public class WritingPracticeTestResource extends ResourceSupport {
     private final WritingPracticeTest writingPracticeTest;
 
-    public WritingPracticeTestResource(WritingPracticeTest writingPracticeTest, long wordSetId, boolean originQuestions) {
+    public WritingPracticeTestResource(WritingPracticeTest writingPracticeTest, Long wordSetId, boolean originQuestions) {
         this.writingPracticeTest = writingPracticeTest;
 
         add(linkTo(methodOn(PracticeController.class).getWritingTest(null, wordSetId, originQuestions)).withSelfRel());

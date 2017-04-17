@@ -31,7 +31,7 @@ public class PracticeController {
     @RequestMapping(value = "/quizzes", method = RequestMethod.GET)
     public QuizResource getQuiz(
             @CurrentUser AuthenticatedUser user,
-            @RequestParam("setId") Long setId,
+            @RequestParam(value = "setId", required = false) Long setId,
             @RequestParam("originQuestions") boolean originQuestions) {
         log.info("Getting quiz for word set with id {}", setId);
         return new QuizResource(
@@ -42,7 +42,7 @@ public class PracticeController {
     @RequestMapping(value = "/writings", method = RequestMethod.GET)
     public WritingPracticeTestResource getWritingTest(
             @CurrentUser AuthenticatedUser user,
-            @RequestParam("setId") Long setId,
+            @RequestParam(value = "setId", required = false) Long setId,
             @RequestParam("originQuestions") boolean originQuestions) {
         log.info("Getting writing practice test for word set with id {}", setId);
         return new WritingPracticeTestResource(
