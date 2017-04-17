@@ -12,6 +12,7 @@ import io.github.solomkinmv.glossary.web.security.model.AuthenticatedUser;
 import io.github.solomkinmv.glossary.web.security.model.JsonWebToken;
 import io.github.solomkinmv.glossary.web.security.util.JwtTokenFactory;
 import io.jsonwebtoken.lang.Assert;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,6 +32,7 @@ import java.util.Map;
  * Represents endpoint to register new user.
  */
 @RestController
+@Slf4j
 public class RegisterEndpoint {
     private final PasswordEncoder passwordEncoder;
     private final UserDictionaryService userDictionaryService;
@@ -49,6 +51,7 @@ public class RegisterEndpoint {
 
     @RequestMapping(value = WebSecurityConfig.FORM_BASED_REGISTER_ENTRY_POINT, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, String> register(@Validated @RequestBody RegistrationRequest request) {
+        log.info("Registering user: {}", request);
         String pass = passwordEncoder.encode(request.getPassword());
 
         Role role = roleService.getByRoleType(RoleType.USER);
