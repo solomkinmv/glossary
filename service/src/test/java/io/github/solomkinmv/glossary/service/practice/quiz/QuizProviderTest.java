@@ -1,7 +1,6 @@
 package io.github.solomkinmv.glossary.service.practice.quiz;
 
 import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
-import io.github.solomkinmv.glossary.persistence.model.WordSet;
 import io.github.solomkinmv.glossary.persistence.model.WordStage;
 import io.github.solomkinmv.glossary.service.practice.Answer;
 import org.junit.Test;
@@ -26,7 +25,7 @@ public class QuizProviderTest {
 
     @Test
     public void generatePracticeTest() {
-        Quiz quiz = quizProvider.generateQuiz(createWordSet());
+        Quiz quiz = quizProvider.generateQuiz(createStudiedWords(), false);
 
         Set<Quiz.Question> questions = quiz.getQuestions();
         assertEquals(TEST_SIZE, questions.size());
@@ -42,10 +41,6 @@ public class QuizProviderTest {
                             .map(Quiz.Question::getAlternatives)
                             .map(Set::size)
                             .allMatch(size -> size == NUMBER_OF_CHOICES));
-    }
-
-    private WordSet createWordSet() {
-        return new WordSet("name", "description", createStudiedWords());
     }
 
     private List<StudiedWord> createStudiedWords() {

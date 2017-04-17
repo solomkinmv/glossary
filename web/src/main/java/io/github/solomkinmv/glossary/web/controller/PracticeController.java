@@ -1,5 +1,6 @@
 package io.github.solomkinmv.glossary.web.controller;
 
+import io.github.solomkinmv.glossary.service.practice.PracticeParameters;
 import io.github.solomkinmv.glossary.service.practice.PracticeResults;
 import io.github.solomkinmv.glossary.service.practice.quiz.QuizPracticeService;
 import io.github.solomkinmv.glossary.service.practice.writing.WritingPracticeService;
@@ -30,17 +31,23 @@ public class PracticeController {
     @RequestMapping(value = "/quizzes", method = RequestMethod.GET)
     public QuizResource getQuiz(
             @CurrentUser AuthenticatedUser user,
-            @RequestParam("setId") Long setId) {
+            @RequestParam("setId") Long setId,
+            @RequestParam("originQuestions") boolean originQuestions) {
         log.info("Getting quiz for word set with id {}", setId);
-        return new QuizResource(quizPracticeService.generateTest(user.getUsername(), setId), setId);
+        return new QuizResource(
+                quizPracticeService.generateTest(user.getUsername(), new PracticeParameters(setId, originQuestions)),
+                setId, originQuestions);
     }
 
     @RequestMapping(value = "/writings", method = RequestMethod.GET)
     public WritingPracticeTestResource getWritingTest(
             @CurrentUser AuthenticatedUser user,
-            @RequestParam("setId") Long setId) {
+            @RequestParam("setId") Long setId,
+            @RequestParam("originQuestions") boolean originQuestions) {
         log.info("Getting writing practice test for word set with id {}", setId);
-        return new WritingPracticeTestResource(writingPracticeService.generateTest(user.getUsername(), setId), setId);
+        return new WritingPracticeTestResource(
+                writingPracticeService.generateTest(user.getUsername(), new PracticeParameters(setId, originQuestions)),
+                setId, originQuestions);
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)

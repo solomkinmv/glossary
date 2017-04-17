@@ -1,7 +1,6 @@
 package io.github.solomkinmv.glossary.service.practice.quiz;
 
 import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
-import io.github.solomkinmv.glossary.persistence.model.WordSet;
 import io.github.solomkinmv.glossary.service.practice.provider.AbstractTestProvider;
 import org.springframework.stereotype.Component;
 
@@ -21,24 +20,22 @@ public class QuizProvider extends AbstractTestProvider {
         this(new Random());
     }
 
-    public Quiz generateQuiz(WordSet wordSet) {
-        List<StudiedWord> words = wordSet.getStudiedWords();
-
+    Quiz generateQuiz(List<StudiedWord> words, boolean originQuestions) {
         return new Quiz(
                 words.stream()
                      .filter(notLearned())
                      .sorted(comparatorByLearningLevel())
                      .limit(TEST_SIZE)
-                     .map(word -> createQuestion(word, words))
+                     .map(word -> createQuestion(word, words, originQuestions))
                      .collect(Collectors.toSet()));
     }
 
-    private Quiz.Question createQuestion(StudiedWord studiedWord, List<StudiedWord> words) {
-        Set<String> alternatives = generateAlternatives(studiedWord, words);
+    private Quiz.Question createQuestion(StudiedWord studiedWord, List<StudiedWord> words, boolean originQuestions) {
+        Set<String> alternatives = generateAlternatives(studiedWord, words, !originQuestions);
 
         return new Quiz.Question(
-                studiedWord.getText(),
-                createAnswer(studiedWord, false),
+                originQuestions ? studiedWord.getText() : studiedWord.getTranslation(),
+                createAnswer(studiedWord, !originQuestions),
                 alternatives);
     }
 }

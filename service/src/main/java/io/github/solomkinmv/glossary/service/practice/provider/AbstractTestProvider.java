@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,18 +26,19 @@ public abstract class AbstractTestProvider {
         return studiedWord -> !studiedWord.getStage().equals(WordStage.LEARNED);
     }
 
-    protected Set<String> generateAlternatives(StudiedWord word, List<StudiedWord> wordList) {
+    protected Set<String> generateAlternatives(StudiedWord word, List<StudiedWord> wordList, boolean origin) {
         if (wordList.size() < NUMBER_OF_CHOICES) {
-            return generateAlternatives(wordList.stream());
+            return generateAlternatives(wordList.stream(), origin);
         }
         Stream<StudiedWord> originalWord = Stream.of(word);
         Stream<StudiedWord> randomWords = Stream.generate(() -> getOtherRandomWord(wordList, word));
-        return generateAlternatives(Stream.concat(originalWord, randomWords));
+        return generateAlternatives(Stream.concat(originalWord, randomWords), origin);
     }
 
-    private Set<String> generateAlternatives(Stream<StudiedWord> wordStream) {
+    private Set<String> generateAlternatives(Stream<StudiedWord> wordStream, boolean origin) {
+        Function<StudiedWord, String> toAlternative = (word) -> origin ? word.getText() : word.getTranslation();
         return wordStream
-                .map(StudiedWord::getTranslation)
+                .map(toAlternative)
                 .distinct()
                 .limit(NUMBER_OF_CHOICES)
                 .collect(Collectors.toSet());

@@ -1,10 +1,10 @@
 package io.github.solomkinmv.glossary.service.practice.writing;
 
 import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
-import io.github.solomkinmv.glossary.persistence.model.WordSet;
 import io.github.solomkinmv.glossary.service.practice.provider.AbstractTestProvider;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -18,20 +18,20 @@ public class WritingTestProvider extends AbstractTestProvider {
         super(random);
     }
 
-    public WritingPracticeTest generateWritingTest(WordSet wordSet) {
+    WritingPracticeTest generateWritingTest(List<StudiedWord> words, boolean originQuestions) {
         return new WritingPracticeTest(
-                wordSet.getStudiedWords()
-                       .stream()
-                       .filter(notLearned())
-                       .sorted(comparatorByLearningLevel())
-                       .limit(TEST_SIZE)
-                       .map(this::createQuestion)
-                       .collect(Collectors.toSet()));
+                words
+                        .stream()
+                        .filter(notLearned())
+                        .sorted(comparatorByLearningLevel())
+                        .limit(TEST_SIZE)
+                        .map(studiedWord -> createQuestion(studiedWord, originQuestions))
+                        .collect(Collectors.toSet()));
     }
 
-    private WritingPracticeTest.Question createQuestion(StudiedWord studiedWord) {
+    private WritingPracticeTest.Question createQuestion(StudiedWord studiedWord, boolean originQuestions) {
         return new WritingPracticeTest.Question(
-                studiedWord.getTranslation(),
-                createAnswer(studiedWord, true));
+                originQuestions ? studiedWord.getText() : studiedWord.getTranslation(),
+                createAnswer(studiedWord, !originQuestions));
     }
 }
