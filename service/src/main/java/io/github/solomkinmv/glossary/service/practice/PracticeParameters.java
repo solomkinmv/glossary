@@ -6,4 +6,13 @@ import lombok.Value;
 public class PracticeParameters {
     Long wordSetId;
     boolean originQuestions;
+
+    public PracticeParameters(Long wordSetId) {
+        this(wordSetId, true);
+    }
+
+    public PracticeParameters(Long wordSetId, Boolean originQuestions) {
+        this.wordSetId = wordSetId;
+        this.originQuestions = originQuestions;
+    }
 }
