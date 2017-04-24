@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
@@ -52,8 +51,7 @@ public class ImageController {
             log.error(message);
             throw new UploadException(message, e);
         }
-        String uriString = ServletUriComponentsBuilder.fromCurrentContextPath().path(uriLocation).toUriString();
-        return ResponseEntity.created(URI.create(uriString)).build();
+        return ResponseEntity.created(URI.create(uriLocation)).build();
     }
 
     @RequestMapping(value = "", method = RequestMethod.DELETE)

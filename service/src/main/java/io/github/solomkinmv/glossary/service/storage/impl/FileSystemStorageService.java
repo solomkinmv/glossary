@@ -7,6 +7,7 @@ import io.github.solomkinmv.glossary.service.storage.StorageService;
 import io.github.solomkinmv.glossary.service.storage.StoredType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.FileSystemUtils;
@@ -24,6 +25,7 @@ import java.util.Optional;
  */
 @Component
 @Slf4j
+@Profile("!s3")
 public class FileSystemStorageService implements StorageService {
     private final HashMap<StoredType, Path> storedTypeDirMapping;
     private final HashMap<StoredType, String> storedTypeUrlPrefixMapping;
