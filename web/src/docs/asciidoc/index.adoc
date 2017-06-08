@@ -1,5 +1,5 @@
 = Person-service Getting Started Guide
-Jane Doe;
+Maksym Solomkin;
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
@@ -10,7 +10,7 @@ Jane Doe;
 [introduction]
 = Introduction
 
-Person-service is a RESTful microservice for ...
+Glossary service used as a back-end service for the whole application.
 
 [[overview]]
 = Overview
