@@ -12,6 +12,7 @@ dependencies {
     compile hibernateValidation
     compile tomcatEmbedEl
     compile group: 'com.h2database', name: 'h2', version: '1.4.194'
+    compile 'mysql:mysql-connector-java'
     compile('org.projectlombok:lombok')
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }

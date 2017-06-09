@@ -1,6 +1,7 @@
 FROM frolvlad/alpine-oraclejdk8:slim
 VOLUME /tmp
 ADD glossary.jar app.jar
+ADD wrapper.sh wrapper.sh
+RUN sh -c 'chmod +x /wrapper.sh'
 RUN sh -c 'touch /app.jar'
-ENV JAVA_OPTS=""
-ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar" ]
+ENTRYPOINT ["/wrapper.sh"]
