@@ -5,9 +5,10 @@ import io.github.solomkinmv.glossary.persistence.model.StudiedWord;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
+
+import static io.github.solomkinmv.glossary.persistence.util.DaoUtils.findOrEmpty;
 
 /**
  * Implementation of {@link StudiedWordDao}.
@@ -33,18 +34,13 @@ public class StudiedWordJpaDao extends AbstractJpaDao<StudiedWord> implements St
 
     @Override
     public Optional<StudiedWord> findByIdAndUsername(long wordId, String username) {
-        try {
-            return Optional.of(entityManager.createQuery("SELECT s FROM UserDictionary u " +
-                                                                 "JOIN u.wordSets w " +
-                                                                 "JOIN w.studiedWords s " +
-                                                                 "WHERE u.user.username=:username AND s.id=:id",
-                                                         StudiedWord.class)
-                                            .setParameter("id", wordId)
-                                            .setParameter("username", username)
-                                            .getSingleResult());
-        } catch (NoResultException e) {
-            log.debug("No studied words found for user {} with id {}", username, wordId);
-            return Optional.empty();
-        }
+        return findOrEmpty(() -> entityManager.createQuery("SELECT s FROM UserDictionary u " +
+                                                                   "JOIN u.wordSets w " +
+                                                                   "JOIN w.studiedWords s " +
+                                                                   "WHERE u.user.username=:username AND s.id=:id",
+                                                           StudiedWord.class)
+                                              .setParameter("id", wordId)
+                                              .setParameter("username", username)
+                                              .getSingleResult());
     }
 }

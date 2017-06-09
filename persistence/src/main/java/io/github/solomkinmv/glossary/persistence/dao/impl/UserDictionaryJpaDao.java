@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+import static io.github.solomkinmv.glossary.persistence.util.DaoUtils.findOrEmpty;
+
 /**
  * Implementation of {@link UserDictionaryDao}.
  */
@@ -18,10 +20,9 @@ public class UserDictionaryJpaDao extends AbstractJpaDao<UserDictionary> impleme
 
     @Override
     public Optional<UserDictionary> findByUsername(String username) {
-        UserDictionary userDictionary = entityManager.createQuery(
+        return findOrEmpty(() -> entityManager.createQuery(
                 "SELECT u FROM UserDictionary u WHERE u.user.username = :username", UserDictionary.class)
-                                                     .setParameter("username", username)
-                                                     .getSingleResult();
-        return Optional.ofNullable(userDictionary);
+                                              .setParameter("username", username)
+                                              .getSingleResult());
     }
 }

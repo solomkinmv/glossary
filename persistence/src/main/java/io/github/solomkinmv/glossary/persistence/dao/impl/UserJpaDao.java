@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+import static io.github.solomkinmv.glossary.persistence.util.DaoUtils.findOrEmpty;
+
 /**
  * Implementation of {@link UserDao}.
  */
@@ -18,9 +20,9 @@ public class UserJpaDao extends AbstractJpaDao<User> implements UserDao {
 
     @Override
     public Optional<User> findByUsername(String username) {
-        User user = entityManager.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class)
-                                 .setParameter("username", username)
-                                 .getSingleResult();
-        return Optional.ofNullable(user);
+        return findOrEmpty(
+                () -> entityManager.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class)
+                                   .setParameter("username", username)
+                                   .getSingleResult());
     }
 }

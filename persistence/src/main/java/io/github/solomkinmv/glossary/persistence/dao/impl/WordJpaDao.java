@@ -5,9 +5,10 @@ import io.github.solomkinmv.glossary.persistence.model.Word;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
+
+import static io.github.solomkinmv.glossary.persistence.util.DaoUtils.findOrEmpty;
 
 /**
  * Implementation of {@link WordDao}.
@@ -31,13 +32,8 @@ public class WordJpaDao extends AbstractJpaDao<Word> implements WordDao {
 
     @Override
     public Optional<Word> findByText(String text) {
-        try {
-            return Optional.of(entityManager.createQuery("SELECT w FROM Word w WHERE w.text = :text", Word.class)
-                                            .setParameter("text", text)
-                                            .getSingleResult());
-        } catch (NoResultException e) {
-            log.debug("No words found for text {}", text);
-            return Optional.empty();
-        }
+        return findOrEmpty(() -> entityManager.createQuery("SELECT w FROM Word w WHERE w.text = :text", Word.class)
+                                              .setParameter("text", text)
+                                              .getSingleResult());
     }
 }

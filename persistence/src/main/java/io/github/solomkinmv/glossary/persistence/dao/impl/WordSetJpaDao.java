@@ -5,9 +5,10 @@ import io.github.solomkinmv.glossary.persistence.model.WordSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
+
+import static io.github.solomkinmv.glossary.persistence.util.DaoUtils.findOrEmpty;
 
 /**
  * Implementation of {@link WordSetDao}.
@@ -32,17 +33,12 @@ public class WordSetJpaDao extends AbstractJpaDao<WordSet> implements WordSetDao
 
     @Override
     public Optional<WordSet> findByIdAndUsername(long id, String username) {
-        try {
-            return Optional.of(entityManager.createQuery(
-                    "SELECT w FROM WordSet w " +
-                            "WHERE w.userDictionary.user.username = :username AND w.id = :id", WordSet.class)
-                                            .setParameter("id", id)
-                                            .setParameter("username", username)
-                                            .getSingleResult());
-        } catch (NoResultException e) {
-            log.debug("No words found for user {} with id {}", username, id);
-            return Optional.empty();
-        }
+        return findOrEmpty(() -> entityManager.createQuery(
+                "SELECT w FROM WordSet w " +
+                        "WHERE w.userDictionary.user.username = :username AND w.id = :id", WordSet.class)
+                                              .setParameter("id", id)
+                                              .setParameter("username", username)
+                                              .getSingleResult());
     }
 
     @Override
