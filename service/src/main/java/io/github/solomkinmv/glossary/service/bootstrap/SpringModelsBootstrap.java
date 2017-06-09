@@ -25,7 +25,6 @@ public class SpringModelsBootstrap implements ApplicationListener<ContextRefresh
     private final WordSetService wordSetService;
     private final UserDictionaryService userDictionaryService;
 
-    private Role adminRole;
     private Role userRole;
     private List<User> users;
     private Map<User, List<StudiedWord>> studiedWords;
@@ -47,11 +46,15 @@ public class SpringModelsBootstrap implements ApplicationListener<ContextRefresh
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        saveRoles();
+        getRoles();
         saveUsers();
         saveStudiedWords();
         saveWordSetForUsers();
         saveUserDictionaries();
+    }
+
+    private void getRoles() {
+        userRole = roleService.getByRoleType(RoleType.USER);
     }
 
     private void saveUserDictionaries() {
@@ -111,13 +114,5 @@ public class SpringModelsBootstrap implements ApplicationListener<ContextRefresh
                            Collections.singleton(userRole)));
 
         users.forEach(userService::save);
-    }
-
-    private void saveRoles() {
-        adminRole = new Role(RoleType.ADMIN);
-        userRole = new Role(RoleType.USER);
-
-        roleService.save(adminRole);
-        roleService.save(userRole);
     }
 }
