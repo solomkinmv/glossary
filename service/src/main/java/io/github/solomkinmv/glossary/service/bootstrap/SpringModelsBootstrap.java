@@ -1,7 +1,12 @@
 package io.github.solomkinmv.glossary.service.bootstrap;
 
+import io.github.solomkinmv.glossary.persistence.dao.RoleDao;
 import io.github.solomkinmv.glossary.persistence.model.*;
-import io.github.solomkinmv.glossary.service.domain.*;
+import io.github.solomkinmv.glossary.service.domain.UserDictionaryService;
+import io.github.solomkinmv.glossary.service.domain.UserService;
+import io.github.solomkinmv.glossary.service.domain.WordService;
+import io.github.solomkinmv.glossary.service.domain.WordSetService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
@@ -17,15 +22,16 @@ import java.util.*;
 @Component
 @Profile("dev")
 @Transactional
+@Slf4j
 public class SpringModelsBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
     private final UserService userService;
-    private final RoleService roleService;
+    private final RoleDao roleDao;
     private final WordService wordService;
     private final WordSetService wordSetService;
     private final UserDictionaryService userDictionaryService;
 
-    private Role userRole;
+    private Map<RoleType, Role> roles;
     private List<User> users;
     private Map<User, List<StudiedWord>> studiedWords;
     private Map<User, Set<WordSet>> wordSets;
@@ -33,12 +39,11 @@ public class SpringModelsBootstrap implements ApplicationListener<ContextRefresh
 
     @Autowired
     public SpringModelsBootstrap(UserService userService,
-                                 RoleService roleService,
-                                 WordService wordService,
+                                 RoleDao roleDao, WordService wordService,
                                  WordSetService wordSetService,
                                  UserDictionaryService userDictionaryService) {
         this.userService = userService;
-        this.roleService = roleService;
+        this.roleDao = roleDao;
         this.wordService = wordService;
         this.wordSetService = wordSetService;
         this.userDictionaryService = userDictionaryService;
@@ -46,15 +51,12 @@ public class SpringModelsBootstrap implements ApplicationListener<ContextRefresh
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        getRoles();
+        log.info("Bootstrapping application for dev environment");
+        saveRoles();
         saveUsers();
         saveStudiedWords();
         saveWordSetForUsers();
         saveUserDictionaries();
-    }
-
-    private void getRoles() {
-        userRole = roleService.getByRoleType(RoleType.USER);
     }
 
     private void saveUserDictionaries() {
@@ -108,11 +110,26 @@ public class SpringModelsBootstrap implements ApplicationListener<ContextRefresh
         users = new ArrayList<>();
         users.add(new User("John", "user1", "$2a$10$bnC26zz//2cavYoSCrlHdecWF8tkGfPodlHcYwlACBBwJvcEf0p2G",
                            "user1@email.com",
-                           Collections.singleton(userRole)));
+                           Collections.singleton(roles.get(RoleType.USER))));
         users.add(new User("Charles", "user2", "$2a$10$bnC26zz//2cavYoSCrlHdecWF8tkGfPodlHcYwlACBBwJvcEf0p2G",
                            "user2@email.com",
-                           Collections.singleton(userRole)));
+                           Collections.singleton(roles.get(RoleType.USER))));
 
         users.forEach(userService::save);
+    }
+
+    private void saveRoles() {
+        roles = new HashMap<>();
+        for (RoleType roleType : RoleType.values()) {
+            roles.put(roleType, ensureRole(roleType));
+        }
+    }
+
+    private Role ensureRole(RoleType roleType) {
+        return roleDao.findByRoleType(roleType).orElseGet(() -> {
+            Role role = new Role(roleType);
+            roleDao.create(role);
+            return role;
+        });
     }
 }
