@@ -9,6 +9,7 @@ import io.github.solomkinmv.glossary.service.domain.WordService;
 import io.github.solomkinmv.glossary.service.speach.SpeechService;
 import io.github.solomkinmv.glossary.service.translate.Language;
 import io.github.solomkinmv.glossary.service.translate.Translator;
+import io.github.solomkinmv.glossary.service.translate.TranslatorException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -100,8 +101,12 @@ public class WordServiceImpl implements WordService {
 
         Set<String> translations = new HashSet<>();
         translations.add(studiedWord.getTranslation());
-        translator.execute(studiedWord.getText(), Language.ENGLISH, Language.RUSSIAN)
-                  .ifPresent(translations::add);
+        try {
+            translator.execute(studiedWord.getText(), Language.ENGLISH, Language.RUSSIAN)
+                      .ifPresent(translations::add);
+        } catch (TranslatorException e) {
+            log.warn("Error occurred while using translator service", e);
+        }
 
         Set<String> images = new HashSet<>();
         if (studiedWord.getImage() != null) {
