@@ -7,4 +7,4 @@ do
   sleep 5
 done
 
-java -Djava.security.egd=file:/dev/./urandom -Dspring.profiles.active=container -jar /app.jar
+java -Djava.security.egd=file:/dev/./urandom -jar /app.jar
