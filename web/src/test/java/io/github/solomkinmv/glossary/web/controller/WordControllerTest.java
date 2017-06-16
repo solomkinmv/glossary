@@ -44,10 +44,10 @@ public class WordControllerTest extends MockMvcBase {
     public void setUp() throws Exception {
         log.info("Setting up test method");
 
-        StudiedWord word1 = new StudiedWord("word1", "слово1");
-        StudiedWord word2 = new StudiedWord("word2", "слово2");
-        StudiedWord word3 = new StudiedWord("word2", "слово22");
-        StudiedWord word4 = new StudiedWord("word4", "слово4");
+        StudiedWord word1 = new StudiedWord("word1", "word1_translation");
+        StudiedWord word2 = new StudiedWord("word2", "word2_translation");
+        StudiedWord word3 = new StudiedWord("word2", "word22_translation");
+        StudiedWord word4 = new StudiedWord("word4", "word4_translation");
         wordList.add(wordService.save(word1));
         wordList.add(wordService.save(word2));
         wordList.add(wordService.save(word3));
@@ -166,7 +166,7 @@ public class WordControllerTest extends MockMvcBase {
 
     @Test
     public void searchForIllegalWords() throws Exception {
-        String illegalWord = "word42";
+        String illegalWord = "illegalWord";
         mockMvc.perform(get("/api/words/search")
                                 .param("text", illegalWord)
                                 .with(userToken()))
@@ -178,7 +178,7 @@ public class WordControllerTest extends MockMvcBase {
     @Test
     public void searchForNewWords() throws Exception {
         String word = "word";
-        String expectedTranslation = "слово";
+        String expectedTranslation = word + "_translation";
         mockMvc.perform(get("/api/words/search")
                                 .param("text", word)
                                 .with(userToken()))
