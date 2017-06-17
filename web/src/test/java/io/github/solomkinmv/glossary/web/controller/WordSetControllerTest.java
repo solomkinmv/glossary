@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -248,7 +249,13 @@ public class WordSetControllerTest extends MockMvcBase {
         assertTrue(dictionaryOptional.isPresent());
         UserDictionary userDictionary = dictionaryOptional.get();
 
-        assertFalse(userDictionary.getWordSets().stream().noneMatch(wordSet -> wordSetIds[0] == wordSet.getId()));
+        assertTrue(userDictionary.getWordSets().stream().noneMatch(wordSet -> wordSetIds[0] == wordSet.getId()));
+
+        List<Long> wordList = wordService.listAll().stream().map(StudiedWord::getId).collect(Collectors.toList());
+
+        assertEquals(3, wordList.size());
+        assertTrue(wordList.stream().noneMatch(wordId -> wordId == 0L));
+        assertTrue(wordList.stream().noneMatch(wordId -> wordId == 1L));
     }
 
     @Test
