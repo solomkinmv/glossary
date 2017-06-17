@@ -13,7 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class UserDictionary extends AbstractModelClass {
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "userDictionary")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userDictionary")
     private Set<WordSet> wordSets;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -22,5 +22,17 @@ public class UserDictionary extends AbstractModelClass {
     @PrePersist
     private void addDictionaryToWordSets() {
         wordSets.forEach(wordSet -> wordSet.setUserDictionary(this));
+    }
+
+    public void addWordSet(WordSet wordSet) {
+        wordSet.setUserDictionary(this);
+        wordSets.add(wordSet);
+    }
+
+    public void removeWordSet(WordSet wordSet) {
+        wordSets.remove(wordSet);
+        if (wordSet != null) {
+            wordSet.setUserDictionary(null);
+        }
     }
 }

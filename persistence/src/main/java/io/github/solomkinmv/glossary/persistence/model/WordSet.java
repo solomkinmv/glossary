@@ -22,10 +22,10 @@ public class WordSet extends AbstractModelClass {
     @NotBlank
     private String description;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudiedWord> studiedWords;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private UserDictionary userDictionary;
 
     public WordSet(String name, String description, List<StudiedWord> studiedWords) {
@@ -43,6 +43,8 @@ public class WordSet extends AbstractModelClass {
 
     @PreRemove
     private void removeFromUserDictionary() {
-        userDictionary.getWordSets().removeIf(this::equals);
+        if (userDictionary != null) {
+            userDictionary.getWordSets().removeIf(this::equals);
+        }
     }
 }

@@ -23,9 +23,6 @@ public class User extends AbstractModelClass {
     private String password;
     private String email;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-//    @JoinTable
-    // ~ defaults to @JoinTable(name = "USER_ROLE", joinColumns = @JoinColumn(name = "user_id"),
-    //     inverseJoinColumns = @joinColumn(name = "role_id"))
+    @ManyToMany(fetch = FetchType.LAZY)
     private Set<Role> roles;
 }
