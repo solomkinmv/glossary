@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * Bootstraps data for the persistence layer.
@@ -52,6 +53,9 @@ public class SpringModelsBootstrap implements ApplicationListener<ContextRefresh
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         log.info("Bootstrapping application for dev environment");
+        if (isDbBootstrapped()) {
+            return;
+        }
         saveRoles();
         saveUsers();
         saveStudiedWords();
@@ -121,15 +125,23 @@ public class SpringModelsBootstrap implements ApplicationListener<ContextRefresh
     private void saveRoles() {
         roles = new HashMap<>();
         for (RoleType roleType : RoleType.values()) {
-            roles.put(roleType, ensureRole(roleType));
+            ensureRole(roleType);
         }
     }
 
-    private Role ensureRole(RoleType roleType) {
-        return roleDao.findByRoleType(roleType).orElseGet(() -> {
+    private void ensureRole(RoleType roleType) {
+        roles.put(roleType, roleDao.findByRoleType(roleType).orElseGet(saveRole(roleType)));
+    }
+
+    private Supplier<Role> saveRole(RoleType roleType) {
+        return () -> {
             Role role = new Role(roleType);
             roleDao.create(role);
             return role;
-        });
+        };
+    }
+
+    private boolean isDbBootstrapped() {
+        return roleDao.findByRoleType(RoleType.USER).isPresent();
     }
 }
