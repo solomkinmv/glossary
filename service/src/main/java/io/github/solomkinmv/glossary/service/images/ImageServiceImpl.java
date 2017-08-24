@@ -20,15 +20,18 @@ import java.util.stream.IntStream;
 
 @Service
 @Slf4j
-public class ImageServiceImpl implements ImageService {
+class ImageServiceImpl implements ImageService {
 
+    private static final int IMAGE_WIDTH = 240;
     private final Flickr flickr;
     private final StorageService storageService;
+    private final ImageProcessor imageProcessor;
 
     @Autowired
-    public ImageServiceImpl(Flickr flickr, StorageService storageService) {
+    public ImageServiceImpl(Flickr flickr, StorageService storageService, ImageProcessor imageProcessor) {
         this.flickr = flickr;
         this.storageService = storageService;
+        this.imageProcessor = imageProcessor;
     }
 
     /**
@@ -63,7 +66,6 @@ public class ImageServiceImpl implements ImageService {
     /**
      * Stores image {@code inputStream} to the file system.
      * Modifies {@code originalFilename} before the image storing.
-     * TODO: check types (throw exception if not an image)
      *
      * @param inputStream      input stream for the image
      * @param originalFilename file name of the image
@@ -73,7 +75,8 @@ public class ImageServiceImpl implements ImageService {
     public String store(InputStream inputStream, String originalFilename) {
         log.info("Storing image with {} filename", originalFilename);
         String filename = adaptFilename(originalFilename);
-        return storageService.store(inputStream, filename, StoredType.IMG);
+        InputStream processedInputStream = imageProcessor.fitByWidth(inputStream, IMAGE_WIDTH);
+        return storageService.store(processedInputStream, filename, StoredType.IMG);
     }
 
     @Override
