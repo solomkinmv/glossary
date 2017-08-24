@@ -1,14 +1,16 @@
+javaModule.name = 'io.github.solomkinmv.glossary.persistence'
+
 jar {
     baseName = 'glossary-persistence'
 }
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
+    compile group: 'org.hibernate.validator', name: 'hibernate-validator', version: '6.0.2.Final'
+    compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-el', version: '9.0.0.M26'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
     compile beanValidation
-    compile hibernateValidation
-    compile tomcatEmbedEl
     compile group: 'com.h2database', name: 'h2', version: '1.4.194'
-    compile 'mysql:mysql-connector-java'
-    compile('org.projectlombok:lombok')
+    compile('org.projectlombok:lombok:1.16.18')
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
