@@ -1,5 +1,5 @@
 def jsonWebTokenVersion = "0.7.0"
-def hateoasVersion = "0.20.0.RELEASE"
+def hateoasVersion = "0.23.0.RELEASE"
 def beanValidationVersion = "1.1.0.Final"
 def httpClientVersion = "4.5.2"
 def jacksonVersion = "2.8.6"
@@ -17,11 +17,12 @@ ext {
 
 buildscript {
     ext {
-        springBootVersion = "1.4.3.RELEASE"
+        springBootVersion = "2.0.0.M3"
     }
 
     repositories {
         mavenCentral()
+        maven { url 'https://repo.spring.io/libs-snapshot' }
     }
 
     dependencies {
@@ -39,12 +40,11 @@ subprojects {
     repositories {
         mavenCentral()
         jcenter()
+        maven { url 'https://repo.spring.io/libs-snapshot' }
     }
 
     apply plugin: "java"
     apply plugin: "idea"
     apply plugin: "org.springframework.boot"
-
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    apply plugin: 'io.spring.dependency-management'
 }
