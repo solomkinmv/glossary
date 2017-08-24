@@ -120,7 +120,7 @@ public class PracticeControllerTest extends MockMvcBase {
                                        .description("Path to the word's pronunciation sound"),
                                fieldWithPath("quiz.questions[].alternatives")
                                        .description("Alternative answers to the test"),
-                               fieldWithPath("_links").ignored()
+                               subsectionWithPath("_links").ignored()
                        ), links(
                                linkWithRel("self").description("Link to generate quiz"),
                                linkWithRel("writingTest").description("Link to generate writing practice"),
@@ -158,7 +158,7 @@ public class PracticeControllerTest extends MockMvcBase {
                                        .description("Word's image"),
                                fieldWithPath("writingPracticeTest.questions[].answer.pronunciation")
                                        .description("Path to the word's pronunciation sound"),
-                               fieldWithPath("_links").ignored()
+                               subsectionWithPath("_links").ignored()
                        ), links(
                                linkWithRel("self").description("Link to generate writing practice"),
                                linkWithRel("quiz").description("Link to generate quiz"),
@@ -208,7 +208,7 @@ public class PracticeControllerTest extends MockMvcBase {
                .andExpect(status().isOk())
                .andDo(documentationHandler.document(
                        requestFields(
-                               fieldWithPath("wordAnswers")
+                               subsectionWithPath("wordAnswers")
                                        .description("Map of answers. wordId -> boolean value, true if correct value")
                        ), headersSnippet
                ));

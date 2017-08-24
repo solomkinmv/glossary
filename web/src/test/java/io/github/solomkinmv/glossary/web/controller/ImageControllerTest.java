@@ -12,8 +12,7 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.*;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -47,11 +46,11 @@ public class ImageControllerTest extends MockMvcBase {
                        responseFields(
                                fieldWithPath("query").description("The search query"),
                                fieldWithPath("images").description("Array of urls for images"),
-                               fieldWithPath("_links").ignored()
+                               subsectionWithPath("_links").ignored()
                        ), requestParameters(
                                parameterWithName("query").description("The search query")
-                       ), links(
-                               linkWithRel("self").description("The same search request")
+                       ), links(halLinks(),
+                                linkWithRel("self").description("The same search request")
                        ), headersSnippet
                ));
     }
@@ -62,7 +61,7 @@ public class ImageControllerTest extends MockMvcBase {
         String expectedFilename = "img_one.jpg";
         MockMultipartFile file = new MockMultipartFile("file", originalFilename, "image/png",
                                                        "nonsensecontent".getBytes());
-        mockMvc.perform(fileUpload("/api/images")
+        mockMvc.perform(multipart("/api/images")
                                 .file(file)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .with(userToken()))
@@ -80,7 +79,7 @@ public class ImageControllerTest extends MockMvcBase {
         String originalFilename = "img one.jpg";
         MockMultipartFile file = new MockMultipartFile("file", originalFilename, "image/png",
                                                        "nonsensecontent".getBytes());
-        mockMvc.perform(fileUpload("/api/images")
+        mockMvc.perform(multipart("/api/images")
                                 .file(file)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .with(userToken()));

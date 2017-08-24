@@ -89,9 +89,9 @@ public class WordControllerTest extends MockMvcBase {
                .andExpect(jsonPath("$._embedded.wordResourceList[*].word.translation", not(contains(nullValue()))))
                .andDo(documentationHandler.document(
                        responseFields(
-                               fieldWithPath("_embedded.wordResourceList[].word").description(
+                               subsectionWithPath("_embedded.wordResourceList[].word").description(
                                        "Information about the word"),
-                               fieldWithPath("_embedded.wordResourceList[]._links").description("Word's links")
+                               subsectionWithPath("_embedded.wordResourceList[]._links").description("Word's links")
                        ), headersSnippet));
     }
 
@@ -115,7 +115,7 @@ public class WordControllerTest extends MockMvcBase {
                                        "Word's learning level. Can be NOT_LEARNED, LEARNING, LEARNED"),
                                fieldWithPath("word.image").description("Path to the word's image"),
                                fieldWithPath("word.sound").description("Path to the word's pronunciation sound"),
-                               fieldWithPath("_links").ignored()
+                               subsectionWithPath("_links").ignored()
                        ), links(
                                linkWithRel("self").description("Link to the word"),
                                linkWithRel("words").description("Link to get all words for the user"),
@@ -155,7 +155,7 @@ public class WordControllerTest extends MockMvcBase {
                                fieldWithPath("result.records[].images").description("Array of word's images"),
                                fieldWithPath("result.records[].sound")
                                        .description("Path to the word's pronunciation sound"),
-                               fieldWithPath("_links").ignored()
+                               subsectionWithPath("_links").ignored()
                        ), links(
                                linkWithRel("words").description("Link to get all words for the user")
                        ), requestParameters(

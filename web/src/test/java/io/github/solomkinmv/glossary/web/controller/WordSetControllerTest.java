@@ -111,9 +111,9 @@ public class WordSetControllerTest extends MockMvcBase {
                                fieldWithPath("_embedded.wordSetResourceList[].set.name").description("Word set's name"),
                                fieldWithPath("_embedded.wordSetResourceList[].set.description")
                                        .description("Word set's description"),
-                               fieldWithPath("_embedded.wordSetResourceList[].set.words[]")
+                               subsectionWithPath("_embedded.wordSetResourceList[].set.words[]")
                                        .description("Array of words"),
-                               fieldWithPath("_embedded.wordSetResourceList[]._links").ignored()
+                               subsectionWithPath("_embedded.wordSetResourceList[]._links").ignored()
                        ), headersSnippet
                ));
     }
@@ -134,8 +134,8 @@ public class WordSetControllerTest extends MockMvcBase {
                                fieldWithPath("set.id").description("Word set's id"),
                                fieldWithPath("set.name").description("Word set's name"),
                                fieldWithPath("set.description").description("Word set's description"),
-                               fieldWithPath("set.words").description("Array of words"),
-                               fieldWithPath("_links").ignored()
+                               subsectionWithPath("set.words").description("Array of words"),
+                               subsectionWithPath("_links").ignored()
                        ), links(
                                linkWithRel("self").description("Link to the word set"),
                                linkWithRel("wordSets").description("Link to get all word sets for the user")
@@ -192,7 +192,7 @@ public class WordSetControllerTest extends MockMvcBase {
                                                      fieldWithPath("id").ignored(),
                                                      fieldWithPath("name").description("Word set's name"),
                                                      fieldWithPath("description").description("Word set's description"),
-                                                     fieldWithPath("words").description("Array of words")
+                                                     subsectionWithPath("words").description("Array of words")
                                              ), headersSnippet
                                      )).andReturn();
 
@@ -376,6 +376,7 @@ public class WordSetControllerTest extends MockMvcBase {
 
     private long extractIdFromLocationHeader(MvcResult mvcResult) {
         String location = mvcResult.getResponse().getHeader("Location");
+        assert location != null;
         String[] urlChunks = location.split("/");
         return Long.parseLong(urlChunks[urlChunks.length - 1]);
     }
