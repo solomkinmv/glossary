@@ -28,16 +28,16 @@ jar {
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-security")
-    testCompile("org.springframework.boot:spring-boot-starter-test")
-    testCompile group: 'org.springframework.security', name: 'spring-security-test'
-    testCompile 'org.springframework.restdocs:spring-restdocs-mockmvc'
     compile('org.projectlombok:lombok')
     compile("org.springframework.boot:spring-boot-starter-hateoas")
     compile hateoas
     compile jsonwebtoken
-
     compile("org.springframework.boot:spring-boot-configuration-processor")
     compileJava.dependsOn(processResources)
+
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    testCompile group: 'org.springframework.security', name: 'spring-security-test'
+    testCompile group: 'org.springframework.restdocs', name: 'spring-restdocs-mockmvc'
 
     compile project(":persistence")
     compile project(":service")
@@ -46,6 +46,10 @@ dependencies {
 group = 'solomkinmv'
 
 apply plugin: "docker"
+
+bootJar {
+    mainClass = 'io.github.solomkinmv.glossary.web.Application'
+}
 
 task buildDocker(type: Docker, dependsOn: build) {
     push = true
