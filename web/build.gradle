@@ -25,10 +25,12 @@ jar {
     }
 }
 
+
 dependencies {
+    compile 'javax.xml.bind:jaxb-api:2.3.0'
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-security")
-    compile('org.projectlombok:lombok')
+    compile lombok
     compile("org.springframework.boot:spring-boot-starter-hateoas")
     compile hateoas
     compile jsonwebtoken
@@ -48,7 +50,8 @@ group = 'solomkinmv'
 apply plugin: "docker"
 
 bootJar {
-    mainClass = 'io.github.solomkinmv.glossary.web.Application'
+    launchScript()
+//    mainClass = 'io.github.solomkinmv.glossary.web.Application'
 }
 
 task buildDocker(type: Docker, dependsOn: build) {
