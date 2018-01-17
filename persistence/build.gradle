@@ -1,7 +1,10 @@
-javaModule.name = 'io.github.solomkinmv.glossary.persistence'
-
 jar {
     baseName = 'glossary-persistence'
+    enabled = true
+}
+
+bootJar {
+    enabled = false
 }
 
 dependencies {
@@ -11,6 +14,6 @@ dependencies {
     compile group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
     compile beanValidation
     compile group: 'com.h2database', name: 'h2', version: '1.4.194'
-    compile('org.projectlombok:lombok:1.16.18')
+    compileOnly lombok
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
