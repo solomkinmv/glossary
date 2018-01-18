@@ -1,5 +1,5 @@
 plugins {
-    id "org.asciidoctor.convert" version "1.5.2"
+    id 'org.asciidoctor.convert' version '1.5.6'
 }
 
 ext {
@@ -17,7 +17,7 @@ asciidoctor {
 }
 
 jar {
-    baseName = "glossary"
+    baseName = 'glossary'
     version = null
     dependsOn asciidoctor
     from ("${asciidoctor.outputDir}/html5") {
@@ -27,31 +27,31 @@ jar {
 
 
 dependencies {
-    compile 'javax.xml.bind:jaxb-api:2.3.0'
-    compile("org.springframework.boot:spring-boot-starter-web")
-    compile("org.springframework.boot:spring-boot-starter-security")
+    compile jaxbApi
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-starter-security'
+    compile 'org.springframework.boot:spring-boot-starter-hateoas'
+    compile 'org.springframework.hateoas:spring-hateoas'
     compile lombok
-    compile("org.springframework.boot:spring-boot-starter-hateoas")
-    compile hateoas
     compile jsonwebtoken
-    compile("org.springframework.boot:spring-boot-configuration-processor")
+    compile 'org.springframework.boot:spring-boot-configuration-processor'
+
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile 'org.springframework.security:spring-security-test'
+    testCompile 'org.springframework.restdocs:spring-restdocs-mockmvc'
+
+    compile project(':persistence')
+    compile project(':service')
+
     compileJava.dependsOn(processResources)
-
-    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-    testCompile group: 'org.springframework.security', name: 'spring-security-test'
-    testCompile group: 'org.springframework.restdocs', name: 'spring-restdocs-mockmvc'
-
-    compile project(":persistence")
-    compile project(":service")
 }
 
 group = 'solomkinmv'
 
-apply plugin: "docker"
+apply plugin: 'docker'
 
 bootJar {
     launchScript()
-//    mainClass = 'io.github.solomkinmv.glossary.web.Application'
 }
 
 task buildDocker(type: Docker, dependsOn: build) {

@@ -1,9 +1,13 @@
 package io.github.solomkinmv.glossary.web.dto;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Value
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class WordSetMetaDto {
-    String name;
-    String description;
+    private String name;
+    private String description;
 }

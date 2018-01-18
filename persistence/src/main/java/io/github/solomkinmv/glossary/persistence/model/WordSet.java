@@ -2,9 +2,9 @@ package io.github.solomkinmv.glossary.persistence.model;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Entity
