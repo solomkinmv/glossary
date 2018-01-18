@@ -1,12 +1,16 @@
 package io.github.solomkinmv.glossary.service.practice;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import java.util.Map;
 
-@Value
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class PracticeResults {
     @NotNull
-    Map<Long, Boolean> wordAnswers;
+    private Map<Long, Boolean> wordAnswers;
 }

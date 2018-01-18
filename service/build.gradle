@@ -9,16 +9,15 @@ bootJar {
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter')
-    compileOnly lombok
-    compile group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.11.181'
-    compile group: 'javazoom', name: 'jlayer', version: '1.0.1'
-    compile group: 'com.flickr4java', name: 'flickr4java', version: '2.16'
-    compile group: 'com.google.guava', name: 'guava', version: '21.0'
-    compile group: 'net.coobird', name: 'thumbnailator', version: '0.4.8'
+    compile awsSdk
+    compile jlayer
+    compile flickr4java
+    compile guava
     compile httpClient
     compile fluentHC
-//    compile jackson
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile project(':persistence')
 
-    compile project(":persistence")
+    compileOnly lombok
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
 }

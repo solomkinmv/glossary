@@ -1,17 +1,21 @@
 package io.github.solomkinmv.glossary.web.dto;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Null;
 import java.util.List;
 
-@Value
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class WordSetDto {
     @Null
-    Long id;
-    String name;
-    String description;
+    private Long id;
+    private String name;
+    private String description;
     @Valid
-    List<WordDto> words;
+    private List<WordDto> words;
 }

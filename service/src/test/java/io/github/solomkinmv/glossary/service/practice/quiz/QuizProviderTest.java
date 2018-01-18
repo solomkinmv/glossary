@@ -5,7 +5,7 @@ import io.github.solomkinmv.glossary.persistence.model.WordStage;
 import io.github.solomkinmv.glossary.service.practice.Answer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.List;

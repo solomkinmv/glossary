@@ -1,19 +1,23 @@
 package io.github.solomkinmv.glossary.web.dto;
 
 import io.github.solomkinmv.glossary.persistence.model.WordStage;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Null;
 
-@Value
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class WordDto {
     @Null
-    Long id;
-    String text;
-    String translation;
+    private Long id;
+    private String text;
+    private String translation;
     @Null
-    WordStage stage;
-    String image;
+    private WordStage stage;
+    private String image;
     @Null
-    String sound;
+    private String sound;
 }
