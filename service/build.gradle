@@ -15,6 +15,7 @@ dependencies {
     compile guava
     compile httpClient
     compile fluentHC
+    compile thumbnailator
     compile project(':persistence')
 
     compileOnly lombok
