@@ -6,6 +6,7 @@ def flickrVersion = '2.16'
 def guavaVersion = '21.0'
 def lombokVersion = '1.16.20'
 def jaxbApiVersion = '2.3.0'
+def thumbnailatorVersion = '0.4.8'
 
 ext {
     awsSdk = "com.amazonaws:aws-java-sdk:${awsSdkVersion}"
@@ -17,6 +18,7 @@ ext {
     fluentHC = "org.apache.httpcomponents:fluent-hc:${httpClientVersion}"
     lombok = "org.projectlombok:lombok:${lombokVersion}"
     jaxbApi = "javax.xml.bind:jaxb-api:${jaxbApiVersion}"
+    thumbnailator = "net.coobird:thumbnailator:${thumbnailatorVersion}"
 }
 
 buildscript {
