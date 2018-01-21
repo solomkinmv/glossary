@@ -27,7 +27,7 @@ jar {
 
 
 dependencies {
-    compile jaxbApi
+    compile jaxbApi // should be included as external dependency because of java 9
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-security'
     compile 'org.springframework.boot:spring-boot-starter-hateoas'

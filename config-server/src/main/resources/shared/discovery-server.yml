@@ -1,0 +1,9 @@
+eureka:
+  server:
+    enable-self-preservation: true
+  client:
+    fetchRegistry: false
+    registerWithEureka: false
+
+server:
+  port: 8761

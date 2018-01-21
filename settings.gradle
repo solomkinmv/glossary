@@ -6,3 +6,4 @@ include 'persistence'
 include 'service'
 
 include 'config-server'
+include 'discovery-server'
