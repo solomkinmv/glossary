@@ -13,5 +13,7 @@ addons:
 
 after_success:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - ./gradlew web:buildDocker
-  - docker push solomkinmv/glossary
+  - ./gradlew config-server:docker
+  - ./gradlew config-server:dockerPush
+  - ./gradlew discovery-server:docker
+  - ./gradlew discovery-server:dockerPush
