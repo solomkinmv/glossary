@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: discovery-server
+
+  cloud:
+    config:
+      uri: http://config:8888
+      fail-fast: true
+
+---
+
+spring:
+  profiles:
+    active: local
+
+  cloud:
+    config:
+      uri: http://localhost:8888
