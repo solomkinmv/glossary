@@ -1,5 +1,5 @@
-def jsonWebTokenVersion = "0.7.0"
-def httpClientVersion = "4.5.2"
+def jsonWebTokenVersion = '0.7.0'
+def httpClientVersion = '4.5.2'
 def awsSdkVersion = '1.11.181'
 def jlayerVersion = '1.0.1'
 def flickrVersion = '2.16'
@@ -9,6 +9,8 @@ def jaxbApiVersion = '2.3.0'
 def thumbnailatorVersion = '0.4.8'
 
 ext {
+    springCloudVersion = 'Finchley.M5'
+
     awsSdk = "com.amazonaws:aws-java-sdk:${awsSdkVersion}"
     jsonwebtoken = "io.jsonwebtoken:jjwt:${jsonWebTokenVersion}"
     jlayer = "javazoom:jlayer:${jlayerVersion}"
@@ -23,8 +25,9 @@ ext {
 
 buildscript {
     ext {
-        springBootVersion = "2.0.0.M7"
-        gradleDockerVersion = "1.2"
+        springBootVersion = '2.0.0.M7'
+        palantirDockerPluginVersion = '0.17.2'
+
     }
 
     repositories {
@@ -36,19 +39,15 @@ buildscript {
 
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath "se.transmode.gradle:gradle-docker:${gradleDockerVersion}"
+        classpath("gradle.plugin.com.palantir.gradle.docker:gradle-docker:${palantirDockerPluginVersion}")
     }
 }
 
-allprojects {
-    group "io.github.solomkinmv"
-    version "0.0.2-SNAPSHOT"
-
-
-    ext['jackson.version'] = '2.9.3'
-}
-
 subprojects {
+    // todo: remove this block after migration to microservices
+    group 'io.github.solomkinmv'
+    version '0.0.2-SNAPSHOT'
+
     repositories {
         mavenCentral()
         jcenter()
@@ -56,8 +55,14 @@ subprojects {
         maven { url 'https://repo.spring.io/libs-milestone' }
     }
 
-    apply plugin: "java"
-    apply plugin: "idea"
-    apply plugin: "org.springframework.boot"
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
+    }
 }

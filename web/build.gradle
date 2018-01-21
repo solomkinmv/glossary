@@ -46,27 +46,6 @@ dependencies {
     compileJava.dependsOn(processResources)
 }
 
-group = 'solomkinmv'
-
-apply plugin: 'docker'
-
 bootJar {
     launchScript()
-}
-
-task buildDocker(type: Docker, dependsOn: build) {
-    push = true
-    applicationName = jar.baseName
-    dockerfile = file('src/main/docker/Dockerfile')
-    doFirst {
-        copy {
-            from jar
-            into stageDir
-        }
-        copy {
-            from file('src/main/docker/wrapper.sh')
-            into stageDir
-        }
-        println  stageDir.listFiles()
-    }
 }
