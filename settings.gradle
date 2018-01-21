@@ -1,4 +1,8 @@
 rootProject.name = 'glossary'
+
+// todo: remove this block after migration to microservices
 include 'web'
 include 'persistence'
 include 'service'
+
+include 'config-server'
