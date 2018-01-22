@@ -6,6 +6,7 @@ def flickrVersion = '2.16'
 def guavaVersion = '21.0'
 def lombokVersion = '1.16.20'
 def jaxbApiVersion = '2.3.0'
+def activationVersion = '1.1.1'
 def thumbnailatorVersion = '0.4.8'
 
 ext {
@@ -20,6 +21,9 @@ ext {
     fluentHC = "org.apache.httpcomponents:fluent-hc:${httpClientVersion}"
     lombok = "org.projectlombok:lombok:${lombokVersion}"
     jaxbApi = "javax.xml.bind:jaxb-api:${jaxbApiVersion}"
+    jaxbCore = "com.sun.xml.bind:jaxb-core:${jaxbApiVersion}"
+    jaxbImpl = "com.sun.xml.bind:jaxb-impl:${jaxbApiVersion}"
+    activation =  "javax.activation:activation:${activationVersion}"
     thumbnailator = "net.coobird:thumbnailator:${thumbnailatorVersion}"
 }
 
