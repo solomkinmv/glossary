@@ -1,4 +1,4 @@
-version: '2.1'
+version: '3.5'
 
 services:
   config:
@@ -17,8 +17,7 @@ services:
     image: solomkinmv/discovery-server
     restart: always
     depends_on:
-      config:
-        condition: service_healthy
+      - config
     ports:
       - 8761:8761
     logging:

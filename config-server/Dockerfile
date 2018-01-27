@@ -1,4 +1,4 @@
-FROM java:9
+FROM openjdk:9.0.1-11-jre-slim
 ARG JAR_FILE
 ADD ${JAR_FILE} app.jar
 ENTRYPOINT ["java", "-Xmx200m", "-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
