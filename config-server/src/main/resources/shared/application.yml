@@ -1,1 +1,8 @@
+eureka:
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://discovery:8761/eureka
+
 hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 30000
