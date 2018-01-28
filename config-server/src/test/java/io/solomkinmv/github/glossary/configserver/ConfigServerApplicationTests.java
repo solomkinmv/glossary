@@ -1,4 +1,4 @@
-package io.solomkinmv.github.glossary.configserver.configserver;
+package io.solomkinmv.github.glossary.configserver;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
