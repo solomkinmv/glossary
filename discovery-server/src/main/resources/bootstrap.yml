@@ -6,3 +6,5 @@ spring:
     config:
       uri: http://config:8888
       fail-fast: true
+
+management.endpoints.web.expose: '*'
