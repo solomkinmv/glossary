@@ -10,7 +10,7 @@ def activationVersion = '1.1.1'
 def thumbnailatorVersion = '0.4.8'
 
 ext {
-    springCloudVersion = 'Finchley.M5'
+    springCloudVersion = 'Edgware.SR1'
 
     awsSdk = "com.amazonaws:aws-java-sdk:${awsSdkVersion}"
     jsonwebtoken = "io.jsonwebtoken:jjwt:${jsonWebTokenVersion}"

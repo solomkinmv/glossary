@@ -7,3 +7,4 @@ include 'service'
 
 include 'config-server'
 include 'discovery-server'
+include 'gateway'
