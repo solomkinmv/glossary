@@ -4,5 +4,3 @@ eureka:
     registerWithEureka: true
     serviceUrl:
       defaultZone: http://registry:8761/eureka
-
-hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 30000
