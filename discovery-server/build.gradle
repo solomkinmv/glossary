@@ -1,4 +1,4 @@
-group = 'io.solomkinmv.github.glossary.discoveryserver'
+group = 'io.solomkinmv.github.glossary'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 9
 
