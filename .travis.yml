@@ -17,3 +17,5 @@ after_success:
   - ./gradlew config-server:dockerPush
   - ./gradlew discovery-server:docker
   - ./gradlew discovery-server:dockerPush
+  - ./gradlew gateway:docker
+  - ./gradlew gateway:dockerPush
