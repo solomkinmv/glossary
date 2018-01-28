@@ -1,4 +1,4 @@
-package io.solomkinmv.github.glossary.configserver;
+package io.github.solomkinmv.glossary.configserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-package io.solomkinmv.github.glossary.discoveryserver;
+package io.github.solomkinmv.glossary.discoveryserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
