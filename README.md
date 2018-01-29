@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/solomkinmv/glossary.svg?branch=master)](https://travis-ci.org/solomkinmv/glossary)
+[![codecov](https://codecov.io/gh/solomkinmv/glossary/branch/master/graph/badge.svg)](https://codecov.io/gh/solomkinmv/glossary)
 
 # glossary
 ## Set up dev environment
