@@ -10,8 +10,10 @@ addons:
   apt:
     packages:
       - oracle-java9-installer
-
+script:
+  - ./gradlew codeCoverageReport
 after_success:
+  - bash <(curl -s https://codecov.io/bash)
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - ./gradlew config-server:docker
   - ./gradlew config-server:dockerPush
