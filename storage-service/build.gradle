@@ -1,0 +1,26 @@
+group = 'io.github.solomkinmv.glossary'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 9
+
+apply plugin: 'com.palantir.docker'
+
+dependencies {
+    compile awsSdk
+
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+//	compile('org.springframework.cloud:spring-cloud-starter-aws')
+	compile('org.springframework.cloud:spring-cloud-starter-config')
+	compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
+	compile('org.springframework.boot:spring-boot-starter-hateoas')
+	compile('org.springframework.boot:spring-boot-starter-web')
+	compileOnly('org.projectlombok:lombok')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile('org.springframework.restdocs:spring-restdocs-mockmvc')
+}
+
+docker {
+    name "solomkinmv/${bootJar.baseName}"
+    println "==> Docker task for ${name}"
+    files bootJar.archivePath
+    buildArgs(['JAR_FILE': "${bootJar.archiveName}"])
+}
