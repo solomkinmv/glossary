@@ -2,15 +2,19 @@ package io.github.solomkinmv.glossary.storage.service.impl;
 
 import io.github.solomkinmv.glossary.storage.exception.ObjectExistException;
 import io.github.solomkinmv.glossary.storage.exception.StorageException;
+import io.github.solomkinmv.glossary.storage.filename.FilenameAdapter;
 import io.github.solomkinmv.glossary.storage.properties.StorageProperties;
 import io.github.solomkinmv.glossary.storage.service.StorageService;
 import io.github.solomkinmv.glossary.storage.service.StoredType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.FileSystemUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,12 +30,19 @@ import java.util.Optional;
 @Component
 @Slf4j
 @Profile("!s3")
-public class FileSystemStorageService implements StorageService {
+public class FileSystemStorageService extends NameAdaptingStorageService {
+    private static final int HTTP_PREFIX_LENGTH = "http://".length();
     private final HashMap<StoredType, Path> storedTypeDirMapping;
     private final HashMap<StoredType, String> storedTypeUrlPrefixMapping;
+    private final String contextPath;
 
     @Autowired
-    public FileSystemStorageService(StorageProperties storageProperties) {
+    public FileSystemStorageService(StorageProperties storageProperties,
+                                    FilenameAdapter filenameAdapter,
+                                    @Value("${server.servlet.context-path:}") String contextPath) {
+        super(filenameAdapter);
+        this.contextPath = contextPath;
+
         log.debug("Build StoredType to dir mapping");
         storedTypeDirMapping = new HashMap<>();
         storedTypeDirMapping.put(StoredType.IMG, Paths.get(storageProperties.getImgUploadDir()));
@@ -56,7 +67,7 @@ public class FileSystemStorageService implements StorageService {
      * @return url for the stored object
      */
     @Override
-    public String store(InputStream inputStream, String filename, StoredType type) {
+    protected String storeWithoutAdaptingFilenames(InputStream inputStream, String filename, StoredType type) {
         Path uploadDir = storedTypeDirMapping.get(type);
         Path objectPath = uploadDir.resolve(filename);
 
@@ -76,6 +87,7 @@ public class FileSystemStorageService implements StorageService {
         }
 
         return buildPath(filename, type);
+
     }
 
     @Override
@@ -124,7 +136,20 @@ public class FileSystemStorageService implements StorageService {
     }
 
     private String buildPath(String objectName, StoredType type) {
+        String requestUrl = extractRequestUrl();
         String urlPrefix = storedTypeUrlPrefixMapping.get(type);
-        return urlPrefix + "/" + objectName;
+        return requestUrl + urlPrefix + "/" + objectName;
+    }
+
+    private String extractRequestUrl() {
+        String fullUrl = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+                .getRequest()
+                .getRequestURL()
+                .toString();
+
+        // dirty hack to dynamically retrieve current host and port
+        int colonIndex = fullUrl.indexOf(':', HTTP_PREFIX_LENGTH);
+        int lastSlashIndex = fullUrl.indexOf('/', colonIndex);
+        return fullUrl.substring(0, lastSlashIndex) + contextPath;
     }
 }

@@ -1,0 +1,55 @@
+[[resource-get-file]]
+== Get file
+A `GET` request retrieves file by type and filename.
+
+include::{snippets}/storage-controller-system-test/gets-file/response-body.adoc[]
+
+=== Request parameters
+
+include::{snippets}/storage-controller-system-test/gets-file/request-parameters.adoc[]
+
+=== Example request
+
+include::{snippets}/storage-controller-system-test/gets-file/curl-request.adoc[]
+
+=== Example response
+
+include::{snippets}/storage-controller-system-test/gets-file/http-response.adoc[]
+
+[[resource-delete-file]]
+== Delete file
+
+A `DELETE` request deletes file from storage. NOTE: `filename` is optional.
+
+=== Request parameters
+
+include::{snippets}/storage-controller-system-test/deletes-existing-file/request-parameters.adoc[]
+
+=== Example request
+
+include::{snippets}/storage-controller-system-test/deletes-existing-file/curl-request.adoc[]
+
+=== Example response
+
+include::{snippets}/storage-controller-system-test/deletes-existing-file/http-response.adoc[]
+
+[[resource-upload-file]]
+== Upload file
+
+A `POST` request stores file to storage.
+
+=== Request parameters
+
+include::{snippets}/storage-controller-system-test/uploads-file/request-parameters.adoc[]
+
+=== Request parts
+
+include::{snippets}/storage-controller-system-test/uploads-file/request-parts.adoc[]
+
+=== Example request
+
+include::{snippets}/storage-controller-system-test/uploads-file/curl-request.adoc[]
+
+=== Example response
+
+include::{snippets}/storage-controller-system-test/uploads-file/http-response.adoc[]

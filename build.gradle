@@ -10,7 +10,7 @@ def activationVersion = '1.1.1'
 def thumbnailatorVersion = '0.4.8'
 
 ext {
-    springCloudVersion = 'Finchley.BUILD-SNAPSHOT'
+    springCloudVersion = 'Finchley.M5'
 
     awsSdk = "com.amazonaws:aws-java-sdk:${awsSdkVersion}"
     jsonwebtoken = "io.jsonwebtoken:jjwt:${jsonWebTokenVersion}"
@@ -29,7 +29,7 @@ ext {
 
 buildscript {
     ext {
-        springBootVersion = '2.0.0.RC1'
+        springBootVersion = '2.0.0.M7'
         palantirDockerPluginVersion = '0.17.2'
 
     }

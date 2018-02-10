@@ -21,3 +21,5 @@ after_success:
   - ./gradlew discovery-server:dockerPush
   - ./gradlew gateway:docker
   - ./gradlew gateway:dockerPush
+  - ./gradlew storage-service:docker
+  - ./gradlew storage-service:dockerPush

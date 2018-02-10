@@ -31,7 +31,19 @@ services:
     depends_on:
       - config
     ports:
-      - 8080:8080
+      - 8008:8008
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
+
+  storage-service:
+    image: solomkinmv/storage-service
+    restart: always
+    depends_on:
+      - config
+    ports:
+      - 8081:8081
     logging:
       options:
         max-size: "10m"

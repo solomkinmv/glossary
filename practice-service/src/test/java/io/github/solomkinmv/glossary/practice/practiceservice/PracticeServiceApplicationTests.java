@@ -1,4 +1,4 @@
-package io.github.solomkinmv.glossary.storage;
+package io.github.solomkinmv.glossary.practice.practiceservice;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,10 +7,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class StorageServiceApplicationTests {
+public class PracticeServiceApplicationTests {
 
-    @Test
-    public void contextLoads() {
-    }
+	@Test
+	public void contextLoads() {
+	}
 
 }

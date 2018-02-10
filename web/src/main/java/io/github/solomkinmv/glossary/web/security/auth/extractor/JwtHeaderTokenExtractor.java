@@ -16,7 +16,6 @@ public class JwtHeaderTokenExtractor implements TokenExtractor {
      * Extracts raw token from the HTTP header.
      * Returns substring after the {@code "Bearer "} header prefix.
      *
-     * @param payload the payload
      * @return the raw token
      */
     @Override

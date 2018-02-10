@@ -1,3 +1,7 @@
+plugins {
+    id 'org.asciidoctor.convert' version '1.5.6'
+}
+
 group = 'io.github.solomkinmv.glossary'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 9
@@ -8,12 +12,12 @@ dependencies {
     compile awsSdk
 
     compile('org.springframework.boot:spring-boot-starter-actuator')
-//	compile('org.springframework.cloud:spring-cloud-starter-aws')
 	compile('org.springframework.cloud:spring-cloud-starter-config')
-	compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
+    compile('org.springframework.boot:spring-boot-configuration-processor')
+    compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
 	compile('org.springframework.boot:spring-boot-starter-hateoas')
 	compile('org.springframework.boot:spring-boot-starter-web')
-	compileOnly('org.projectlombok:lombok')
+	compileOnly lombok
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.springframework.restdocs:spring-restdocs-mockmvc')
 }
@@ -23,4 +27,25 @@ docker {
     println "==> Docker task for ${name}"
     files bootJar.archivePath
     buildArgs(['JAR_FILE': "${bootJar.archiveName}"])
+}
+
+ext {
+	snippetsDir = file('build/generated-snippets')
+}
+
+test {
+	outputs.dir snippetsDir
+}
+
+asciidoctor {
+	attributes 'snippets': snippetsDir
+	inputs.dir snippetsDir
+	dependsOn test
+}
+
+bootJar {
+    dependsOn asciidoctor
+    from ("${asciidoctor.outputDir}/html5") {
+        into 'static/docs'
+    }
 }
