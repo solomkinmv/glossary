@@ -1,0 +1,18 @@
+= Person-service Getting Started Guide
+Maksym Solomkin;
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+[introduction]
+= Introduction
+
+Storage service used to store, get and delete images or sound files on file system or AWS S3.
+
+[[resources]]
+= Resources
+
+include::service.adoc[]

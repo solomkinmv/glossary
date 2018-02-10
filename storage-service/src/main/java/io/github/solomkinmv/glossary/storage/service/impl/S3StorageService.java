@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.util.IOUtils;
 import io.github.solomkinmv.glossary.storage.exception.StorageException;
+import io.github.solomkinmv.glossary.storage.filename.FilenameAdapter;
 import io.github.solomkinmv.glossary.storage.properties.StorageProperties;
 import io.github.solomkinmv.glossary.storage.service.StorageService;
 import io.github.solomkinmv.glossary.storage.service.StoredType;
@@ -29,12 +30,14 @@ import java.util.Optional;
 @Component
 @Slf4j
 @Profile("s3")
-public class S3StorageService implements StorageService {
+public class S3StorageService extends NameAdaptingStorageService {
     private final AmazonS3 amazonS3;
     private final HashMap<StoredType, String> storedTypeBuckerMapping;
 
     @Autowired
-    public S3StorageService(StorageProperties storageProperties, AmazonS3 amazonS3) {
+    public S3StorageService(StorageProperties storageProperties, AmazonS3 amazonS3, FilenameAdapter filenameAdapter) {
+        super(filenameAdapter);
+
         this.amazonS3 = amazonS3;
         log.debug("Build StoredType to dir mapping");
         storedTypeBuckerMapping = new HashMap<>();
@@ -45,7 +48,7 @@ public class S3StorageService implements StorageService {
     }
 
     @Override
-    public String store(InputStream inputStream, String filename, StoredType type) {
+    protected String storeWithoutAdaptingFilenames(InputStream inputStream, String filename, StoredType type) {
         String bucketName = storedTypeBuckerMapping.get(type);
         if (amazonS3.doesObjectExist(bucketName, filename)) {
             log.error("Object already exist: {}", filename);
@@ -66,6 +69,7 @@ public class S3StorageService implements StorageService {
         String url = amazonS3.getUrl(bucketName, filename).toString();
         log.debug("Stored object url: " + url);
         return url;
+
     }
 
     @Override

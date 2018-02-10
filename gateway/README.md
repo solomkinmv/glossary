@@ -10,4 +10,4 @@ Use `./gradlew :gateway:docker` to build docker image
 
 How to run:
 
-`docker run --rm -e 'SPRING_PROFILES_ACTIVE=local' -p 8080:8080 solomkinmv/gateway`
+`docker run --rm -e 'SPRING_PROFILES_ACTIVE=local' -p 8008:8008 solomkinmv/gateway`
