@@ -1,0 +1,2 @@
+storage-service.ribbon.listOfServers: localhost:${wiremock.server.port}
+spring.jackson.serialization.FAIL_ON_EMPTY_BEANS: false
