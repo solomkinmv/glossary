@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  io.github.solomkinmv.glossary.translateserviceclient.config.TranslateClientAutoConfiguration

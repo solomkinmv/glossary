@@ -1,0 +1,1 @@
+translate-service.ribbon.listOfServers: localhost:${wiremock.server.port}

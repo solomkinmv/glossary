@@ -23,3 +23,5 @@ after_success:
   - ./gradlew gateway:dockerPush
   - ./gradlew storage-service:docker
   - ./gradlew storage-service:dockerPush
+  - ./gradlew translate-service:docker
+  - ./gradlew translate-service:dockerPush

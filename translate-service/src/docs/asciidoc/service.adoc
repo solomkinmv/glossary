@@ -1,0 +1,21 @@
+[[resource-translate-text]]
+== Translate text
+A `POST` request translates text from `source` language to `target` language. Source language could be skipped.
+
+include::{snippets}/translate-controller-system-test/translates-text-with-source-language/response-body.adoc[]
+
+=== Request parameters
+
+include::{snippets}/translate-controller-system-test/translates-text-with-source-language/request-parameters.adoc[]
+
+=== Response fields
+
+include::{snippets}/translate-controller-system-test/translates-text-with-source-language/response-fields.adoc[]
+
+=== Example request
+
+include::{snippets}/translate-controller-system-test/translates-text-with-source-language/curl-request.adoc[]
+
+=== Example response
+
+include::{snippets}/translate-controller-system-test/translates-text-with-source-language/http-response.adoc[]

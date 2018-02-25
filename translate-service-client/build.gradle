@@ -1,0 +1,17 @@
+group = 'io.github.solomkinmv.glossary'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 9
+
+dependencies {
+	compile('org.springframework.cloud:spring-cloud-starter-openfeign')
+	compileOnly('org.projectlombok:lombok')
+
+    testCompile('org.springframework.boot:spring-boot-starter-web')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile('org.springframework.cloud:spring-cloud-contract-wiremock')
+	testCompile wiremock
+}
+
+bootJar {
+    enabled = false
+}

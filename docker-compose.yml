@@ -48,3 +48,17 @@ services:
       options:
         max-size: "10m"
         max-file: "10"
+
+  translate-service:
+    image: solomkinmv/translate-service
+    env_file:
+      - principal_keys.env
+    restart: always
+    depends_on:
+      - config
+    ports:
+      - 8082:8082
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
