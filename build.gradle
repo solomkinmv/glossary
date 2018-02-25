@@ -11,7 +11,7 @@ def thumbnailatorVersion = '0.4.8'
 def wiremockVersion = '2.14.0'
 
 ext {
-    springCloudVersion = 'Finchley.M5'
+    springCloudVersion = 'Finchley.M8'
 
     awsSdk = "com.amazonaws:aws-java-sdk:${awsSdkVersion}"
     jsonwebtoken = "io.jsonwebtoken:jjwt:${jsonWebTokenVersion}"
@@ -31,9 +31,8 @@ ext {
 
 buildscript {
     ext {
-        springBootVersion = '2.0.0.M7'
+        springBootVersion = '2.0.0.RELEASE'
         palantirDockerPluginVersion = '0.17.2'
-
     }
 
     repositories {
@@ -57,7 +56,6 @@ allprojects {
     repositories {
         mavenCentral()
         jcenter()
-        maven { url 'https://repo.spring.io/libs-snapshot' }
         maven { url 'https://repo.spring.io/libs-milestone' }
     }
 
