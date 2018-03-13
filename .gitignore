@@ -17,3 +17,8 @@ hs_err_pid*
 out/
 */build/
 */target/
+
+# Media files
+*.mp3
+*.png
+*.jpg
