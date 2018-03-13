@@ -10,9 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Optional;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static wiremock.org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204;
 import static wiremock.org.eclipse.jetty.http.HttpStatus.OK_200;
 
 @RunWith(SpringRunner.class)
@@ -35,10 +38,24 @@ public class StorageClientTest {
                                             .withHeader("Content-Type", "application/json")
                                             .withBody(responseBody)));
 
-        ResponseEntity<String> response = storageClient.get(StoredType.IMG, "image.png");
+        Optional<String> response = storageClient.get(StoredType.IMG, "image.png");
 
-        assertThat(response.getBody()).isEqualTo(responseBody);
-        assertThat(response.getStatusCode().value()).isEqualTo(OK_200);
+        assertThat(response).contains(responseBody);
+    }
+
+    @Test
+    public void returnsEmptyOptionalIfNoContent() {
+        stubFor(get(urlPathMatching("/storage-service/\\\\?.*"))
+                        .withQueryParam("type", equalTo("IMG"))
+                        .withQueryParam("filename", equalTo("image.png"))
+                        .willReturn(aResponse()
+                                            .withStatus(NO_CONTENT_204)
+                                            .withHeader("Content-Type", "application/json")
+                                            .withBody(responseBody)));
+
+        Optional<String> optionalResponse = storageClient.get(StoredType.IMG, "image.png");
+
+        assertThat(optionalResponse).isEmpty();
     }
 
     @Test
