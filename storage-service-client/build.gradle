@@ -3,20 +3,19 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 9
 
 dependencies {
-	compile('org.springframework.cloud:spring-cloud-starter-openfeign')
-	compile('org.springframework.boot:spring-boot-starter-web')
-	compile group: 'io.github.openfeign.form', name: 'feign-form', version: '2.1.0'
-	compile 'io.github.openfeign.form:feign-form-spring:2.1.0'
+    compile('org.springframework.cloud:spring-cloud-starter-openfeign')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compile feignForm
+    compile feignFormSpring
+    compile lombok
 
-	testCompile jaxbApi // should be included as external dependency because of java 9
-	testCompile jaxbCore// should be included as external dependency because of java 9
-//	testCompile jaxbImpl// should be included as external dependency because of java 9
-//	testCompile activation// should be included as external dependency because of java 9
-	testCompile('org.springframework.boot:spring-boot-starter-test')
-	testCompile('org.springframework.cloud:spring-cloud-contract-wiremock')
-	testCompile wiremock
+    testCompile jaxbApi // should be included as external dependency because of java 9
+    testCompile jaxbCore // should be included as external dependency because of java 9
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('org.springframework.cloud:spring-cloud-contract-wiremock')
+    testCompile wiremock
 }
 
 bootJar {
-	enabled = false
+    enabled = false
 }

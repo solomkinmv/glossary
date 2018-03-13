@@ -1,30 +1,27 @@
 package io.github.solomkinmv.glossary.storage.client;
 
-import feign.codec.Encoder;
-import feign.form.spring.SpringFormEncoder;
-import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.cloud.openfeign.support.SpringEncoder;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Optional;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
+
 @FeignClient(
         name = "storage-service",
-        path = "/storage-service",
-        configuration = StorageClient.MultipartSupportConfig.class
+        path = "/storage-service"
 )
 public interface StorageClient {
 
     String UPLOAD_IMG_KEY = "file";
 
-    @GetMapping("/")
-    ResponseEntity<String> get(@RequestParam("type") StoredType type, @RequestParam("filename") String filename);
+    @GetMapping(value = "/", consumes = APPLICATION_JSON_VALUE)
+    Optional<String> get(@RequestParam("type") StoredType type, @RequestParam("filename") String filename);
 
-    @PostMapping("/")
+    @PostMapping(value = "/", consumes = MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<Void> save(@RequestParam("type") StoredType type,
                               @RequestPart(UPLOAD_IMG_KEY) MultipartFile file);
 
@@ -34,14 +31,4 @@ public interface StorageClient {
     @DeleteMapping("/")
     ResponseEntity<Void> delete(@RequestParam("type") StoredType type);
 
-    class MultipartSupportConfig {
-
-        @Autowired
-        private ObjectFactory<HttpMessageConverters> messageConverters;
-
-        @Bean
-        public Encoder feignFormEncoder() {
-            return new SpringFormEncoder(new SpringEncoder(messageConverters));
-        }
-    }
 }

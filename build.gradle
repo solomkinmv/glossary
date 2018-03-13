@@ -9,6 +9,7 @@ def jaxbApiVersion = '2.3.0'
 def activationVersion = '1.1.1'
 def thumbnailatorVersion = '0.4.8'
 def wiremockVersion = '2.14.0'
+def feignFormVersion = '3.2.2'
 
 ext {
     springCloudVersion = 'Finchley.M8'
@@ -24,9 +25,11 @@ ext {
     jaxbApi = "javax.xml.bind:jaxb-api:${jaxbApiVersion}"
     jaxbCore = "com.sun.xml.bind:jaxb-core:${jaxbApiVersion}"
     jaxbImpl = "com.sun.xml.bind:jaxb-impl:${jaxbApiVersion}"
-    activation =  "javax.activation:activation:${activationVersion}"
+    activation = "javax.activation:activation:${activationVersion}"
     thumbnailator = "net.coobird:thumbnailator:${thumbnailatorVersion}"
     wiremock = "com.github.tomakehurst:wiremock-standalone:${wiremockVersion}"
+    feignForm = "io.github.openfeign.form:feign-form:${feignFormVersion}"
+    feignFormSpring = "io.github.openfeign.form:feign-form-spring:${feignFormVersion}"
 }
 
 buildscript {
