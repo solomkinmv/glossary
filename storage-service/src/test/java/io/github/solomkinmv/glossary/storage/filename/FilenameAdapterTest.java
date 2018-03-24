@@ -10,7 +10,7 @@ public class FilenameAdapterTest {
     private FilenameAdapter filenameAdapter;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         filenameAdapter = new FilenameAdapter();
     }
 

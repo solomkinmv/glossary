@@ -1,5 +1,5 @@
 plugins {
-    id 'org.asciidoctor.convert' version '1.5.6'
+	id 'org.asciidoctor.convert' version '1.5.6'
 }
 
 group = 'io.github.solomkinmv.glossary'
@@ -10,13 +10,16 @@ apply plugin: 'com.palantir.docker'
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-actuator')
-	compile("org.springframework.boot:spring-boot-starter-cache")
+	compile('org.springframework.boot:spring-boot-starter-cache')
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile('org.springframework.cloud:spring-cloud-starter-config')
 	compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
 	compile('org.springframework.cloud:spring-cloud-starter-netflix-hystrix')
 	compile('org.springframework.cloud:spring-cloud-starter-openfeign')
+    compile awsSdk
+    compile project(':storage-service-client')
 	compileOnly lombok
+
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.springframework.restdocs:spring-restdocs-mockmvc')
 }

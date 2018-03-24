@@ -2,6 +2,10 @@ group = 'io.github.solomkinmv.glossary'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 9
 
+jar {
+    enabled = true
+}
+
 dependencies {
     compile('org.springframework.cloud:spring-cloud-starter-openfeign')
     compile('org.springframework.boot:spring-boot-starter-web')
