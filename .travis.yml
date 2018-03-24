@@ -25,3 +25,5 @@ after_success:
   - ./gradlew storage-service:dockerPush
   - ./gradlew translate-service:docker
   - ./gradlew translate-service:dockerPush
+  - ./gradlew tts-service:docker
+  - ./gradlew tts-service:dockerPush
