@@ -34,7 +34,8 @@ public class StorageController {
     @PostMapping("/")
     public ResponseEntity<Void> save(@RequestParam("type") StoredType type,
                                      @RequestParam(UPLOAD_IMG_KEY) MultipartFile file) {
-        log.info("Uploading file with [name: {}, type: {}]", file.getOriginalFilename(), type);
+        log.info("Uploading file with [name: {}, type: {}, contentType: {}]",
+                 file.getOriginalFilename(), type, file.getContentType());
         if (file.isEmpty()) {
             String message = "Failed to store empty file: " + file.getOriginalFilename();
             log.error(message);

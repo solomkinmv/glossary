@@ -25,8 +25,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.endsWith;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
@@ -73,7 +72,7 @@ public class StorageControllerSystemTest {
     }
 
     @Before
-    public void setUpMockMvc() throws Exception {
+    public void setUpMockMvc() {
         documentationHandler = document("{class-name}/{method-name}",
                                         preprocessRequest(prettyPrint()),
                                         preprocessResponse(prettyPrint()));
@@ -110,8 +109,7 @@ public class StorageControllerSystemTest {
                                 .accept(MediaType.APPLICATION_JSON))
                .andExpect(status().isCreated())
                .andExpect(header().string("Location",
-                                          containsString("http://localhost:8080" + imgPathPrefix + "/imgone")))
-               .andExpect(header().string("Location", endsWith(".jpg")))
+                                          equalTo("http://localhost:8080" + imgPathPrefix + "/imgone.jpg")))
                .andDo(documentationHandler.document(
                        requestParts(
                                partWithName("file").description("A file to upload")

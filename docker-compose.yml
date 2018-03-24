@@ -62,3 +62,15 @@ services:
       options:
         max-size: "10m"
         max-file: "10"
+
+  tts-service:
+    image: solomkinmv/tts-service
+    restart: always
+    depends_on:
+      - config
+    ports:
+      - 8083:8083
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"

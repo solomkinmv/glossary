@@ -1,0 +1,21 @@
+[[resource-translate-text]]
+== Translate text
+A `GET` request returns url to generated speech record.
+
+include::{snippets}/tts-service-application-tests/retrieves-already-present-sound-file/response-body.adoc[]
+
+=== Request parameters
+
+include::{snippets}/tts-service-application-tests/retrieves-already-present-sound-file/request-parameters.adoc[]
+
+=== Response fields
+
+include::{snippets}/tts-service-application-tests/retrieves-already-present-sound-file/response-fields.adoc[]
+
+=== Example request
+
+include::{snippets}/tts-service-application-tests/retrieves-already-present-sound-file/curl-request.adoc[]
+
+=== Example response
+
+include::{snippets}/tts-service-application-tests/retrieves-already-present-sound-file/http-response.adoc[]
