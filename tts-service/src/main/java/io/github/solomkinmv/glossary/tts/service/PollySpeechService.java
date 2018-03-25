@@ -1,13 +1,14 @@
 package io.github.solomkinmv.glossary.tts.service;
 
 import com.amazonaws.services.polly.AmazonPolly;
-import com.amazonaws.services.polly.model.*;
+import com.amazonaws.services.polly.model.OutputFormat;
+import com.amazonaws.services.polly.model.SynthesizeSpeechRequest;
+import com.amazonaws.services.polly.model.SynthesizeSpeechResult;
 import io.github.solomkinmv.glossary.tts.storage.StorageServiceFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.InputStream;
 import java.util.function.Supplier;
 
@@ -18,17 +19,7 @@ public class PollySpeechService implements SpeechService {
     private static final OutputFormat FORMAT = OutputFormat.Mp3;
     private final AmazonPolly polly;
     private final StorageServiceFacade storageService;
-    private Voice voice;
-
-    @PostConstruct
-    private void init() {
-        // Create describe voices request
-        DescribeVoicesRequest describeVoicesRequest = new DescribeVoicesRequest();
-
-        // Synchronously ask Amazon Polly to describe available TTS voices.
-        DescribeVoicesResult describeVoicesResult = polly.describeVoices(describeVoicesRequest);
-        voice = describeVoicesResult.getVoices().get(0);
-    }
+    private String voiceId = "Joanna";
 
     @Override
     public String getSpeechRecord(String speech) {
@@ -40,10 +31,10 @@ public class PollySpeechService implements SpeechService {
 
     private Supplier<String> createSpeechRecordSupplier(String speech, String filename) {
         return () -> {
-            log.info("Creating new speech record: \"{}\"", speech);
+            log.info("Creating new speech record [speech: {}, filename: {}]", speech, filename);
             SynthesizeSpeechRequest synthReq = new SynthesizeSpeechRequest()
                     .withText(speech)
-                    .withVoiceId(voice.getId())
+                    .withVoiceId(voiceId)
                     .withOutputFormat(FORMAT);
             SynthesizeSpeechResult synthRes = polly.synthesizeSpeech(synthReq);
 

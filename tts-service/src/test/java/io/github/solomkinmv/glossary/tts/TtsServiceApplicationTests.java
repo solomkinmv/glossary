@@ -1,9 +1,7 @@
 package io.github.solomkinmv.glossary.tts;
 
 import com.amazonaws.services.polly.AmazonPolly;
-import com.amazonaws.services.polly.model.DescribeVoicesResult;
 import com.amazonaws.services.polly.model.SynthesizeSpeechResult;
-import com.amazonaws.services.polly.model.Voice;
 import io.github.solomkinmv.glossary.storage.client.StorageClient;
 import io.github.solomkinmv.glossary.storage.client.StoredType;
 import org.junit.Before;
@@ -12,9 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
@@ -27,10 +23,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.Optional;
 
-import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
@@ -59,7 +53,7 @@ public class TtsServiceApplicationTests {
     private RestDocumentationResultHandler documentationHandler;
     @MockBean
     private StorageClient storageClient;
-    @Autowired
+    @MockBean
     private AmazonPolly amazonPolly;
 
     @Before
@@ -71,6 +65,16 @@ public class TtsServiceApplicationTests {
                 .apply(documentationConfiguration(restDocumentation))
                 .alwaysDo(documentationHandler)
                 .build();
+
+        SynthesizeSpeechResult synthesizeSpeechResult = new SynthesizeSpeechResult();
+        synthesizeSpeechResult.setAudioStream(new InputStream() {
+            @Override
+            public int read() {
+                return -1;
+            }
+        });
+        when(amazonPolly.synthesizeSpeech(any()))
+                .thenReturn(synthesizeSpeechResult);
     }
 
     @Test
@@ -107,31 +111,5 @@ public class TtsServiceApplicationTests {
                .andReturn()
                .getResponse()
                .getContentAsString();
-    }
-
-    @TestConfiguration
-    public static class TestConfig {
-
-        @Bean
-        public AmazonPolly amazonPolly() {
-            AmazonPolly mock = mock(AmazonPolly.class);
-
-            DescribeVoicesResult describeVoicesResult = new DescribeVoicesResult();
-            describeVoicesResult.setVoices(singletonList(new Voice()));
-            when(mock.describeVoices(any()))
-                    .thenReturn(describeVoicesResult);
-
-            SynthesizeSpeechResult synthesizeSpeechResult = new SynthesizeSpeechResult();
-            synthesizeSpeechResult.setAudioStream(new InputStream() {
-                @Override
-                public int read() {
-                    return -1;
-                }
-            });
-            when(mock.synthesizeSpeech(any()))
-                    .thenReturn(synthesizeSpeechResult);
-
-            return mock;
-        }
     }
 }

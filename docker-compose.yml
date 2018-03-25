@@ -65,6 +65,8 @@ services:
 
   tts-service:
     image: solomkinmv/tts-service
+    env_file:
+      - principal_keys.env
     restart: always
     depends_on:
       - config

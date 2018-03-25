@@ -28,7 +28,7 @@ public class StorageController {
         Optional<String> path = storageService.getObject(filename, type);
 
         return path.map(ResponseEntity::ok)
-                   .orElse(ResponseEntity.notFound().build());
+                   .orElse(ResponseEntity.noContent().build());
     }
 
     @PostMapping("/")
