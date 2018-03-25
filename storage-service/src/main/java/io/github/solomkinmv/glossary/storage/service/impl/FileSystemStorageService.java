@@ -138,18 +138,28 @@ public class FileSystemStorageService extends NameAdaptingStorageService {
     private String buildPath(String objectName, StoredType type) {
         String requestUrl = extractRequestUrl();
         String urlPrefix = storedTypeUrlPrefixMapping.get(type);
-        return requestUrl + urlPrefix + "/" + objectName;
+        String finalRequestPath = requestUrl + urlPrefix + "/" + objectName;
+
+        log.debug("Final constructed object path [objectName: {}, type: {}, prefixes: {}, finalRequestPath: {}]",
+                  objectName, type, storedTypeUrlPrefixMapping, finalRequestPath);
+        return finalRequestPath;
     }
 
     private String extractRequestUrl() {
+        log.trace("Extracting request url to build full stored file url");
         String fullUrl = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
                 .getRequest()
                 .getRequestURL()
                 .toString();
 
+        log.trace("Full request url: {}", fullUrl);
+
         // dirty hack to dynamically retrieve current host and port
         int colonIndex = fullUrl.indexOf(':', HTTP_PREFIX_LENGTH);
         int lastSlashIndex = fullUrl.indexOf('/', colonIndex);
-        return fullUrl.substring(0, lastSlashIndex) + contextPath;
+        String requestUrl = fullUrl.substring(0, lastSlashIndex) + contextPath;
+
+        log.debug("Extracted request url: {}", requestUrl);
+        return requestUrl;
     }
 }

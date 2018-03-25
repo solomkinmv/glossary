@@ -14,7 +14,7 @@ public class SpeechController {
     private final SpeechService speechService;
 
     @Cacheable("speeches")
-    @GetMapping
+    @GetMapping(value = "/")
     public SpeechResult getSpeech(@RequestParam("text") String text) {
         return new SpeechResult(speechService.getSpeechRecord(text));
     }
