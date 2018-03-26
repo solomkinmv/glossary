@@ -1,0 +1,18 @@
+= Translate service
+Maksym Solomkin;
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+[introduction]
+= Introduction
+
+Image Service provides methods to search for images in Flickr and to store them in storage service
+
+[[resources]]
+= Resources
+
+include::service.adoc[]

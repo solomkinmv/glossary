@@ -1,0 +1,46 @@
+[[resource-image-search]]
+== Image search
+A `GET` request returns list of urls from flickr.
+
+include::{snippets}/image-service-application-tests/searches-for-images-in-flickr/response-body.adoc[]
+
+=== Request parameters
+
+include::{snippets}/image-service-application-tests/searches-for-images-in-flickr/request-parameters.adoc[]
+
+=== Example request
+
+include::{snippets}/image-service-application-tests/searches-for-images-in-flickr/curl-request.adoc[]
+
+=== Example response
+
+include::{snippets}/image-service-application-tests/searches-for-images-in-flickr/http-response.adoc[]
+
+[[resource-save-image]]
+== Save image
+A `POST` request saves image to `storage-service`. Returns saved image url in `Location` header.
+
+=== Example request
+
+include::{snippets}/image-service-application-tests/saves-image-to-storage-service/curl-request.adoc[]
+
+=== Example response
+
+include::{snippets}/image-service-application-tests/saves-image-to-storage-service/http-response.adoc[]
+
+
+[[resource-delete-image]]
+== Delete image
+A `DELETE` request deletes image from `storage-service`.
+
+=== Request parameters
+
+include::{snippets}/image-service-application-tests/deletes-image-by-name/request-parameters.adoc[]
+
+=== Example request
+
+include::{snippets}/image-service-application-tests/deletes-image-by-name/curl-request.adoc[]
+
+=== Example response
+
+include::{snippets}/image-service-application-tests/deletes-image-by-name/http-response.adoc[]
