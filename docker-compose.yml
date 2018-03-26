@@ -76,3 +76,17 @@ services:
       options:
         max-size: "10m"
         max-file: "10"
+
+  image-service:
+    image: solomkinmv/image-service
+    env_file:
+      - principal_keys.env
+    restart: always
+    depends_on:
+      - config
+    ports:
+      - 8084:8084
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"

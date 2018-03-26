@@ -12,7 +12,7 @@ def wiremockVersion = '2.14.0'
 def feignFormVersion = '3.2.2'
 
 ext {
-    springCloudVersion = 'Finchley.M8'
+    springCloudVersion = 'Finchley.M9'
 
     awsSdk = "com.amazonaws:aws-java-sdk:${awsSdkVersion}"
     jsonwebtoken = "io.jsonwebtoken:jjwt:${jsonWebTokenVersion}"
