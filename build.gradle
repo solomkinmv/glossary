@@ -10,6 +10,7 @@ def activationVersion = '1.1.1'
 def thumbnailatorVersion = '0.4.8'
 def wiremockVersion = '2.14.0'
 def feignFormVersion = '3.2.2'
+def playtikaTestcontainersVersion = '1.6'
 
 ext {
     springCloudVersion = 'Finchley.M9'
@@ -30,11 +31,12 @@ ext {
     wiremock = "com.github.tomakehurst:wiremock-standalone:${wiremockVersion}"
     feignForm = "io.github.openfeign.form:feign-form:${feignFormVersion}"
     feignFormSpring = "io.github.openfeign.form:feign-form-spring:${feignFormVersion}"
+    playtikaTestcontainers = "com.playtika.testcontainers:embedded-mariadb:${playtikaTestcontainersVersion}"
 }
 
 buildscript {
     ext {
-        springBootVersion = '2.0.0.RELEASE'
+        springBootVersion = '2.0.1.RELEASE'
         palantirDockerPluginVersion = '0.17.2'
     }
 
