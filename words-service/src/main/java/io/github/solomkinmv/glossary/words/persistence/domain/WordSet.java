@@ -20,7 +20,7 @@ public class WordSet {
     @GeneratedValue
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private long userId;
 
     @NotBlank
@@ -32,7 +32,8 @@ public class WordSet {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudiedWord> studiedWords;
 
-    public WordSet(String name, String description) {
+    public WordSet(long userId, String name, String description) {
+        this.userId = userId;
         this.name = name;
         this.description = description;
     }

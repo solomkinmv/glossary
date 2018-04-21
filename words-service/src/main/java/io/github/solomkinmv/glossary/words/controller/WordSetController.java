@@ -1,10 +1,13 @@
 package io.github.solomkinmv.glossary.words.controller;
 
 import io.github.solomkinmv.glossary.words.controller.dto.WordSetResponse;
-import io.github.solomkinmv.glossary.words.service.WordSetMeta;
-import io.github.solomkinmv.glossary.words.service.WordSetService;
+import io.github.solomkinmv.glossary.words.persistence.domain.WordSet;
+import io.github.solomkinmv.glossary.words.service.word.WordMeta;
+import io.github.solomkinmv.glossary.words.service.wordset.WordSetMeta;
+import io.github.solomkinmv.glossary.words.service.wordset.WordSetService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +21,14 @@ public class WordSetController {
 
     private final WordSetService wordSetService;
 
+    @GetMapping("/{wordSetId}")
+    public WordSetResponse getById(@PathVariable long wordSetId) {
+        log.info("Getting word set by id: {}", wordSetId);
+        WordSet wordSet = wordSetService.getWordSet(wordSetId);
+        log.info("Got word set by id: {} {}", wordSetId, wordSet);
+        return WordSetResponse.of(wordSet);
+    }
+
     @GetMapping("/")
     public List<WordSetResponse> getAllByUserId(@RequestParam("userId") long userId) {
         log.info("Getting all word sets for userId: {}", userId);
@@ -27,16 +38,25 @@ public class WordSetController {
     }
 
     @PostMapping("/")
-    public void createWordSet(@RequestParam("userId") long userId,
-                              @RequestBody WordSetMeta wordSetMeta) {
+    public long createWordSet(@Validated @RequestBody WordSetMeta wordSetMeta) {
+        log.info("Creating word set [wordSetMeta: {}]", wordSetMeta);
         long wordSetId = wordSetService.create(wordSetMeta);
+        log.info("Created word set with id: {} [wordSetMeta: {}]", wordSetId, wordSetMeta);
+        return wordSetId;
     }
 
-    // todo: create
+    @RequestMapping(value = "/{wordSetId}/words", method = RequestMethod.POST)
+    public WordSetResponse createWordByAddingToWordSet(@PathVariable long wordSetId,
+                                                       @Validated @RequestBody WordMeta wordMeta) {
+        log.info("Adding word to word set with id {}: {}", wordSetId, wordMeta);
+        WordSet wordSet = wordSetService.addWordToWordSet(wordSetId, wordMeta);
+
+        log.info("Added word {} to word set: {} [wordSetId: {}]", wordMeta, wordSet, wordSetId);
+        return WordSetResponse.of(wordSet);
+    }
+
+
     // todo: delete
     // todo: updateWordSetMetaInformation
-    // todo: createWordByAddingToWordSet
-    // todo: deleteWordFromWordSet
-    // todo: createWordByAddingToWordSet
     // todo: deleteWordFromWordSet
 }
