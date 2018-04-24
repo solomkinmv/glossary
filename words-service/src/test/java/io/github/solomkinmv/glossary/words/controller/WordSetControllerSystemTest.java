@@ -233,6 +233,29 @@ public class WordSetControllerSystemTest {
                .andExpect(jsonPath("$.studiedWords", hasSize(2)));
     }
 
+    @Test
+    public void deletesWordFromWordSet() throws Exception {
+        String name = "word-set-name";
+        String description = "desc";
+        WordSetMeta wordSetMeta = new WordSetMeta(userId.get(), name, description);
+        long wordSetId = createWordSet(wordSetMeta);
+
+        addWordToWordSet(wordSetId, new WordMeta("word1", "translation", "img-url"));
+        WordSetResponse wordSetResponse = addWordToWordSet(wordSetId, new WordMeta("word2", "translation", "img-url"));
+        StudiedWordResponse wordToDelete = wordSetResponse.getStudiedWords().get(0);
+        StudiedWordResponse wordThatShouldStay = wordSetResponse.getStudiedWords().get(1);
+
+        mockMvc.perform(delete("/word-sets/{wordSetId}/words/{wordId}", wordSetId, wordToDelete.getId()))
+               .andExpect(status().isOk());
+
+        WordSetResponse response = getWordSetById(wordSetId);
+
+        assertThat(response.getName()).isEqualTo(name);
+        assertThat(response.getDescription()).isEqualTo(description);
+        assertThat(response.getStudiedWords()).hasSize(1);
+        assertThat(response.getStudiedWords()).containsOnly(wordThatShouldStay);
+    }
+
     private long createWordSet(WordSetMeta wordSetMeta) throws Exception {
         String stringWordSetId = mockMvc.perform(post("/word-sets/")
                                                          .contentType(APPLICATION_JSON_UTF8)

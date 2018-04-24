@@ -62,4 +62,9 @@ public class WordSetService {
         wordSet.setDescription(wordSetMeta.getDescription());
         return wordSet;
     }
+
+    @Transactional
+    public void deleteWordFromWordSet(long wordSetId, long wordId) {
+        getWordSet(wordSetId).getStudiedWords().removeIf(word -> word.getId() == wordId);
+    }
 }
