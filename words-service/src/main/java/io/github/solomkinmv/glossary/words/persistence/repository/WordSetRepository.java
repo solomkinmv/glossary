@@ -12,7 +12,7 @@ public interface WordSetRepository extends CrudRepository<WordSet, Long> {
 
     List<WordSet> findAllByUserId(long userId);
 
-    @Query("SELECT w FROM WordSet w LEFT JOIN FETCH w.studiedWords WHERE w.id = (:id)")
+    @Query("SELECT w FROM WordSet w LEFT JOIN FETCH w.words WHERE w.id = (:id)")
     Optional<WordSet> findByUserId(@Param("id") long id);
 
 }

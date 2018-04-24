@@ -1,7 +1,7 @@
 package io.github.solomkinmv.glossary.words.service.wordset;
 
 import io.github.solomkinmv.glossary.words.exception.DomainObjectNotFound;
-import io.github.solomkinmv.glossary.words.persistence.domain.StudiedWord;
+import io.github.solomkinmv.glossary.words.persistence.domain.Word;
 import io.github.solomkinmv.glossary.words.persistence.domain.WordSet;
 import io.github.solomkinmv.glossary.words.persistence.repository.WordSetRepository;
 import io.github.solomkinmv.glossary.words.service.external.TtsFacade;
@@ -30,15 +30,15 @@ public class WordSetService {
 
     @Transactional
     public WordSet addWordToWordSet(long wordSetId, WordMeta wordMeta) {
-        StudiedWord unsavedStudiedWord = StudiedWord.builder()
-                                                    .text(wordMeta.getText())
-                                                    .translation(wordMeta.getTranslation())
-                                                    .image(wordMeta.getImage())
-                                                    .sound(ttsFacade.getSpeechUrl(wordMeta.getText()))
-                                                    .build();
+        Word unsavedWord = Word.builder()
+                               .text(wordMeta.getText())
+                               .translation(wordMeta.getTranslation())
+                               .image(wordMeta.getImage())
+                               .sound(ttsFacade.getSpeechUrl(wordMeta.getText()))
+                               .build();
         WordSet wordSet = getWordSet(wordSetId);
 
-        wordSet.getStudiedWords().add(unsavedStudiedWord);
+        wordSet.getWords().add(unsavedWord);
         return wordSet;
     }
 
@@ -65,6 +65,6 @@ public class WordSetService {
 
     @Transactional
     public void deleteWordFromWordSet(long wordSetId, long wordId) {
-        getWordSet(wordSetId).getStudiedWords().removeIf(word -> word.getId() == wordId);
+        getWordSet(wordSetId).getWords().removeIf(word -> word.getId() == wordId);
     }
 }

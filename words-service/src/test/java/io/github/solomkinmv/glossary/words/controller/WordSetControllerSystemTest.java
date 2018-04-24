@@ -3,10 +3,10 @@ package io.github.solomkinmv.glossary.words.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.solomkinmv.glossary.tts.client.TtsClient;
 import io.github.solomkinmv.glossary.tts.client.domain.SpeechResult;
-import io.github.solomkinmv.glossary.words.controller.dto.StudiedWordResponse;
+import io.github.solomkinmv.glossary.words.controller.dto.WordResponse;
 import io.github.solomkinmv.glossary.words.controller.dto.WordSetResponse;
 import io.github.solomkinmv.glossary.words.persistence.domain.WordSet;
-import io.github.solomkinmv.glossary.words.persistence.repository.StudiedWordRepository;
+import io.github.solomkinmv.glossary.words.persistence.repository.WordRepository;
 import io.github.solomkinmv.glossary.words.service.word.WordMeta;
 import io.github.solomkinmv.glossary.words.service.wordset.WordSetMeta;
 import io.github.solomkinmv.glossary.words.service.wordset.WordSetService;
@@ -60,7 +60,7 @@ public class WordSetControllerSystemTest {
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private StudiedWordRepository studiedWordRepository;
+    private WordRepository wordRepository;
     @MockBean
     private TtsClient ttsClient;
 
@@ -93,7 +93,7 @@ public class WordSetControllerSystemTest {
         assertThat(wordSet.getUserId()).isEqualTo(userId.get());
         assertThat(wordSet.getName()).isEqualTo(name);
         assertThat(wordSet.getDescription()).isEqualTo(description);
-        assertThat(wordSet.getStudiedWords()).isEmpty();
+        assertThat(wordSet.getWords()).isEmpty();
     }
 
     @Test
@@ -163,11 +163,11 @@ public class WordSetControllerSystemTest {
                 .andExpect(jsonPath("$.id").value(wordSetId))
                 .andExpect(jsonPath("$.name").value(name))
                 .andExpect(jsonPath("$.description").value(description))
-                .andExpect(jsonPath("$.studiedWords", hasSize(1)))
-                .andExpect(jsonPath("$.studiedWords[0].text").value(wordText))
-                .andExpect(jsonPath("$.studiedWords[0].translation").value(wordTranslation))
-                .andExpect(jsonPath("$.studiedWords[0].image").value(imageUrl))
-                .andExpect(jsonPath("$.studiedWords[0].sound").value(speechUrl));
+                .andExpect(jsonPath("$.words", hasSize(1)))
+                .andExpect(jsonPath("$.words[0].text").value(wordText))
+                .andExpect(jsonPath("$.words[0].translation").value(wordTranslation))
+                .andExpect(jsonPath("$.words[0].image").value(imageUrl))
+                .andExpect(jsonPath("$.words[0].sound").value(speechUrl));
     }
 
     private ResultActions performAddWordToWordSet(long wordSetId, WordMeta wordMeta) throws Exception {
@@ -201,11 +201,11 @@ public class WordSetControllerSystemTest {
         performGetWordSetById(wordSetId)
                 .andExpect(status().isNotFound());
 
-        assertThat(wordSetResponse.getStudiedWords()).hasSize(2);
+        assertThat(wordSetResponse.getWords()).hasSize(2);
 
-        wordSetResponse.getStudiedWords().stream()
-                       .mapToLong(StudiedWordResponse::getId)
-                       .mapToObj(studiedWordRepository::findById)
+        wordSetResponse.getWords().stream()
+                       .mapToLong(WordResponse::getId)
+                       .mapToObj(wordRepository::findById)
                        .forEach(optionalWord -> assertThat(optionalWord).isEmpty());
     }
 
@@ -230,7 +230,7 @@ public class WordSetControllerSystemTest {
                .andExpect(jsonPath("$.id").value(wordSetId))
                .andExpect(jsonPath("$.name").value(updatedName))
                .andExpect(jsonPath("$.description").value(updatedDescription))
-               .andExpect(jsonPath("$.studiedWords", hasSize(2)));
+               .andExpect(jsonPath("$.words", hasSize(2)));
     }
 
     @Test
@@ -242,8 +242,8 @@ public class WordSetControllerSystemTest {
 
         addWordToWordSet(wordSetId, new WordMeta("word1", "translation", "img-url"));
         WordSetResponse wordSetResponse = addWordToWordSet(wordSetId, new WordMeta("word2", "translation", "img-url"));
-        StudiedWordResponse wordToDelete = wordSetResponse.getStudiedWords().get(0);
-        StudiedWordResponse wordThatShouldStay = wordSetResponse.getStudiedWords().get(1);
+        WordResponse wordToDelete = wordSetResponse.getWords().get(0);
+        WordResponse wordThatShouldStay = wordSetResponse.getWords().get(1);
 
         mockMvc.perform(delete("/word-sets/{wordSetId}/words/{wordId}", wordSetId, wordToDelete.getId()))
                .andExpect(status().isOk());
@@ -252,8 +252,8 @@ public class WordSetControllerSystemTest {
 
         assertThat(response.getName()).isEqualTo(name);
         assertThat(response.getDescription()).isEqualTo(description);
-        assertThat(response.getStudiedWords()).hasSize(1);
-        assertThat(response.getStudiedWords()).containsOnly(wordThatShouldStay);
+        assertThat(response.getWords()).hasSize(1);
+        assertThat(response.getWords()).containsOnly(wordThatShouldStay);
     }
 
     private long createWordSet(WordSetMeta wordSetMeta) throws Exception {

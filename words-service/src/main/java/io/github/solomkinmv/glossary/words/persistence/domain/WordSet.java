@@ -30,7 +30,7 @@ public class WordSet {
     private String description;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StudiedWord> studiedWords;
+    private List<Word> words;
 
     public WordSet(long userId, String name, String description) {
         this.userId = userId;
