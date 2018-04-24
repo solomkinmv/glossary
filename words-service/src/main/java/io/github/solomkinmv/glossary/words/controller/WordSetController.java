@@ -75,7 +75,14 @@ public class WordSetController {
         return WordSetResponse.of(wordSet);
     }
 
-    // todo: delete
-    // todo: updateWordSetMetaInformation
-    // todo: deleteWordFromWordSet
+    @DeleteMapping("/{wordSetId}/words/{wordId}")
+    public void deleteWordFromWordSet(@PathVariable long wordSetId,
+                                      @PathVariable long wordId) {
+        log.info("Deleting word from word set [wordSetId: {}, wordId: {}]", wordSetId, wordId);
+
+        wordSetService.deleteWordFromWordSet(wordSetId, wordId);
+
+        log.info("Deleted word from word set [wordSetId: {}, wordId: {}]", wordSetId, wordId);
+    }
+
 }
