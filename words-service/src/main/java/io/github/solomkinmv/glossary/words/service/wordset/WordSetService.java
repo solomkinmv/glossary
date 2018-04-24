@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -43,9 +44,13 @@ public class WordSetService {
     }
 
     public WordSet getWordSet(long wordSetId) {
-        return wordSetRepository.findByUserId(wordSetId)
-                                .orElseThrow(() -> new DomainObjectNotFound(
-                                        "Can't find word set with id " + wordSetId));
+        return findWordSet(wordSetId)
+                .orElseThrow(() -> new DomainObjectNotFound(
+                        "Can't find word set with id " + wordSetId));
+    }
+
+    public Optional<WordSet> findWordSet(long wordSetId) {
+        return wordSetRepository.findByUserId(wordSetId);
     }
 
     public void deleteWordSetById(long wordSetId) {
