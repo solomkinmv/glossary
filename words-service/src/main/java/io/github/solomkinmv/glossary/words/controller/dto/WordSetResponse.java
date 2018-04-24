@@ -13,23 +13,23 @@ public class WordSetResponse {
     private long id;
     private String name;
     private String description;
-    private List<StudiedWordResponse> studiedWords;
-
-    public static WordSetResponse of(WordSet wordSet) {
-        return new WordSetResponse(wordSet.getId(), wordSet.getName(), wordSet.getDescription(),
-                                   wordSet.getStudiedWords().stream()
-                                          .map(StudiedWordResponse::of)
-                                          .collect(Collectors.toList()));
-    }
+    private List<WordResponse> words;
 
     @JsonCreator
     public WordSetResponse(@JsonProperty("id") long id,
                            @JsonProperty("name") String name,
                            @JsonProperty("description") String description,
-                           @JsonProperty("studiedWords") List<StudiedWordResponse> studiedWords) {
+                           @JsonProperty("words") List<WordResponse> words) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.studiedWords = studiedWords;
+        this.words = words;
+    }
+
+    public static WordSetResponse of(WordSet wordSet) {
+        return new WordSetResponse(wordSet.getId(), wordSet.getName(), wordSet.getDescription(),
+                                   wordSet.getWords().stream()
+                                          .map(WordResponse::of)
+                                          .collect(Collectors.toList()));
     }
 }

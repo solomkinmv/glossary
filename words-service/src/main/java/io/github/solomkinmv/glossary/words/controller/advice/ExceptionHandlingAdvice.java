@@ -16,4 +16,9 @@ public class ExceptionHandlingAdvice {
         return new ExceptionMessage(e.getMessage());
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ExceptionMessage badRequest(IllegalArgumentException e) {
+        return new ExceptionMessage(e.getMessage());
+    }
 }

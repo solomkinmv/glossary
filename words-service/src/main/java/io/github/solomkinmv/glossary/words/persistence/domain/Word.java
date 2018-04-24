@@ -17,7 +17,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudiedWord {
+public class Word {
 
     @Id
     @GeneratedValue

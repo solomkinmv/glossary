@@ -11,8 +11,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = {"studiedWords", "userDictionary"})
-@ToString(callSuper = true, exclude = {"studiedWords", "userDictionary"})
+@EqualsAndHashCode(callSuper = true, exclude = {"words", "userDictionary"})
+@ToString(callSuper = true, exclude = {"words", "userDictionary"})
 @Slf4j
 public class WordSet extends AbstractModelClass {
 
