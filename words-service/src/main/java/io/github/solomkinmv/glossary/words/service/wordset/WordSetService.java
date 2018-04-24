@@ -51,4 +51,15 @@ public class WordSetService {
     public void deleteWordSetById(long wordSetId) {
         wordSetRepository.deleteById(wordSetId);
     }
+
+    public WordSet updateWordSetMetaInformation(long wordSetId, WordSetMeta wordSetMeta) {
+        WordSet wordSet = getWordSet(wordSetId);
+        if (wordSet.getUserId() != wordSetMeta.getUserId()) {
+            String msg = "Unable to change userId of word set. Original: " + wordSet + ", updated: " + wordSetMeta;
+            throw new IllegalArgumentException(msg);
+        }
+        wordSet.setName(wordSetMeta.getName());
+        wordSet.setDescription(wordSetMeta.getDescription());
+        return wordSet;
+    }
 }
