@@ -64,6 +64,17 @@ public class WordSetController {
         log.info("Deleted word set by id: {}", wordSetId);
     }
 
+    @PatchMapping("/{wordSetId}")
+    public WordSetResponse updateWordSetMetaInformation(@PathVariable long wordSetId,
+                                                        @Validated @RequestBody WordSetMeta wordSetMeta) {
+        log.info("Updating word set meta information [wordSetId: {}, wordSetMeta: {}]", wordSetId, wordSetMeta);
+
+        WordSet wordSet = wordSetService.updateWordSetMetaInformation(wordSetId, wordSetMeta);
+
+        log.info("Updated word set meta information: {}", wordSet);
+        return WordSetResponse.of(wordSet);
+    }
+
     // todo: delete
     // todo: updateWordSetMetaInformation
     // todo: deleteWordFromWordSet

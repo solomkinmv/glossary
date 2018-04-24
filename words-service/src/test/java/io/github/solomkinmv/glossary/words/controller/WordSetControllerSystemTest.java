@@ -5,7 +5,6 @@ import io.github.solomkinmv.glossary.tts.client.TtsClient;
 import io.github.solomkinmv.glossary.tts.client.domain.SpeechResult;
 import io.github.solomkinmv.glossary.words.controller.dto.StudiedWordResponse;
 import io.github.solomkinmv.glossary.words.controller.dto.WordSetResponse;
-import io.github.solomkinmv.glossary.words.persistence.domain.StudiedWord;
 import io.github.solomkinmv.glossary.words.persistence.domain.WordSet;
 import io.github.solomkinmv.glossary.words.persistence.repository.StudiedWordRepository;
 import io.github.solomkinmv.glossary.words.service.word.WordMeta;
@@ -26,7 +25,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static java.lang.String.valueOf;
@@ -209,6 +207,30 @@ public class WordSetControllerSystemTest {
                        .mapToLong(StudiedWordResponse::getId)
                        .mapToObj(studiedWordRepository::findById)
                        .forEach(optionalWord -> assertThat(optionalWord).isEmpty());
+    }
+
+    @Test
+    public void updatedWordSetMetaInformationWithoutTouchingWords() throws Exception {
+        String name = "word-set-name";
+        String description = "desc";
+        WordSetMeta wordSetMeta = new WordSetMeta(userId.get(), name, description);
+        long wordSetId = createWordSet(wordSetMeta);
+
+        addWordToWordSet(wordSetId, new WordMeta("word1", "translation", "img-url"));
+        addWordToWordSet(wordSetId, new WordMeta("word2", "translation", "img-url"));
+
+        String updatedName = "updated-ws-name";
+        String updatedDescription = "updated desc";
+        WordSetMeta updatedMeta = new WordSetMeta(userId.get(), updatedName, updatedDescription);
+
+        mockMvc.perform(patch("/word-sets/{wordSetId}", wordSetId)
+                                .contentType(APPLICATION_JSON_UTF8)
+                                .content(objectMapper.writeValueAsString(updatedMeta)))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.id").value(wordSetId))
+               .andExpect(jsonPath("$.name").value(updatedName))
+               .andExpect(jsonPath("$.description").value(updatedDescription))
+               .andExpect(jsonPath("$.studiedWords", hasSize(2)));
     }
 
     private long createWordSet(WordSetMeta wordSetMeta) throws Exception {
