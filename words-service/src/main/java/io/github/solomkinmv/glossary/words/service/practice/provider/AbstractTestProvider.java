@@ -24,7 +24,7 @@ public abstract class AbstractTestProvider {
     }
 
     protected Predicate<Word> notLearned() {
-        return studiedWord -> !studiedWord.getStage().equals(WordStage.LEARNED);
+        return word -> !word.getStage().equals(WordStage.LEARNED);
     }
 
     protected Set<String> generateAlternatives(Word word, List<Word> wordList, boolean origin) {

@@ -2,6 +2,7 @@ package io.github.solomkinmv.glossary.words.service.practice.quiz;
 
 import io.github.solomkinmv.glossary.words.persistence.domain.Word;
 import io.github.solomkinmv.glossary.words.service.practice.provider.AbstractTestProvider;
+import io.github.solomkinmv.glossary.words.service.practice.quiz.Quiz.Question;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -30,12 +31,12 @@ public class QuizProvider extends AbstractTestProvider {
                      .collect(Collectors.toSet()));
     }
 
-    private Quiz.Question createQuestion(Word studiedWord, List<Word> words, boolean originQuestions) {
-        Set<String> alternatives = generateAlternatives(studiedWord, words, !originQuestions);
+    private Question createQuestion(Word word, List<Word> words, boolean originQuestions) {
+        Set<String> alternatives = generateAlternatives(word, words, !originQuestions);
 
-        return new Quiz.Question(
-                originQuestions ? studiedWord.getText() : studiedWord.getTranslation(),
-                createAnswer(studiedWord, !originQuestions),
+        return new Question(
+                originQuestions ? word.getText() : word.getTranslation(),
+                createAnswer(word, !originQuestions),
                 alternatives);
     }
 }
