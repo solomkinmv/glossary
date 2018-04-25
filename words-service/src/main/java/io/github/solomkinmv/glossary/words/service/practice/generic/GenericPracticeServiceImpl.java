@@ -1,4 +1,4 @@
-package io.github.solomkinmv.glossary.words.service.practice.repetition;
+package io.github.solomkinmv.glossary.words.service.practice.generic;
 
 import io.github.solomkinmv.glossary.words.persistence.domain.Word;
 import io.github.solomkinmv.glossary.words.persistence.domain.WordStage;
@@ -13,18 +13,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class RepetitionPracticeServiceImpl extends AbstractPracticeService<RepetitionTest> implements RepetitionPracticeService {
+public class GenericPracticeServiceImpl extends AbstractPracticeService<GenericTest> implements GenericPracticeService {
 
     @Autowired
-    protected RepetitionPracticeServiceImpl(WordSetService wordSetService, WordService wordService, PracticeResultsHandler practiceResultsHandler) {
+    protected GenericPracticeServiceImpl(WordSetService wordSetService, WordService wordService, PracticeResultsHandler practiceResultsHandler) {
         super(wordSetService, wordService, practiceResultsHandler);
     }
 
     @Override
-    protected RepetitionTest generateTest(List<Word> words, boolean originQuestions) {
+    protected GenericTest generateTest(List<Word> words, boolean originQuestions) {
         List<Word> learnedWords = words.stream()
-                                       .filter(word -> WordStage.LEARNED.equals(word.getStage()))
+                                       .filter(word -> !word.getStage().equals(WordStage.LEARNED))
                                        .collect(Collectors.toList());
-        return new RepetitionTest(learnedWords);
+        return new GenericTest(learnedWords);
     }
 }

@@ -1,4 +1,4 @@
-package io.github.solomkinmv.glossary.words.service.practice;
+package io.github.solomkinmv.glossary.words.service.practice.status;
 
 import io.github.solomkinmv.glossary.words.persistence.domain.WordStage;
 import org.springframework.stereotype.Component;
