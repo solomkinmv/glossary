@@ -17,7 +17,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.mariadb.jdbc:mariadb-java-client'
     compile 'org.springframework.boot:spring-boot-starter-web'
-    compileOnly 'org.projectlombok:lombok'
+    compile lombok
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile('org.springframework.restdocs:spring-restdocs-mockmvc')
     testCompile playtikaTestcontainers

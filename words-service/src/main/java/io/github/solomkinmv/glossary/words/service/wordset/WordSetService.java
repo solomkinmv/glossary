@@ -3,6 +3,7 @@ package io.github.solomkinmv.glossary.words.service.wordset;
 import io.github.solomkinmv.glossary.words.exception.DomainObjectNotFound;
 import io.github.solomkinmv.glossary.words.persistence.domain.Word;
 import io.github.solomkinmv.glossary.words.persistence.domain.WordSet;
+import io.github.solomkinmv.glossary.words.persistence.domain.WordStage;
 import io.github.solomkinmv.glossary.words.persistence.repository.WordSetRepository;
 import io.github.solomkinmv.glossary.words.service.external.TtsFacade;
 import io.github.solomkinmv.glossary.words.service.word.WordMeta;
@@ -36,6 +37,7 @@ public class WordSetService {
                                .translation(wordMeta.getTranslation())
                                .image(wordMeta.getImage())
                                .sound(ttsFacade.getSpeechUrl(wordMeta.getText()))
+                               .stage(WordStage.NOT_LEARNED)
                                .build();
         WordSet wordSet = getWordSet(wordSetId);
 
