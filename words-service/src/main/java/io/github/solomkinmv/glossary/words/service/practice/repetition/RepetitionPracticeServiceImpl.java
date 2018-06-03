@@ -17,7 +17,7 @@ public class RepetitionPracticeServiceImpl extends AbstractPracticeService<Repet
 
     @Autowired
     protected RepetitionPracticeServiceImpl(WordSetService wordSetService, WordService wordService, PracticeResultsHandler practiceResultsHandler) {
-        super(wordSetService, wordService, practiceResultsHandler);
+        super(wordSetService, wordService);
     }
 
     @Override

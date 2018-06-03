@@ -17,7 +17,7 @@ public class GenericPracticeServiceImpl extends AbstractPracticeService<GenericT
 
     @Autowired
     protected GenericPracticeServiceImpl(WordSetService wordSetService, WordService wordService, PracticeResultsHandler practiceResultsHandler) {
-        super(wordSetService, wordService, practiceResultsHandler);
+        super(wordSetService, wordService);
     }
 
     @Override

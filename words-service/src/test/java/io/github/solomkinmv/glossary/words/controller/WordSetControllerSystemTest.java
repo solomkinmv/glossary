@@ -1,6 +1,5 @@
 package io.github.solomkinmv.glossary.words.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.solomkinmv.glossary.tts.client.TtsClient;
 import io.github.solomkinmv.glossary.tts.client.domain.SpeechResult;
 import io.github.solomkinmv.glossary.words.controller.dto.WordResponse;
@@ -11,54 +10,25 @@ import io.github.solomkinmv.glossary.words.service.word.WordMeta;
 import io.github.solomkinmv.glossary.words.service.wordset.WordSetMeta;
 import io.github.solomkinmv.glossary.words.service.wordset.WordSetService;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.restdocs.JUnitRestDocumentation;
-import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.web.context.WebApplicationContext;
 
-import java.util.concurrent.atomic.AtomicLong;
-
+import static io.github.solomkinmv.glossary.words.persistence.domain.WordStage.NOT_LEARNED;
 import static java.lang.String.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@ActiveProfiles("test")
-public class WordSetControllerSystemTest {
+public class WordSetControllerSystemTest extends BaseTest {
 
-    private static final AtomicLong userId = new AtomicLong();
-
-    @Rule
-    public JUnitRestDocumentation restDocumentation =
-            new JUnitRestDocumentation("build/generated-snippets");
-    private RestDocumentationResultHandler documentationHandler;
-    private MockMvc mockMvc;
-    @Autowired
-    private WebApplicationContext webApplicationContext;
     @Autowired
     private WordSetService wordSetService;
-    @Autowired
-    private ObjectMapper objectMapper;
     @Autowired
     private WordRepository wordRepository;
     @MockBean
@@ -66,15 +36,7 @@ public class WordSetControllerSystemTest {
 
     @Before
     public void setUpMockMvc() {
-        userId.incrementAndGet();
-
-        documentationHandler = document("{class-name}/{method-name}",
-                                        preprocessRequest(prettyPrint()),
-                                        preprocessResponse(prettyPrint()));
-        mockMvc = webAppContextSetup(webApplicationContext)
-                .apply(documentationConfiguration(restDocumentation))
-                .alwaysDo(documentationHandler)
-                .build();
+        super.setUpMockMvc();
 
         when(ttsClient.getSpeech(any(String.class)))
                 .thenReturn(new SpeechResult("url"));
@@ -131,19 +93,6 @@ public class WordSetControllerSystemTest {
                 .andExpect(jsonPath("$.description").value(description));
     }
 
-    private ResultActions performGetWordSetById(long wordSetId) throws Exception {
-        return mockMvc.perform(get("/word-sets/{wordSetId}", wordSetId));
-    }
-
-    private WordSetResponse getWordSetById(long wordSetId) throws Exception {
-        String contentAsString = performGetWordSetById(wordSetId)
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        return objectMapper.readValue(contentAsString, WordSetResponse.class);
-    }
-
     @Test
     public void createsWordByAddingToWordSet() throws Exception {
         String name = "word-set-name";
@@ -167,22 +116,8 @@ public class WordSetControllerSystemTest {
                 .andExpect(jsonPath("$.words[0].text").value(wordText))
                 .andExpect(jsonPath("$.words[0].translation").value(wordTranslation))
                 .andExpect(jsonPath("$.words[0].image").value(imageUrl))
-                .andExpect(jsonPath("$.words[0].sound").value(speechUrl));
-    }
-
-    private ResultActions performAddWordToWordSet(long wordSetId, WordMeta wordMeta) throws Exception {
-        return mockMvc.perform(post("/word-sets/{wordSetId}/words/", wordSetId)
-                                       .contentType(APPLICATION_JSON_UTF8)
-                                       .content(objectMapper.writeValueAsString(wordMeta)));
-    }
-
-    private WordSetResponse addWordToWordSet(long wordSetId, WordMeta wordMeta) throws Exception {
-        String contentAsString = performAddWordToWordSet(wordSetId, wordMeta)
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        return objectMapper.readValue(contentAsString, WordSetResponse.class);
+                .andExpect(jsonPath("$.words[0].sound").value(speechUrl))
+                .andExpect(jsonPath("$.words[0].stage").value(NOT_LEARNED.name()));
     }
 
     @Test
@@ -256,13 +191,4 @@ public class WordSetControllerSystemTest {
         assertThat(response.getWords()).containsOnly(wordThatShouldStay);
     }
 
-    private long createWordSet(WordSetMeta wordSetMeta) throws Exception {
-        String stringWordSetId = mockMvc.perform(post("/word-sets/")
-                                                         .contentType(APPLICATION_JSON_UTF8)
-                                                         .content(objectMapper.writeValueAsString(wordSetMeta)))
-                                        .andExpect(status().isOk())
-                                        .andReturn().getResponse().getContentAsString();
-
-        return Long.parseLong(stringWordSetId);
-    }
 }

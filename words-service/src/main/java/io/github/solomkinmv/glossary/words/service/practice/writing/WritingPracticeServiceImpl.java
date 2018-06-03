@@ -21,7 +21,7 @@ public class WritingPracticeServiceImpl extends AbstractPracticeService<WritingP
                                          WordService wordService,
                                          PracticeResultsHandler practiceResultsHandler,
                                          WritingTestProvider writingTestProvider) {
-        super(wordSetService, wordService, practiceResultsHandler);
+        super(wordSetService, wordService);
         this.writingTestProvider = writingTestProvider;
     }
 

@@ -21,7 +21,7 @@ public class QuizPracticeServiceImpl extends AbstractPracticeService<Quiz> imple
                                    WordService wordService,
                                    PracticeResultsHandler practiceResultsHandler,
                                    QuizProvider quizProvider) {
-        super(wordSetService, wordService, practiceResultsHandler);
+        super(wordSetService, wordService);
         this.quizProvider = quizProvider;
     }
 
