@@ -5,19 +5,20 @@ import io.github.solomkinmv.glossary.tts.client.domain.SpeechResult;
 import io.github.solomkinmv.glossary.words.controller.dto.WordResponse;
 import io.github.solomkinmv.glossary.words.controller.dto.WordSetResponse;
 import io.github.solomkinmv.glossary.words.persistence.domain.WordStage;
+import io.github.solomkinmv.glossary.words.service.practice.Answer;
 import io.github.solomkinmv.glossary.words.service.practice.PracticeResults;
-import io.github.solomkinmv.glossary.words.service.practice.provider.AbstractTestProvider;
-import io.github.solomkinmv.glossary.words.service.practice.repetition.RepetitionTest;
+import io.github.solomkinmv.glossary.words.service.practice.quiz.Quiz;
 import io.github.solomkinmv.glossary.words.service.practice.writing.WritingPracticeTest;
 import io.github.solomkinmv.glossary.words.service.practice.writing.WritingPracticeTest.Question;
 import io.github.solomkinmv.glossary.words.service.word.WordMeta;
 import io.github.solomkinmv.glossary.words.service.wordset.WordSetMeta;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -25,14 +26,19 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static io.github.solomkinmv.glossary.words.service.practice.provider.AbstractTestProvider.NUMBER_OF_CHOICES;
+import static io.github.solomkinmv.glossary.words.service.practice.provider.AbstractTestProvider.TEST_SIZE;
 import static java.lang.String.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -125,19 +131,75 @@ public class PracticeControllerSystemTest extends BaseTest {
     @Test
     public void generatesGenericTest() throws Exception {
         mockMvc.perform(get("/practices/generic")
-                                .param("userId", valueOf(userId.get())))
+                                .param("userId", valueOf(userId.get()))
+                                .param("setId", valueOf(wordSet1.getId())))
                .andExpect(status().isOk())
-               .andExpect(jsonPath("$.words", hasSize(AbstractTestProvider.TEST_SIZE)));
+               .andExpect(jsonPath("$.words", hasSize(wordSet1.getWords().size())))
+               .andDo(documentationHandler.document(
+                       requestParameters(
+                               parameterWithName("userId").description("Id of the user"),
+                               parameterWithName("setId").description("Word Set id to generate generic test")
+                       ), responseFields(
+                               fieldWithPath("words[].id").description("id of the word"),
+                               fieldWithPath("words[].text").description("Original text of the word"),
+                               fieldWithPath("words[].translation").description("Translation text of the word"),
+                               fieldWithPath("words[].stage").description("Learning stage of the word"),
+                               fieldWithPath("words[].image").description("Image url for the word"),
+                               fieldWithPath("words[].sound").description("Pronunciation sound url for the word")
+                       )
+               ));
     }
 
     @Test
-    public void generatesQuiz() throws Exception {
-        mockMvc.perform(get("/practices/quiz")
-                                .param("userId", valueOf(userId.get()))
-                                .param("originQuestions", "true"))
-               .andDo(print())
-               .andExpect(jsonPath("$.questions", hasSize(AbstractTestProvider.TEST_SIZE)))
-               .andExpect(status().isOk());
+    public void generatesQuizOfCorrectSize() throws Exception {
+        final Constructor<?> constructor = Quiz.class.getConstructors()[0];
+        for (Parameter p : constructor.getParameters()) {
+            System.out.println(p.getName());
+        }
+
+
+        Quiz quiz = getQuiz();
+
+        assertThat(quiz.getQuestions()).hasSize(TEST_SIZE);
+    }
+
+    @Test
+    public void generatesQuizWithCorrectAnswers() throws Exception {
+        Quiz quiz = getQuiz();
+
+        quiz.getQuestions().forEach(question -> {
+            WordResponse associatedWord = wordsMap.get(question.getQuestionText());
+            Answer expectedAnswer = new Answer(associatedWord.getId(),
+                                               associatedWord.getTranslation(),
+                                               associatedWord.getStage(),
+                                               associatedWord.getImage(),
+                                               associatedWord.getSound());
+
+            assertThat(question.getAnswer())
+                    .isEqualTo(expectedAnswer);
+        });
+    }
+
+    @Test
+    public void generatesQuizWithOneCorrectAlternative() throws Exception {
+        Quiz quiz = getQuiz();
+
+        quiz.getQuestions().forEach(question -> {
+            WordResponse associatedWord = wordsMap.get(question.getQuestionText());
+
+            assertThat(question.getAlternatives()).hasSize(NUMBER_OF_CHOICES);
+            assertThat(question.getAlternatives()).containsOnlyOnce(associatedWord.getTranslation());
+        });
+    }
+
+    private Quiz getQuiz() throws Exception {
+        String contentAsString = mockMvc.perform(get("/practices/quiz")
+                                                         .param("userId", valueOf(userId.get()))
+                                                         .param("originQuestions", valueOf(true)))
+                                        .andExpect(status().isOk())
+                                        .andReturn().getResponse().getContentAsString();
+
+        return objectMapper.readValue(contentAsString, Quiz.class);
     }
 
     @Test
@@ -149,8 +211,8 @@ public class PracticeControllerSystemTest extends BaseTest {
                                                           .distinct()
                                                           .count();
         assertThat(writingPracticeTest.getQuestions())
-                .hasSize(AbstractTestProvider.TEST_SIZE);
-        assertThat(numberOfUniqueQuestions).isEqualTo(AbstractTestProvider.TEST_SIZE);
+                .hasSize(TEST_SIZE);
+        assertThat(numberOfUniqueQuestions).isEqualTo(TEST_SIZE);
     }
 
     @Test
@@ -208,11 +270,6 @@ public class PracticeControllerSystemTest extends BaseTest {
                 .doesNotContainAnyElementsOf(wordsFromWordSet2);
     }
 
-    @Test
-    public void generatesRepetitionTest() {
-        Assert.fail();
-    }
-
     private WritingPracticeTest getWritingPracticeTest(long wordSetId) throws Exception {
         String contentAsString = mockMvc.perform(get("/practices/writing")
                                                          .param("userId", valueOf(userId.get()))
@@ -233,15 +290,5 @@ public class PracticeControllerSystemTest extends BaseTest {
                                         .andReturn().getResponse().getContentAsString();
 
         return objectMapper.readValue(contentAsString, WritingPracticeTest.class);
-    }
-
-    private RepetitionTest getRepetition(boolean originQuestion) throws Exception {
-        String contentAsString = mockMvc.perform(get("/practices/repetition")
-                                                         .param("userId", valueOf(userId.get()))
-                                                         .param("originQuestions", valueOf(originQuestion)))
-                                        .andExpect(status().isOk())
-                                        .andReturn().getResponse().getContentAsString();
-
-        return objectMapper.readValue(contentAsString, RepetitionTest.class);
     }
 }

@@ -7,8 +7,6 @@ import io.github.solomkinmv.glossary.words.service.practice.generic.GenericTest;
 import io.github.solomkinmv.glossary.words.service.practice.handler.PracticeResultsHandler;
 import io.github.solomkinmv.glossary.words.service.practice.quiz.Quiz;
 import io.github.solomkinmv.glossary.words.service.practice.quiz.QuizPracticeService;
-import io.github.solomkinmv.glossary.words.service.practice.repetition.RepetitionPracticeService;
-import io.github.solomkinmv.glossary.words.service.practice.repetition.RepetitionTest;
 import io.github.solomkinmv.glossary.words.service.practice.writing.WritingPracticeService;
 import io.github.solomkinmv.glossary.words.service.practice.writing.WritingPracticeTest;
 import lombok.AllArgsConstructor;
@@ -24,7 +22,6 @@ public class PracticeController {
 
     private final QuizPracticeService quizPracticeService;
     private final WritingPracticeService writingPracticeService;
-    private final RepetitionPracticeService repetitionPracticeService;
     private final GenericPracticeService genericPracticeService;
     private final PracticeResultsHandler practiceResultsHandler;
 
@@ -42,13 +39,6 @@ public class PracticeController {
                                               @RequestParam("originQuestions") boolean originQuestions) {
         log.info("Getting writing practice test for word set with id {} [userId: {}]", setId, userId);
         return writingPracticeService.generateTest(userId, new PracticeParameters(setId, originQuestions));
-    }
-
-    @GetMapping("/repetition")
-    public RepetitionTest getRepetitionTest(@RequestParam("userId") long userId,
-                                            @RequestParam(value = "setId", required = false) Long setId) {
-        log.info("Getting words for repetition [wordSetId: {}, userId: {}]", setId, userId);
-        return repetitionPracticeService.generateTest(userId, new PracticeParameters(setId));
     }
 
     @GetMapping("/generic")

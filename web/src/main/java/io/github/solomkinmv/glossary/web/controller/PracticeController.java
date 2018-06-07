@@ -68,9 +68,7 @@ public class PracticeController {
             @RequestParam(value = "setId", required = false) Long setId) {
         log.info("Getting words for repetition (set id {})", setId);
         return new RepetitionResource(
-                repetitionPracticeService.generateTest(user.getUsername(),
-                                                       new PracticeParameters(setId))
-                                         .stream()
+                repetitionPracticeService.generateTest(user.getUsername(), new PracticeParameters(setId)).stream()
                                          .map(wordConverter::toDto)
                                          .collect(Collectors.toList()),
                 setId);

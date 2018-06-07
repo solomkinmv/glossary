@@ -42,7 +42,7 @@ public abstract class BaseTest {
     @Autowired
     protected ObjectMapper objectMapper;
     protected MockMvc mockMvc;
-    private RestDocumentationResultHandler documentationHandler;
+    protected RestDocumentationResultHandler documentationHandler;
     @Autowired
     private WebApplicationContext webApplicationContext;
 
@@ -59,7 +59,7 @@ public abstract class BaseTest {
                 .build();
     }
 
-    protected long createWordSet(WordSetMeta wordSetMeta) throws Exception {
+    long createWordSet(WordSetMeta wordSetMeta) throws Exception {
         String stringWordSetId = mockMvc.perform(post("/word-sets/")
                                                          .contentType(APPLICATION_JSON_UTF8)
                                                          .content(objectMapper.writeValueAsString(wordSetMeta)))
@@ -69,14 +69,14 @@ public abstract class BaseTest {
         return Long.parseLong(stringWordSetId);
     }
 
-    protected ResultActions performAddWordToWordSet(long wordSetId, WordMeta wordMeta) throws Exception {
+    ResultActions performAddWordToWordSet(long wordSetId, WordMeta wordMeta) throws Exception {
         return mockMvc.perform(post("/word-sets/{wordSetId}/words/", wordSetId)
                                        .contentType(APPLICATION_JSON_UTF8)
                                        .content(objectMapper.writeValueAsString(wordMeta)));
     }
 
     @SneakyThrows
-    protected WordSetResponse addWordToWordSet(long wordSetId, WordMeta wordMeta) {
+    WordSetResponse addWordToWordSet(long wordSetId, WordMeta wordMeta) {
         String contentAsString = performAddWordToWordSet(wordSetId, wordMeta)
                 .andReturn()
                 .getResponse()
@@ -85,11 +85,11 @@ public abstract class BaseTest {
         return objectMapper.readValue(contentAsString, WordSetResponse.class);
     }
 
-    protected ResultActions performGetWordSetById(long wordSetId) throws Exception {
+    ResultActions performGetWordSetById(long wordSetId) throws Exception {
         return mockMvc.perform(get("/word-sets/{wordSetId}", wordSetId));
     }
 
-    protected WordSetResponse getWordSetById(long wordSetId) throws Exception {
+    WordSetResponse getWordSetById(long wordSetId) throws Exception {
         String contentAsString = performGetWordSetById(wordSetId)
                 .andReturn()
                 .getResponse()
