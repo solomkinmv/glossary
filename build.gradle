@@ -69,6 +69,10 @@ allprojects {
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'jacoco'
 
+    compileJava {
+        options.compilerArgs << '-parameters'
+    }
+
     dependencyManagement {
         imports {
             mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"

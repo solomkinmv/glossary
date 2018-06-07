@@ -5,7 +5,8 @@
 ## Set up dev environment
 1. Install Lombok plugin for Intellij IDEA
 2. Allow annotation processing (Intellij should ask you to allow this)
-3. Run `Application` class with active `dev` profile
+3. Configure additional javac parameter `-params`
+4. Run `Application` class with active `dev` profile
 
 ## Docker
 ### Build container
