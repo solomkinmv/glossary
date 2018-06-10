@@ -1,7 +1,5 @@
 package io.github.solomkinmv.glossary.words.controller;
 
-import io.github.solomkinmv.glossary.tts.client.TtsClient;
-import io.github.solomkinmv.glossary.tts.client.domain.SpeechResult;
 import io.github.solomkinmv.glossary.words.controller.dto.WordResponse;
 import io.github.solomkinmv.glossary.words.controller.dto.WordSetResponse;
 import io.github.solomkinmv.glossary.words.persistence.domain.WordStage;
@@ -10,31 +8,19 @@ import io.github.solomkinmv.glossary.words.service.practice.PracticeResults;
 import io.github.solomkinmv.glossary.words.service.practice.quiz.Quiz;
 import io.github.solomkinmv.glossary.words.service.practice.writing.WritingPracticeTest;
 import io.github.solomkinmv.glossary.words.service.practice.writing.WritingPracticeTest.Question;
-import io.github.solomkinmv.glossary.words.service.word.WordMeta;
-import io.github.solomkinmv.glossary.words.service.wordset.WordSetMeta;
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static io.github.solomkinmv.glossary.words.service.practice.provider.AbstractTestProvider.NUMBER_OF_CHOICES;
 import static io.github.solomkinmv.glossary.words.service.practice.provider.AbstractTestProvider.TEST_SIZE;
 import static java.lang.String.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -43,42 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class PracticeControllerSystemTest extends BaseTest {
-
-    private WordSetResponse wordSet1;
-    private WordSetResponse wordSet2;
-
-    @MockBean
-    private TtsClient ttsClient;
-    private Map<String, WordResponse> wordsMap;
-
-    @Before
-    public void mockTts() {
-        when(ttsClient.getSpeech(anyString()))
-                .thenReturn(new SpeechResult("speech-url"));
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        wordSet1 = createWordSet();
-        wordSet2 = createWordSet();
-
-        wordsMap = Stream.concat(wordSet1.getWords().stream(), wordSet2.getWords().stream())
-                         .collect(Collectors.toMap(WordResponse::getText, Function.identity()));
-    }
-
-    private WordSetResponse createWordSet() throws Exception {
-        String name = "word-set-name";
-        String description = "desc";
-        WordSetMeta wordSetMeta = new WordSetMeta(userId.get(), name, description);
-        long wordSetId = createWordSet(wordSetMeta);
-
-
-        IntStream.rangeClosed(1, 9)
-                 .mapToObj(i -> new WordMeta(wordSetId + "word" + i, wordSetId + "translation" + i, "img-url"))
-                 .forEach(word -> addWordToWordSet(wordSetId, word));
-
-        return getWordSetById(wordSetId);
-    }
 
     @Test
     public void handlesTestResults() throws Exception {
@@ -91,10 +41,7 @@ public class PracticeControllerSystemTest extends BaseTest {
                 word1.getId(), true,
                 word2.getId(), false
         ));
-        mockMvc.perform(post("/practices")
-                                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                                .content(objectMapper.writeValueAsString(practiceResults)))
-               .andExpect(status().isOk());
+        handleResults(practiceResults);
         WordSetResponse updatedWordSet = getWordSetById(wordSet1.getId());
 
         assertThat(updatedWordSet.getWords().get(0).getStage()).isEqualTo(WordStage.LEARNING);
@@ -106,10 +53,7 @@ public class PracticeControllerSystemTest extends BaseTest {
                 word0.getId(), true,
                 word1.getId(), false
         ));
-        mockMvc.perform(post("/practices")
-                                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                                .content(objectMapper.writeValueAsString(practiceResults)))
-               .andExpect(status().isOk());
+        handleResults(practiceResults);
         updatedWordSet = getWordSetById(wordSet1.getId());
 
         assertThat(updatedWordSet.getWords().get(0).getStage()).isEqualTo(WordStage.LEARNED);
@@ -119,13 +63,32 @@ public class PracticeControllerSystemTest extends BaseTest {
         practiceResults = new PracticeResults(Map.of(
                 word0.getId(), false
         ));
-        mockMvc.perform(post("/practices")
-                                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                                .content(objectMapper.writeValueAsString(practiceResults)))
-               .andExpect(status().isOk());
+        handleResults(practiceResults);
         updatedWordSet = getWordSetById(wordSet1.getId());
 
         assertThat(updatedWordSet.getWords().get(0).getStage()).isEqualTo(WordStage.NOT_LEARNED);
+
+        // basically this request used only to help Spring Rest Docs to record request and response body
+        practiceResults = new PracticeResults(Map.of(
+                word0.getId(), true,
+                word1.getId(), true,
+                word2.getId(), false
+        ));
+        handleResults(practiceResults);
+    }
+
+    private void handleResults(PracticeResults practiceResults) throws Exception {
+        mockMvc.perform(post("/practices")
+                                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                                .content(objectMapper.writeValueAsString(practiceResults)))
+               .andExpect(status().isOk())
+               .andDo(documentationHandler.document(
+                       requestFields(
+                               fieldWithPath("wordAnswers.*")
+                                       .description(
+                                               "Map of word answers. Key is word id, value is boolean successful result")
+                       )
+               ));
     }
 
     @Test
@@ -152,12 +115,6 @@ public class PracticeControllerSystemTest extends BaseTest {
 
     @Test
     public void generatesQuizOfCorrectSize() throws Exception {
-        final Constructor<?> constructor = Quiz.class.getConstructors()[0];
-        for (Parameter p : constructor.getParameters()) {
-            System.out.println(p.getName());
-        }
-
-
         Quiz quiz = getQuiz();
 
         assertThat(quiz.getQuestions()).hasSize(TEST_SIZE);
@@ -197,6 +154,34 @@ public class PracticeControllerSystemTest extends BaseTest {
                                                          .param("userId", valueOf(userId.get()))
                                                          .param("originQuestions", valueOf(true)))
                                         .andExpect(status().isOk())
+                                        .andDo(documentationHandler.document(
+                                                requestParameters(
+                                                        parameterWithName("userId").description("User id"),
+                                                        parameterWithName("originQuestions")
+                                                                .description(
+                                                                        "Flag that specifies test direction (word -> translation or translation -> word)"),
+                                                        parameterWithName("setId")
+                                                                .description("Optional word set id")
+                                                                .optional()
+                                                ),
+                                                responseFields(
+                                                        fieldWithPath("questions[].questionText")
+                                                                .description("Question text"),
+                                                        fieldWithPath("questions[].answer.wordId")
+                                                                .description("Correct word id"),
+                                                        fieldWithPath("questions[].answer.answerText")
+                                                                .description("Correct word text"),
+                                                        fieldWithPath("questions[].answer.stage")
+                                                                .description("Correct word learning stage"),
+                                                        fieldWithPath("questions[].answer.image")
+                                                                .description("Correct word image url"),
+                                                        fieldWithPath("questions[].answer.pronunciation")
+                                                                .description("Correct word pronunciation url"),
+                                                        fieldWithPath("questions[].alternatives[]")
+                                                                .description(
+                                                                        "List of possible answers. Includes one correct answer")
+                                                )
+                                        ))
                                         .andReturn().getResponse().getContentAsString();
 
         return objectMapper.readValue(contentAsString, Quiz.class);
@@ -274,9 +259,33 @@ public class PracticeControllerSystemTest extends BaseTest {
         String contentAsString = mockMvc.perform(get("/practices/writing")
                                                          .param("userId", valueOf(userId.get()))
                                                          .param("originQuestions", valueOf(true))
-                                                         .param("setId", valueOf(wordSetId))
-        )
+                                                         .param("setId", valueOf(wordSetId)))
                                         .andExpect(status().isOk())
+                                        .andDo(documentationHandler.document(
+                                                requestParameters(
+                                                        parameterWithName("userId").description("User id"),
+                                                        parameterWithName("originQuestions")
+                                                                .description(
+                                                                        "Flag that specifies test direction (word -> translation or translation -> word)"),
+                                                        parameterWithName("setId")
+                                                                .description("Optional word set id")
+                                                                .optional()
+                                                ),
+                                                responseFields(
+                                                        fieldWithPath("questions[].questionText")
+                                                                .description("Question text"),
+                                                        fieldWithPath("questions[].answer.wordId")
+                                                                .description("Correct word id"),
+                                                        fieldWithPath("questions[].answer.answerText")
+                                                                .description("Correct word text"),
+                                                        fieldWithPath("questions[].answer.stage")
+                                                                .description("Correct word learning stage"),
+                                                        fieldWithPath("questions[].answer.image")
+                                                                .description("Correct word image url"),
+                                                        fieldWithPath("questions[].answer.pronunciation")
+                                                                .description("Correct word pronunciation url")
+                                                )
+                                        ))
                                         .andReturn().getResponse().getContentAsString();
 
         return objectMapper.readValue(contentAsString, WritingPracticeTest.class);

@@ -1,0 +1,24 @@
+= Words Service
+Maksym Solomkin;
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+[introduction]
+= Introduction
+
+Words Service handles managing (CRUD) of words and sets of words.
+Creates different types of practice exercises and handles results.
+
+[[word-resources]]
+= Word Resources
+
+include::words.adoc[]
+
+[[practice-resources]]
+= Practice Resources
+
+include::practices.adoc[]
