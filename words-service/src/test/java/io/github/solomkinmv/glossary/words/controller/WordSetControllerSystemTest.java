@@ -163,6 +163,15 @@ public class WordSetControllerSystemTest extends BaseTest {
         addWordToWordSet(wordSetId, new WordMeta("word1", "translation", "img-url"));
         WordSetResponse wordSetResponse = addWordToWordSet(wordSetId, new WordMeta("word2", "translation", "img-url"));
 
+        deleteWordSet(wordSetId);
+
+        verifyThatWordWithAllCorrespondingWordsHaveBeenDeleted(wordSetId, wordSetResponse);
+
+        // basically this request used only to help Spring Rest Docs to record request and response body
+        deleteWordSet(createWordSet(wordSetMeta));
+    }
+
+    private void deleteWordSet(long wordSetId) throws Exception {
         mockMvc.perform(delete("/word-sets/{wordSetId}", wordSetId))
                .andExpect(status().isOk())
                .andDo(documentationHandler.document(
@@ -170,8 +179,6 @@ public class WordSetControllerSystemTest extends BaseTest {
                                parameterWithName("wordSetId").description("Word Set id")
                        )
                ));
-
-        verifyThatWordWithAllCorrespondingWordsHaveBeenDeleted(wordSetId, wordSetResponse);
     }
 
     private void verifyThatWordWithAllCorrespondingWordsHaveBeenDeleted(long wordSetId, WordSetResponse wordSetResponse) throws Exception {
@@ -243,7 +250,16 @@ public class WordSetControllerSystemTest extends BaseTest {
         WordResponse wordToDelete = wordSetResponse.getWords().get(0);
         WordResponse wordThatShouldStay = wordSetResponse.getWords().get(1);
 
-        mockMvc.perform(delete("/word-sets/{wordSetId}/words/{wordId}", wordSetId, wordToDelete.getId()))
+        deleteWordFromWordSet(wordSetId, wordToDelete.getId());
+
+        verifyThatWordHasBeenDelitedFromWordSet(wordSetId, wordThatShouldStay);
+
+        // basically this request used only to help Spring Rest Docs to record request and response body
+        deleteWordFromWordSet(wordSetId, wordThatShouldStay.getId());
+    }
+
+    private void deleteWordFromWordSet(long wordSetId, long wordId) throws Exception {
+        mockMvc.perform(delete("/word-sets/{wordSetId}/words/{wordId}", wordSetId, wordId))
                .andExpect(status().isOk())
                .andDo(documentationHandler.document(
                        pathParameters(
@@ -251,8 +267,6 @@ public class WordSetControllerSystemTest extends BaseTest {
                                parameterWithName("wordId").description("Word id")
                        )
                ));
-
-        verifyThatWordHasBeenDelitedFromWordSet(wordSetId, wordThatShouldStay);
     }
 
     private void verifyThatWordHasBeenDelitedFromWordSet(long wordSetId, WordResponse wordThatShouldStay) throws Exception {
