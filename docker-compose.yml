@@ -90,3 +90,14 @@ services:
       options:
         max-size: "10m"
         max-file: "10"
+
+  words-service:
+    image: solomkinmv/words-service
+    restart: always
+    depends_on:
+      - config
+    ports: 8085:8085
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
