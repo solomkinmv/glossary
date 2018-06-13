@@ -3,19 +3,19 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 9
 
 dependencies {
-	compile('org.springframework.cloud:spring-cloud-starter-openfeign')
-	compileOnly lombok
+    compile('org.springframework.cloud:spring-cloud-starter-openfeign')
+    compileOnly lombok
 
-	testCompile('org.springframework.boot:spring-boot-starter-web')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
-	testCompile('org.springframework.cloud:spring-cloud-contract-wiremock')
-	testCompile wiremock
+    testCompile('org.springframework.boot:spring-boot-starter-web')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('org.springframework.cloud:spring-cloud-contract-wiremock')
+    testCompile wiremock
 }
 
 jar {
-	enabled = true
+    enabled = true
 }
 
 bootJar {
-	enabled = false
+    enabled = false
 }
