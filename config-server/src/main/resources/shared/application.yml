@@ -4,3 +4,5 @@ eureka:
     registerWithEureka: true
     serviceUrl:
       defaultZone: http://registry:8761/eureka
+
+management.endpoints.web.expose: '*'
