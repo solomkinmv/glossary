@@ -4,6 +4,6 @@ ADD ${JAR_FILE} app.jar
 ENTRYPOINT ["java", "-Xmx200m", "-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
 
 # todo: fix health endpoint path
-HEALTHCHECK --interval=10s --timeout=3s CMD curl -f http://localhost:8085/actuator/health || exit 1
+HEALTHCHECK --interval=10s --timeout=3s CMD curl -f http://localhost:8085/words-service/actuator/health || exit 1
 
 EXPOSE 8085
