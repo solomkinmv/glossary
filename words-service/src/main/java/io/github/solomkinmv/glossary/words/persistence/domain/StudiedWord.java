@@ -1,6 +1,7 @@
 package io.github.solomkinmv.glossary.words.persistence.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotBlank;
  */
 @Entity
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class StudiedWord {
@@ -33,25 +35,4 @@ public class StudiedWord {
     private String image;
 
     private String sound;
-
-    public StudiedWord(String text, String translation) {
-        this(text, translation, WordStage.NOT_LEARNED);
-    }
-
-    public StudiedWord(Long id, String text, String translation) {
-        this(id, text, translation, WordStage.NOT_LEARNED);
-    }
-
-    public StudiedWord(String text, String translation, WordStage stage) {
-        this.text = text;
-        this.translation = translation;
-        this.stage = stage;
-    }
-
-    public StudiedWord(Long id, String text, String translation, WordStage stage) {
-        this.id = id;
-        this.text = text;
-        this.translation = translation;
-        this.stage = stage;
-    }
 }
