@@ -5,6 +5,11 @@ Image Service provides methods to search for images in Flickr and to store them 
 Service uses `storage-service` to store images.
 
 Requires config server to be up and running `http://config:8888`.
+Requires Flickr API keys via following environment variables:
+
+    - FLICKR_KEY
+    - FLICKR_SECRET
+
 Could be started with `local` profile to use local config server `http://localhost:8888`
 
 Use `./gradlew :image-service:docker` to build docker image.

@@ -4,6 +4,14 @@ Words Service handles managing (CRUD) of words and sets of words.
 Creates different types of practice exercises and handles results.
 
 Requires config server to be up and running `http://config:8888`.
+Requires mariaDB database connection which is specified using following environment variables:
+
+    - DATABASE_HOST
+    - DATABASE_USER
+    - DATABASE_PASSWORD
+    - DATABASE_NAME
+    - DATABASE_PORT
+      
 Could be started with `local` profile to use local config server `http://localhost:8888`
 
 Use `./gradlew :words-service:docker` to build docker image
