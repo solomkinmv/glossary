@@ -21,6 +21,8 @@ dependencies {
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile('org.springframework.restdocs:spring-restdocs-mockmvc')
     testCompile playtikaTestcontainers
+
+    compile project(':tts-service-client')
 }
 
 docker {

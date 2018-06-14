@@ -4,6 +4,7 @@ import io.github.solomkinmv.glossary.words.exception.DomainObjectNotFound;
 import io.github.solomkinmv.glossary.words.persistence.domain.StudiedWord;
 import io.github.solomkinmv.glossary.words.persistence.domain.WordSet;
 import io.github.solomkinmv.glossary.words.persistence.repository.WordSetRepository;
+import io.github.solomkinmv.glossary.words.service.external.TtsFacade;
 import io.github.solomkinmv.glossary.words.service.word.WordMeta;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.List;
 public class WordSetService {
 
     private final WordSetRepository wordSetRepository;
+    private final TtsFacade ttsFacade;
 
     public List<WordSet> findAllForUserId(long userId) {
         return wordSetRepository.findAllByUserId(userId);
@@ -28,7 +30,12 @@ public class WordSetService {
 
     @Transactional
     public WordSet addWordToWordSet(long wordSetId, WordMeta wordMeta) {
-        StudiedWord unsavedStudiedWord = new StudiedWord(wordMeta.getText(), wordMeta.getTranslation());
+        StudiedWord unsavedStudiedWord = StudiedWord.builder()
+                                                    .text(wordMeta.getText())
+                                                    .translation(wordMeta.getTranslation())
+                                                    .image(wordMeta.getImage())
+                                                    .sound(ttsFacade.getSpeechUrl(wordMeta.getText()))
+                                                    .build();
         WordSet wordSet = getWordSet(wordSetId);
 
         wordSet.getStudiedWords().add(unsavedStudiedWord);
@@ -39,5 +46,9 @@ public class WordSetService {
         return wordSetRepository.findByUserId(wordSetId)
                                 .orElseThrow(() -> new DomainObjectNotFound(
                                         "Can't find word set with id " + wordSetId));
+    }
+
+    public void deleteWordSetById(long wordSetId) {
+        wordSetRepository.deleteById(wordSetId);
     }
 }

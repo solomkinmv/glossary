@@ -45,7 +45,7 @@ public class WordSetController {
         return wordSetId;
     }
 
-    @RequestMapping(value = "/{wordSetId}/words", method = RequestMethod.POST)
+    @PostMapping("/{wordSetId}/words")
     public WordSetResponse createWordByAddingToWordSet(@PathVariable long wordSetId,
                                                        @Validated @RequestBody WordMeta wordMeta) {
         log.info("Adding word to word set with id {}: {}", wordSetId, wordMeta);
@@ -55,6 +55,14 @@ public class WordSetController {
         return WordSetResponse.of(wordSet);
     }
 
+    @DeleteMapping("/{wordSetId}")
+    public void deleteWordSetById(@PathVariable long wordSetId) {
+        log.info("Deleting word set by id: {}", wordSetId);
+
+        wordSetService.deleteWordSetById(wordSetId);
+
+        log.info("Deleted word set by id: {}", wordSetId);
+    }
 
     // todo: delete
     // todo: updateWordSetMetaInformation
