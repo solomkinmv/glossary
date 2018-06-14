@@ -9,7 +9,7 @@ def jaxbApiVersion = '2.3.0'
 def activationVersion = '1.1.1'
 def thumbnailatorVersion = '0.4.8'
 def wiremockVersion = '2.14.0'
-def feignFormVersion = '3.2.2'
+def feignFormVersion = '3.3.0'
 def playtikaTestcontainersVersion = '1.6'
 
 ext {
