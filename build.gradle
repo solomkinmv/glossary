@@ -4,13 +4,14 @@ def awsSdkVersion = '1.11.181'
 def jlayerVersion = '1.0.1'
 def flickrVersion = '2.16'
 def guavaVersion = '21.0'
-def lombokVersion = '1.16.20'
+def lombokVersion = '1.18.0'
 def jaxbApiVersion = '2.3.0'
 def activationVersion = '1.1.1'
 def thumbnailatorVersion = '0.4.8'
 def wiremockVersion = '2.14.0'
 def feignFormVersion = '3.3.0'
 def playtikaTestcontainersVersion = '1.6'
+def jacocoVersion = '0.8.1'
 
 ext {
     springCloudVersion = 'Finchley.M9'
@@ -68,6 +69,13 @@ allprojects {
     apply plugin: 'idea'
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'jacoco'
+
+    jacoco {
+        toolVersion = jacocoVersion
+    }
+
+    sourceCompatibility = 10
+    targetCompatibility = 10
 
     compileJava {
         options.compilerArgs << '-parameters'
