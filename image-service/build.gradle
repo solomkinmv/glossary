@@ -27,6 +27,7 @@ dependencies {
 
 docker {
 	name "solomkinmv/${bootJar.baseName}"
+	tags project.version
 	println "==> Docker task for ${name}"
 	files bootJar.archivePath
 	buildArgs(['JAR_FILE': "${bootJar.archiveName}"])

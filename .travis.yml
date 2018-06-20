@@ -12,18 +12,26 @@ after_success:
   - bash <(curl -s https://codecov.io/bash)
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - ./gradlew config-server:docker
+  - ./gradlew config-server:dockerTag
   - ./gradlew config-server:dockerPush
   - ./gradlew discovery-server:docker
+  - ./gradlew discovery-server:dockerTag
   - ./gradlew discovery-server:dockerPush
   - ./gradlew gateway:docker
+  - ./gradlew gateway:dockerTag
   - ./gradlew gateway:dockerPush
   - ./gradlew storage-service:docker
+  - ./gradlew storage-service:dockerTag
   - ./gradlew storage-service:dockerPush
   - ./gradlew translate-service:docker
+  - ./gradlew translate-service:dockerTag
   - ./gradlew translate-service:dockerPush
   - ./gradlew tts-service:docker
+  - ./gradlew tts-service:dockerTag
   - ./gradlew tts-service:dockerPush
   - ./gradlew image-service:docker
+  - ./gradlew image-service:dockerTag
   - ./gradlew image-service:dockerPush
   - ./gradlew words-service:docker
+  - ./gradlew words-service:dockerTag
   - ./gradlew words-service:dockerPush
