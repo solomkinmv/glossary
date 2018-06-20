@@ -38,7 +38,7 @@ ext {
 buildscript {
     ext {
         springBootVersion = '2.0.1.RELEASE'
-        palantirDockerPluginVersion = '0.17.2'
+        palantirDockerPluginVersion = '0.19.2'
     }
 
     repositories {
