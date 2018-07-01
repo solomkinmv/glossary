@@ -27,7 +27,7 @@ public class TtsClientTest {
         String text = "hello world";
         SpeechResult expectedSpeechResult = new SpeechResult("some url");
 
-        stubFor(get(urlPathEqualTo("/tts-service"))
+        stubFor(get(urlPathEqualTo("/"))
                         .withQueryParam("text", equalTo(text))
                         .willReturn(aResponse()
                                             .withStatus(OK_200)

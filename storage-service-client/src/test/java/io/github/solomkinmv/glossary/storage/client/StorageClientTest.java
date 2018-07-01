@@ -30,7 +30,7 @@ public class StorageClientTest {
 
     @Test
     public void getsUrlByTypeAndFilename() {
-        stubFor(get(urlPathMatching("/storage-service/\\\\?.*"))
+        stubFor(get(urlPathEqualTo("/"))
                         .withQueryParam("type", equalTo("IMG"))
                         .withQueryParam("filename", equalTo("image.png"))
                         .willReturn(aResponse()
@@ -45,7 +45,7 @@ public class StorageClientTest {
 
     @Test
     public void returnsEmptyOptionalIfNoContent() {
-        stubFor(get(urlPathMatching("/storage-service/\\\\?.*"))
+        stubFor(get(urlPathEqualTo("/"))
                         .withQueryParam("type", equalTo("IMG"))
                         .withQueryParam("filename", equalTo("image.png"))
                         .willReturn(aResponse()
@@ -60,7 +60,7 @@ public class StorageClientTest {
 
     @Test
     public void deletesByType() {
-        stubFor(delete(urlPathMatching("/storage-service/\\\\?.*"))
+        stubFor(delete(urlPathEqualTo("/"))
                         .withQueryParam("type", equalTo("SOUND"))
                         .willReturn(aResponse()
                                             .withStatus(OK_200)));
@@ -72,7 +72,7 @@ public class StorageClientTest {
 
     @Test
     public void deletesByTypeAndFilename() {
-        stubFor(delete(urlPathMatching("/storage-service/\\\\?.*"))
+        stubFor(delete(urlPathEqualTo("/"))
                         .withQueryParam("type", equalTo("SOUND"))
                         .withQueryParam("filename", equalTo("book.mp3"))
                         .willReturn(aResponse()
@@ -88,7 +88,7 @@ public class StorageClientTest {
         String imagePngContentType = "image/png";
         String fileContent = "nonsensecontent";
         String location = "location";
-        stubFor(any(urlPathMatching("/storage-service/\\\\?.*"))
+        stubFor(any(urlPathEqualTo("/"))
                         .withQueryParam("type", equalTo("IMG"))
                         .withMultipartRequestBody(
                                 aMultipart()
