@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @FeignClient(
-        name = "tts-service",
-        path = "/tts-service"
+        name = "tts-service"
 )
 public interface TtsClient {
 

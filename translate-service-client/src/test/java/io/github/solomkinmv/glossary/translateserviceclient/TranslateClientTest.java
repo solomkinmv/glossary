@@ -30,7 +30,7 @@ public class TranslateClientTest {
         String text = "hello world";
         TranslateResult expectedResult = new TranslateResult(text, Collections.singletonList("привет мир"),
                                                              Language.ENGLISH, Language.RUSSIAN);
-        stubFor(post(urlPathEqualTo("/translate-service/translate"))
+        stubFor(post(urlPathEqualTo("/translate"))
                         .withQueryParam("text", equalTo(text))
                         .withQueryParam("source", equalTo("ENGLISH"))
                         .withQueryParam("target", equalTo("RUSSIAN"))
@@ -56,7 +56,7 @@ public class TranslateClientTest {
         String text = "hello world";
         TranslateResult expectedResult = new TranslateResult(text, Collections.singletonList("привет мир"),
                                                              Language.ENGLISH, Language.RUSSIAN);
-        stubFor(post(urlPathEqualTo("/translate-service/translate"))
+        stubFor(post(urlPathEqualTo("/translate"))
                         .withQueryParam("text", equalTo(text))
                         .withQueryParam("target", equalTo("RUSSIAN"))
                         .willReturn(aResponse()

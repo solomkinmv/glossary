@@ -119,7 +119,7 @@ include::{snippets}/word-set-controller-system-test/deletes-word-set-with-all-co
 
 
 [[resource-update-word-set-meta]]
-== Create Word By Adding to Word Set
+== Update Word Set Meta Info
 A `PATCH` request updated word set meta information.
 
 include::{snippets}/word-set-controller-system-test/updated-word-set-meta-information-without-touching-words/response-body.adoc[]

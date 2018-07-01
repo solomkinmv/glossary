@@ -5,8 +5,11 @@ import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.polly.AmazonPolly;
 import com.amazonaws.services.polly.AmazonPollyClient;
+import io.github.solomkinmv.glossary.tts.service.SpeechService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
 public class PollyConfiguration {
@@ -19,4 +22,12 @@ public class PollyConfiguration {
                                 .withClientConfiguration(new ClientConfiguration())  // todo: try without this
                                 .build();
     }
+
+    @Bean
+    @Primary
+    @Profile("stub")
+    SpeechService stubSpeechService() {
+        return speech -> ("http://stub-url/" + speech).replaceAll("\\W", "") + ".mp3";
+    }
+
 }
