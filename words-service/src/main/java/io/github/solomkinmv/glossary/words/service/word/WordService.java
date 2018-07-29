@@ -5,6 +5,7 @@ import io.github.solomkinmv.glossary.words.persistence.domain.Word;
 import io.github.solomkinmv.glossary.words.persistence.repository.WordRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,5 +27,16 @@ public class WordService {
 
     public void save(Word word) {
         wordRepository.save(word);
+    }
+
+    @Transactional
+    public Word updateWord(long wordId, WordMeta wordMeta) {
+        Word word = getById(wordId);
+
+        word.setText(wordMeta.getText());
+        word.setTranslation(wordMeta.getTranslation());
+        word.setImage(wordMeta.getImage());
+
+        return word;
     }
 }
