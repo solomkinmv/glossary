@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class PracticeControllerSystemTest extends BaseTest {
+public class PracticeControllerComponentTest extends BaseTest {
 
     @Test
     @WithOAuthSubject
