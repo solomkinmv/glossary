@@ -21,12 +21,12 @@ public class WordSetService {
     private final WordSetRepository wordSetRepository;
     private final TtsFacade ttsFacade;
 
-    public List<WordSet> findAllForUserId(long userId) {
-        return wordSetRepository.findAllByUserId(userId);
+    public List<WordSet> findAllForSubjectId(String subjectId) {
+        return wordSetRepository.findAllBySubjectId(subjectId);
     }
 
-    public long create(WordSetMeta wordSetMeta) {
-        WordSet wordSet = new WordSet(wordSetMeta.getUserId(), wordSetMeta.getName(), wordSetMeta.getDescription());
+    public long create(WordSetMeta wordSetMeta, String subjectId) {
+        WordSet wordSet = new WordSet(subjectId, wordSetMeta.getName(), wordSetMeta.getDescription());
         return wordSetRepository.save(wordSet).getId();
     }
 
@@ -52,19 +52,16 @@ public class WordSetService {
     }
 
     public Optional<WordSet> findWordSet(long wordSetId) {
-        return wordSetRepository.findByUserId(wordSetId);
+        return wordSetRepository.findById(wordSetId);
     }
 
     public void deleteWordSetById(long wordSetId) {
         wordSetRepository.deleteById(wordSetId);
     }
 
+    @Transactional
     public WordSet updateWordSetMetaInformation(long wordSetId, WordSetMeta wordSetMeta) {
         WordSet wordSet = getWordSet(wordSetId);
-        if (wordSet.getUserId() != wordSetMeta.getUserId()) {
-            String msg = "Unable to change userId of word set. Original: " + wordSet + ", updated: " + wordSetMeta;
-            throw new IllegalArgumentException(msg);
-        }
         wordSet.setName(wordSetMeta.getName());
         wordSet.setDescription(wordSetMeta.getDescription());
         return wordSet;

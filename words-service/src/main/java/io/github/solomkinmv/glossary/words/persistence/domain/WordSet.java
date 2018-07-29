@@ -5,7 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
@@ -21,7 +26,7 @@ public class WordSet {
     private Long id;
 
     @Column(nullable = false)
-    private long userId;
+    private String subjectId;
 
     @NotBlank
     private String name;
@@ -32,8 +37,8 @@ public class WordSet {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Word> words;
 
-    public WordSet(long userId, String name, String description) {
-        this.userId = userId;
+    public WordSet(String subjectId, String name, String description) {
+        this.subjectId = subjectId;
         this.name = name;
         this.description = description;
     }

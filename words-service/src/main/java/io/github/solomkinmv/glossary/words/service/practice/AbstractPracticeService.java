@@ -18,7 +18,7 @@ public abstract class AbstractPracticeService<T> implements PracticeService<T> {
 
 
     @Override
-    public T generateTest(long userId, PracticeParameters practiceParameters) {
+    public T generateTest(String subjectId, PracticeParameters practiceParameters) {
         log.info("Generating practice with parameters: {}", practiceParameters);
 
         Long wordSetId = practiceParameters.getWordSetId();
@@ -29,7 +29,7 @@ public abstract class AbstractPracticeService<T> implements PracticeService<T> {
                                   .orElseThrow(() -> new DomainObjectNotFound(
                                           "No such word set with id: " + wordSetId));
         } else {
-            words = wordService.findAllByUserId(userId);
+            words = wordService.findAllForUser(subjectId);
         }
 
         return generateTest(words, practiceParameters.isOriginQuestions());

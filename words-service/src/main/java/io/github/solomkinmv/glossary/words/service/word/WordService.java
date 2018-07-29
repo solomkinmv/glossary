@@ -20,8 +20,8 @@ public class WordService {
                                      "Can't find word with id " + wordId));
     }
 
-    public List<Word> findAllByUserId(long userId) {
-        return wordRepository.findAllByUserId(userId);
+    public List<Word> findAllForUser(String subjectId) {
+        return wordRepository.findAllBySubjectId(subjectId);
     }
 
     public void save(Word word) {
