@@ -22,3 +22,7 @@ out/
 *.mp3
 *.png
 *.jpg
+
+# sensitive info
+/principal_keys.env
+/realm-export.json

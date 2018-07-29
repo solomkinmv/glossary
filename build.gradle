@@ -14,7 +14,7 @@ def playtikaTestcontainersVersion = '1.6'
 def jacocoVersion = '0.8.1'
 
 ext {
-    springCloudVersion = 'Finchley.M9'
+    springCloudVersion = 'Finchley.RELEASE'
 
     awsSdk = "com.amazonaws:aws-java-sdk:${awsSdkVersion}"
     jsonwebtoken = "io.jsonwebtoken:jjwt:${jsonWebTokenVersion}"
@@ -37,8 +37,8 @@ ext {
 
 buildscript {
     ext {
-        springBootVersion = '2.0.1.RELEASE'
-        palantirDockerPluginVersion = '0.19.2'
+        springBootVersion = '2.0.3.RELEASE'
+        palantirDockerPluginVersion = '0.20.0'
     }
 
     repositories {
@@ -57,7 +57,7 @@ buildscript {
 allprojects {
     // todo: remove this block after migration to microservices
     group 'io.github.solomkinmv'
-    version '0.0.2-SNAPSHOT'
+    version '0.0.2-SECURITY-SNAPSHOT'
 
     repositories {
         mavenCentral()
