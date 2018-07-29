@@ -19,6 +19,8 @@ How to run:
 
 `docker run --rm -e 'SPRING_PROFILES_ACTIVE=local' -p 8083:8083 solomkinmv/tts-service`
 
+Use `stub` profile to stub Amazon Polly requests.
+
 ## Documentation
 
 Start service and visit: `http://localhost:8083/tts-service/docs/index.html`

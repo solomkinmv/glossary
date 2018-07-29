@@ -9,10 +9,17 @@ import io.github.solomkinmv.glossary.words.service.practice.quiz.Quiz;
 import io.github.solomkinmv.glossary.words.service.practice.quiz.QuizPracticeService;
 import io.github.solomkinmv.glossary.words.service.practice.writing.WritingPracticeService;
 import io.github.solomkinmv.glossary.words.service.practice.writing.WritingPracticeTest;
+import io.github.solomkinmv.glossary.words.util.OAuth2Utils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -26,26 +33,29 @@ public class PracticeController {
     private final PracticeResultsHandler practiceResultsHandler;
 
     @GetMapping("/quiz")
-    public Quiz getQuiz(@RequestParam("userId") long userId,
-                        @RequestParam(value = "setId", required = false) Long setId,
-                        @RequestParam("originQuestions") boolean originQuestions) {
-        log.info("Getting quiz for word set with id {} [userId: {}]", setId, userId);
-        return quizPracticeService.generateTest(userId, new PracticeParameters(setId, originQuestions));
+    public Quiz getQuiz(@RequestParam(value = "setId", required = false) Long setId,
+                        @RequestParam("originQuestions") boolean originQuestions,
+                        OAuth2Authentication authentication) {
+        String subjectId = OAuth2Utils.subjectId(authentication);
+        log.info("Getting quiz for word set with id {} [subjectId: {}]", setId, subjectId);
+        return quizPracticeService.generateTest(subjectId, new PracticeParameters(setId, originQuestions));
     }
 
     @GetMapping("/writing")
-    public WritingPracticeTest getWritingTest(@RequestParam("userId") long userId,
-                                              @RequestParam(value = "setId", required = false) Long setId,
-                                              @RequestParam("originQuestions") boolean originQuestions) {
-        log.info("Getting writing practice test for word set with id {} [userId: {}]", setId, userId);
-        return writingPracticeService.generateTest(userId, new PracticeParameters(setId, originQuestions));
+    public WritingPracticeTest getWritingTest(@RequestParam(value = "setId", required = false) Long setId,
+                                              @RequestParam("originQuestions") boolean originQuestions,
+                                              OAuth2Authentication authentication) {
+        String subjectId = OAuth2Utils.subjectId(authentication);
+        log.info("Getting writing practice test for word set with id {} [subjectId: {}]", setId, subjectId);
+        return writingPracticeService.generateTest(subjectId, new PracticeParameters(setId, originQuestions));
     }
 
     @GetMapping("/generic")
-    public GenericTest getGenericTest(@RequestParam("userId") long userId,
-                                      @RequestParam(value = "setId", required = false) Long setId) {
-        log.info("Getting words for generic test [wordSetId: {}, userId: {}]", setId, userId);
-        return genericPracticeService.generateTest(userId, new PracticeParameters(setId));
+    public GenericTest getGenericTest(@RequestParam(value = "setId", required = false) Long setId,
+                                      OAuth2Authentication authentication) {
+        String subjectId = OAuth2Utils.subjectId(authentication);
+        log.info("Getting words for generic test [wordSetId: {}, subjectId: {}]", setId, subjectId);
+        return genericPracticeService.generateTest(subjectId, new PracticeParameters(setId));
     }
 
     @PostMapping

@@ -5,18 +5,32 @@ sourceCompatibility = 9
 apply plugin: 'com.palantir.docker'
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-actuator')
-	compile('org.springframework.cloud:spring-cloud-starter-config')
-	compile('org.springframework.cloud:spring-cloud-starter-netflix-zuul')
-	compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    compile('org.springframework.cloud:spring-cloud-starter-config')
+    compile('org.springframework.cloud:spring-cloud-starter-netflix-zuul')
+    compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
 
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+//    security
+    compile 'org.springframework.cloud:spring-cloud-starter-security'
+    compile 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure'
+
+    compile jaxbApi // should be included as external dependency because of java 9
+    compile jaxbCore// should be included as external dependency because of java 9
+    compile jaxbImpl// should be included as external dependency because of java 9
+    compile activation// should be included as external dependency because of java 9
+
+//    web, todo: remove this
+    compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    compile 'org.springframework:spring-webflux'
+    compile 'io.projectreactor.ipc:reactor-netty'
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 
 docker {
-	name "solomkinmv/${bootJar.baseName}"
-	tags project.version
-	println "==> Docker task for ${name}"
-	files bootJar.archivePath
-	buildArgs(['JAR_FILE': "${bootJar.archiveName}"])
+    name "solomkinmv/${bootJar.baseName}"
+    tags project.version
+    println "==> Docker task for ${name}"
+    files bootJar.archivePath
+    buildArgs(['JAR_FILE': "${bootJar.archiveName}"])
 }

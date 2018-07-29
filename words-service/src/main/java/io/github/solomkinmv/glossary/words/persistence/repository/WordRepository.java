@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface WordRepository extends CrudRepository<Word, Long> {
 
-    @Query("SELECT w FROM WordSet ws JOIN ws.words w WHERE ws.userId = (:userId)")
-    List<Word> findAllByUserId(@Param("userId") long userId);
+    @Query("SELECT w FROM WordSet ws JOIN ws.words w WHERE ws.subjectId = (:subjectId)")
+    List<Word> findAllBySubjectId(@Param("subjectId") String subjectId);
 }

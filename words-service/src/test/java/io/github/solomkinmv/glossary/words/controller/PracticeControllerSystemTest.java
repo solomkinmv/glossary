@@ -1,5 +1,6 @@
 package io.github.solomkinmv.glossary.words.controller;
 
+import io.github.solomkinmv.glossary.words.WithOAuthSubject;
 import io.github.solomkinmv.glossary.words.controller.dto.WordResponse;
 import io.github.solomkinmv.glossary.words.controller.dto.WordSetResponse;
 import io.github.solomkinmv.glossary.words.persistence.domain.WordStage;
@@ -20,7 +21,12 @@ import static io.github.solomkinmv.glossary.words.service.practice.provider.Abst
 import static java.lang.String.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -31,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class PracticeControllerSystemTest extends BaseTest {
 
     @Test
+    @WithOAuthSubject
     public void handlesTestResults() throws Exception {
         WordResponse word0 = wordSet1.getWords().get(0);
         WordResponse word1 = wordSet1.getWords().get(1);
@@ -80,9 +87,12 @@ public class PracticeControllerSystemTest extends BaseTest {
     private void handleResults(PracticeResults practiceResults) throws Exception {
         mockMvc.perform(post("/practices")
                                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                                .content(objectMapper.writeValueAsString(practiceResults)))
+                                .content(objectMapper.writeValueAsString(practiceResults))
+                                .header(AUTHORIZATION, "Bearer foo"))
                .andExpect(status().isOk())
                .andDo(documentationHandler.document(
+                       requestHeaders(
+                               headerWithName("Authorization").description("OAuth2 JWT token")),
                        requestFields(
                                fieldWithPath("wordAnswers.*")
                                        .description(
@@ -92,15 +102,17 @@ public class PracticeControllerSystemTest extends BaseTest {
     }
 
     @Test
+    @WithOAuthSubject
     public void generatesGenericTest() throws Exception {
         mockMvc.perform(get("/practices/generic")
-                                .param("userId", valueOf(userId.get()))
-                                .param("setId", valueOf(wordSet1.getId())))
+                                .param("setId", valueOf(wordSet1.getId()))
+                                .header(AUTHORIZATION, "Bearer foo"))
                .andExpect(status().isOk())
                .andExpect(jsonPath("$.words", hasSize(wordSet1.getWords().size())))
                .andDo(documentationHandler.document(
+                       requestHeaders(
+                               headerWithName("Authorization").description("OAuth2 JWT token")),
                        requestParameters(
-                               parameterWithName("userId").description("Id of the user"),
                                parameterWithName("setId").description("Word Set id to generate generic test")
                        ), responseFields(
                                fieldWithPath("words[].id").description("id of the word"),
@@ -114,6 +126,7 @@ public class PracticeControllerSystemTest extends BaseTest {
     }
 
     @Test
+    @WithOAuthSubject
     public void generatesQuizOfCorrectSize() throws Exception {
         Quiz quiz = getQuiz();
 
@@ -121,6 +134,7 @@ public class PracticeControllerSystemTest extends BaseTest {
     }
 
     @Test
+    @WithOAuthSubject
     public void generatesQuizWithCorrectAnswers() throws Exception {
         Quiz quiz = getQuiz();
 
@@ -138,6 +152,7 @@ public class PracticeControllerSystemTest extends BaseTest {
     }
 
     @Test
+    @WithOAuthSubject
     public void generatesQuizWithOneCorrectAlternative() throws Exception {
         Quiz quiz = getQuiz();
 
@@ -151,12 +166,13 @@ public class PracticeControllerSystemTest extends BaseTest {
 
     private Quiz getQuiz() throws Exception {
         String contentAsString = mockMvc.perform(get("/practices/quiz")
-                                                         .param("userId", valueOf(userId.get()))
-                                                         .param("originQuestions", valueOf(true)))
+                                                         .param("originQuestions", valueOf(true))
+                                                         .header(AUTHORIZATION, "Bearer foo"))
                                         .andExpect(status().isOk())
                                         .andDo(documentationHandler.document(
+                                                requestHeaders(
+                                                        headerWithName("Authorization").description("OAuth2 JWT token")),
                                                 requestParameters(
-                                                        parameterWithName("userId").description("User id"),
                                                         parameterWithName("originQuestions")
                                                                 .description(
                                                                         "Flag that specifies test direction (word -> translation or translation -> word)"),
@@ -188,6 +204,7 @@ public class PracticeControllerSystemTest extends BaseTest {
     }
 
     @Test
+    @WithOAuthSubject
     public void generatesWritingTestWithAppropriateNumberOfQuestions() throws Exception {
         WritingPracticeTest writingPracticeTest = getWritingPracticeTest(true);
 
@@ -201,6 +218,7 @@ public class PracticeControllerSystemTest extends BaseTest {
     }
 
     @Test
+    @WithOAuthSubject
     public void generatesWritingTestWithAppropriateAnswers() throws Exception {
         WritingPracticeTest writingPracticeTest = getWritingPracticeTest(true);
 
@@ -214,6 +232,7 @@ public class PracticeControllerSystemTest extends BaseTest {
     }
 
     @Test
+    @WithOAuthSubject
     public void generatesWritingTestWithOriginAsAnswers() throws Exception {
         WritingPracticeTest writingPracticeTest = getWritingPracticeTest(false);
 
@@ -227,6 +246,7 @@ public class PracticeControllerSystemTest extends BaseTest {
     }
 
     @Test
+    @WithOAuthSubject
     public void generatesWritingTestFromAllSets() throws Exception {
         WritingPracticeTest writingPracticeTest = getWritingPracticeTest(true);
 
@@ -246,6 +266,7 @@ public class PracticeControllerSystemTest extends BaseTest {
     }
 
     @Test
+    @WithOAuthSubject
     public void generatesWritingTestForAppropriateWordSet() throws Exception {
         WritingPracticeTest writingPracticeTest = getWritingPracticeTest(wordSet1.getId());
 
@@ -257,13 +278,14 @@ public class PracticeControllerSystemTest extends BaseTest {
 
     private WritingPracticeTest getWritingPracticeTest(long wordSetId) throws Exception {
         String contentAsString = mockMvc.perform(get("/practices/writing")
-                                                         .param("userId", valueOf(userId.get()))
                                                          .param("originQuestions", valueOf(true))
-                                                         .param("setId", valueOf(wordSetId)))
+                                                         .param("setId", valueOf(wordSetId))
+                                                         .header(AUTHORIZATION, "Bearer foo"))
                                         .andExpect(status().isOk())
                                         .andDo(documentationHandler.document(
+                                                requestHeaders(
+                                                        headerWithName("Authorization").description("OAuth2 JWT token")),
                                                 requestParameters(
-                                                        parameterWithName("userId").description("User id"),
                                                         parameterWithName("originQuestions")
                                                                 .description(
                                                                         "Flag that specifies test direction (word -> translation or translation -> word)"),
@@ -293,8 +315,8 @@ public class PracticeControllerSystemTest extends BaseTest {
 
     private WritingPracticeTest getWritingPracticeTest(boolean originQuestions) throws Exception {
         String contentAsString = mockMvc.perform(get("/practices/writing")
-                                                         .param("userId", valueOf(userId.get()))
-                                                         .param("originQuestions", valueOf(originQuestions)))
+                                                         .param("originQuestions", valueOf(originQuestions))
+                                                         .header(AUTHORIZATION, "Bearer foo"))
                                         .andExpect(status().isOk())
                                         .andReturn().getResponse().getContentAsString();
 

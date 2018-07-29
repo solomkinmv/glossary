@@ -10,9 +10,9 @@ import java.util.Optional;
 
 public interface WordSetRepository extends CrudRepository<WordSet, Long> {
 
-    List<WordSet> findAllByUserId(long userId);
+    List<WordSet> findAllBySubjectId(String subjectId);
 
     @Query("SELECT w FROM WordSet w LEFT JOIN FETCH w.words WHERE w.id = (:id)")
-    Optional<WordSet> findByUserId(@Param("id") long id);
+    Optional<WordSet> findById(@Param("id") long id);
 
 }

@@ -5,10 +5,19 @@ import io.github.solomkinmv.glossary.words.persistence.domain.WordSet;
 import io.github.solomkinmv.glossary.words.service.word.WordMeta;
 import io.github.solomkinmv.glossary.words.service.wordset.WordSetMeta;
 import io.github.solomkinmv.glossary.words.service.wordset.WordSetService;
+import io.github.solomkinmv.glossary.words.util.OAuth2Utils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,17 +39,19 @@ public class WordSetController {
     }
 
     @GetMapping("/")
-    public List<WordSetResponse> getAllByUserId(@RequestParam("userId") long userId) {
-        log.info("Getting all word sets for userId: {}", userId);
-        return wordSetService.findAllForUserId(userId).stream()
+    public List<WordSetResponse> getAllForUser(OAuth2Authentication authentication) {
+        String subjectId = OAuth2Utils.subjectId(authentication);
+        log.info("Getting all word sets for subjectId: {}", subjectId);
+        return wordSetService.findAllForSubjectId(subjectId).stream()
                              .map(WordSetResponse::of)
                              .collect(Collectors.toList());
     }
 
     @PostMapping("/")
-    public long createWordSet(@Validated @RequestBody WordSetMeta wordSetMeta) {
-        log.info("Creating word set [wordSetMeta: {}]", wordSetMeta);
-        long wordSetId = wordSetService.create(wordSetMeta);
+    public long createWordSet(@Validated @RequestBody WordSetMeta wordSetMeta, OAuth2Authentication authentication) {
+        String subjectId = OAuth2Utils.subjectId(authentication);
+        log.info("Creating word set [wordSetMeta: {}, subjectId]", wordSetMeta, subjectId);
+        long wordSetId = wordSetService.create(wordSetMeta, subjectId);
         log.info("Created word set with id: {} [wordSetMeta: {}]", wordSetId, wordSetMeta);
         return wordSetId;
     }
