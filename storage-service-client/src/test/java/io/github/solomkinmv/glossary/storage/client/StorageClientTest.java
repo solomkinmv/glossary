@@ -2,18 +2,33 @@ package io.github.solomkinmv.glossary.storage.client;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aMultipart;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.any;
+import static com.github.tomakehurst.wiremock.client.WireMock.binaryEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.delete;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static wiremock.org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204;
 import static wiremock.org.eclipse.jetty.http.HttpStatus.OK_200;
@@ -23,10 +38,15 @@ import static wiremock.org.eclipse.jetty.http.HttpStatus.OK_200;
 @AutoConfigureWireMock(port = 8081)
 public class StorageClientTest {
 
+    private static final String TOKEN = "token-value";
+
     private String responseBody = "http://localhost:8080/img/image.png";
 
     @Autowired
     private StorageClient storageClient;
+
+    @Mock
+    private OAuth2Authentication authentication;
 
     @Test
     public void getsUrlByTypeAndFilename() {
@@ -36,6 +56,7 @@ public class StorageClientTest {
                         .willReturn(aResponse()
                                             .withStatus(OK_200)
                                             .withHeader("Content-Type", "application/json")
+                                            .withHeader("Authorization", "Bearer " + TOKEN)
                                             .withBody(responseBody)));
 
         Optional<String> response = storageClient.get(StoredType.IMG, "image.png");
@@ -106,6 +127,18 @@ public class StorageClientTest {
 
         assertThat(response.getStatusCode().value()).isEqualTo(OK_200);
         assertThat(response.getHeaders().get("Location")).containsOnly(location);
+    }
+
+    private void initializeSecurityContext() {
+        when(authentication.getDetails())
+                .thenReturn(new OAuth2AuthenticationDetails(new MockHttpServletRequest()) {
+                    @Override
+                    public String getTokenValue() {
+                        return TOKEN;
+                    }
+                });
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     @EnableAutoConfiguration
