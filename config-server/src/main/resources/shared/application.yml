@@ -5,4 +5,4 @@ eureka:
     serviceUrl:
       defaultZone: http://registry:8761/eureka
 
-management.endpoints.web.expose: '*'
+security.oauth2.resource.jwk.key-set-uri: http://keycloak:8000/auth/realms/glossary/protocol/openid-connect/certs

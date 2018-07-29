@@ -121,3 +121,34 @@ services:
       options:
         max-size: "10m"
         max-file: "10"
+
+  keycloak:
+    image: jboss/keycloak:4.1.0.Final
+    ports:
+    - "8000:8080"
+    - "8001:9990"
+    environment:
+    - KEYCLOAK_LOGLEVEL=DEBUG
+    - PROXY_ADDRESS_FORWARDING=true
+    - KEYCLOAK_USER=keycloak
+    - KEYCLOAK_PASSWORD=keycloak
+    - DB_VENDOR=mysql
+    - DB_ADDR=keycloak-mysql
+    - DB_DATABASE=keycloak
+    - DB_USER=keycloak
+    - DB_PASSWORD=password
+    depends_on:
+    - keycloak-mysql
+    command: -b 0.0.0.0 -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/tmp/keycloak/test/realm-export.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING
+    volumes:
+    - .:/tmp/keycloak/test/
+
+  keycloak-mysql:
+    image: mysql:5.7.22 # mysql v8 doesn't work with keycloak 4.1.0, there is some bug
+    environment:
+    - MYSQL_ROOT_PASSWORD=root
+    - MYSQL_DATABASE=keycloak
+    - MYSQL_USER=keycloak
+    - MYSQL_PASSWORD=password
+    ports:
+    - "3307:3306"

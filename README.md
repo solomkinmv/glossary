@@ -8,6 +8,12 @@
 3. Configure additional javac parameter `-params`
 4. Run `Application` class with active `dev` profile
 
+# Microservices Flow
+
+### Run docker-compose
+`docker-compose up`
+
+# Monolith Legacy Flow
 ## Docker
 ### Build container
 `./gradlew web:buildDocker`
