@@ -35,4 +35,9 @@ public class StorageClientAutoConfiguration {
     public Decoder feignDecoder() {
         return new OptionalDecoder(new ResponseEntityDecoder(new SpringDecoder(messageConverters)));
     }
+
+    @Bean
+    public UserFeignClientInterceptor userFeignClientInterceptor() {
+        return new UserFeignClientInterceptor();
+    }
 }
