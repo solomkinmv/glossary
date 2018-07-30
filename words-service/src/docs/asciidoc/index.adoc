@@ -13,7 +13,12 @@ Maksym Solomkin;
 Words Service handles managing (CRUD) of words and sets of words.
 Creates different types of practice exercises and handles results.
 
-[[word-resources]]
+[[word-sets-resources]]
+= Word Sets Resources
+
+include::word-sets.adoc[]
+
+[[words-resources]]
 = Word Resources
 
 include::words.adoc[]

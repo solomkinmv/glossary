@@ -2,23 +2,23 @@
 == Generate Generic Test
 A `GET` request gets generic test data.
 
-include::{snippets}/practice-controller-system-test/generates-generic-test/response-body.adoc[]
+include::{snippets}/practice-controller-component-test/generates-generic-test/response-body.adoc[]
 
 === Request parameters
 
-include::{snippets}/practice-controller-system-test/generates-generic-test/request-parameters.adoc[]
+include::{snippets}/practice-controller-component-test/generates-generic-test/request-parameters.adoc[]
 
 === Response fields
 
-include::{snippets}/practice-controller-system-test/generates-generic-test/response-fields.adoc[]
+include::{snippets}/practice-controller-component-test/generates-generic-test/response-fields.adoc[]
 
 === Example request
 
-include::{snippets}/practice-controller-system-test/generates-generic-test/curl-request.adoc[]
+include::{snippets}/practice-controller-component-test/generates-generic-test/curl-request.adoc[]
 
 === Example response
 
-include::{snippets}/practice-controller-system-test/generates-generic-test/http-response.adoc[]
+include::{snippets}/practice-controller-component-test/generates-generic-test/http-response.adoc[]
 
 
 
@@ -26,23 +26,23 @@ include::{snippets}/practice-controller-system-test/generates-generic-test/http-
 == Generate Quiz
 A `GET` request gets quiz test data.
 
-include::{snippets}/practice-controller-system-test/generates-quiz-with-correct-answers/response-body.adoc[]
+include::{snippets}/practice-controller-component-test/generates-quiz-with-correct-answers/response-body.adoc[]
 
 === Request parameters
 
-include::{snippets}/practice-controller-system-test/generates-quiz-with-correct-answers/request-parameters.adoc[]
+include::{snippets}/practice-controller-component-test/generates-quiz-with-correct-answers/request-parameters.adoc[]
 
 === Response fields
 
-include::{snippets}/practice-controller-system-test/generates-quiz-with-correct-answers/response-fields.adoc[]
+include::{snippets}/practice-controller-component-test/generates-quiz-with-correct-answers/response-fields.adoc[]
 
 === Example request
 
-include::{snippets}/practice-controller-system-test/generates-quiz-with-correct-answers/curl-request.adoc[]
+include::{snippets}/practice-controller-component-test/generates-quiz-with-correct-answers/curl-request.adoc[]
 
 === Example response
 
-include::{snippets}/practice-controller-system-test/generates-quiz-with-correct-answers/http-response.adoc[]
+include::{snippets}/practice-controller-component-test/generates-quiz-with-correct-answers/http-response.adoc[]
 
 
 
@@ -50,23 +50,23 @@ include::{snippets}/practice-controller-system-test/generates-quiz-with-correct-
 == Generate Writing Test
 A `GET` request gets writing test data.
 
-include::{snippets}/practice-controller-system-test/generates-writing-test-for-appropriate-word-set/response-body.adoc[]
+include::{snippets}/practice-controller-component-test/generates-writing-test-for-appropriate-word-set/response-body.adoc[]
 
 === Request parameters
 
-include::{snippets}/practice-controller-system-test/generates-writing-test-for-appropriate-word-set/request-parameters.adoc[]
+include::{snippets}/practice-controller-component-test/generates-writing-test-for-appropriate-word-set/request-parameters.adoc[]
 
 === Response fields
 
-include::{snippets}/practice-controller-system-test/generates-writing-test-for-appropriate-word-set/response-fields.adoc[]
+include::{snippets}/practice-controller-component-test/generates-writing-test-for-appropriate-word-set/response-fields.adoc[]
 
 === Example request
 
-include::{snippets}/practice-controller-system-test/generates-writing-test-for-appropriate-word-set/curl-request.adoc[]
+include::{snippets}/practice-controller-component-test/generates-writing-test-for-appropriate-word-set/curl-request.adoc[]
 
 === Example response
 
-include::{snippets}/practice-controller-system-test/generates-writing-test-for-appropriate-word-set/http-response.adoc[]
+include::{snippets}/practice-controller-component-test/generates-writing-test-for-appropriate-word-set/http-response.adoc[]
 
 
 
@@ -77,12 +77,12 @@ A `POST` request sends test results.
 
 === Request fields
 
-include::{snippets}/practice-controller-system-test/handles-test-results/request-fields.adoc[]
+include::{snippets}/practice-controller-component-test/handles-test-results/request-fields.adoc[]
 
 === Example request
 
-include::{snippets}/practice-controller-system-test/handles-test-results/curl-request.adoc[]
+include::{snippets}/practice-controller-component-test/handles-test-results/curl-request.adoc[]
 
 === Example response
 
-include::{snippets}/practice-controller-system-test/handles-test-results/http-response.adoc[]
+include::{snippets}/practice-controller-component-test/handles-test-results/http-response.adoc[]
