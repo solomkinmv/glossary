@@ -2,6 +2,8 @@ package io.github.solomkinmv.glossary.storage.filename;
 
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class FilenameAdapter {
 
@@ -19,6 +21,6 @@ public class FilenameAdapter {
     private String insertIdBeforeExtension(String filename) {
         int dotIndex = filename.lastIndexOf('.');
 
-        return filename.substring(0, dotIndex) + filename.substring(dotIndex);
+        return filename.substring(0, dotIndex) + UUID.randomUUID() + filename.substring(dotIndex);
     }
 }

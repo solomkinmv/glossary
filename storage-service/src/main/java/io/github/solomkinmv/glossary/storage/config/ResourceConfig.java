@@ -15,7 +15,7 @@ import java.nio.file.Paths;
 @RequiredArgsConstructor
 public class ResourceConfig implements WebMvcConfigurer {
     private static final int CACHE_PERIOD = 3600;
-    private static final String RESOURCE_HANDLER_FORMAT = "/%s/**";
+    private static final String RESOURCE_HANDLER_FORMAT = "%s/**";
     private static final String RESOURCE_LOCATION_FORMAT = "file:%s/";
     private final StorageProperties storageProperties;
 
