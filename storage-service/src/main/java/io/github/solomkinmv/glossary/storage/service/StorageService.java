@@ -15,9 +15,9 @@ public interface StorageService {
      * @param inputStream the input stream for the object
      * @param filename    the object's filename
      * @param type        the object's type
-     * @return URL to the object
+     * @return information about stored object
      */
-    String store(InputStream inputStream, String filename, StoredType type);
+    StoredObject store(InputStream inputStream, String filename, StoredType type);
 
     /**
      * Deletes object of specified {@code type} by the filename.

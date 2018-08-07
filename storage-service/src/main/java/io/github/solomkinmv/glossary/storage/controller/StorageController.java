@@ -2,11 +2,16 @@ package io.github.solomkinmv.glossary.storage.controller;
 
 import io.github.solomkinmv.glossary.storage.exception.UploadException;
 import io.github.solomkinmv.glossary.storage.service.StorageService;
+import io.github.solomkinmv.glossary.storage.service.StoredObject;
 import io.github.solomkinmv.glossary.storage.service.StoredType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -32,8 +37,8 @@ public class StorageController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Void> save(@RequestParam("type") StoredType type,
-                                     @RequestParam(UPLOAD_IMG_KEY) MultipartFile file) {
+    public ResponseEntity<StoredObject> save(@RequestParam("type") StoredType type,
+                                             @RequestParam(UPLOAD_IMG_KEY) MultipartFile file) {
         log.info("Uploading file with [name: {}, type: {}, contentType: {}]",
                  file.getOriginalFilename(), type, file.getContentType());
         if (file.isEmpty()) {
@@ -41,16 +46,17 @@ public class StorageController {
             log.error(message);
             throw new UploadException(message);
         }
-        String uriLocation;
+
+        StoredObject storedObject;
         try {
-            uriLocation = storageService.store(file.getInputStream(), file.getOriginalFilename(), type);
+            storedObject = storageService.store(file.getInputStream(), file.getOriginalFilename(), type);
         } catch (IOException e) {
             String message = "Failed to store empty file: " + file.getOriginalFilename();
             log.error(message);
             throw new UploadException(message, e);
         }
-        return ResponseEntity.created(URI.create(uriLocation))
-                             .build();
+        return ResponseEntity.created(URI.create(storedObject.getUrl()))
+                             .body(storedObject);
     }
 
     @DeleteMapping("/")
