@@ -1,0 +1,1 @@
+security.oauth2.resource.jwk.key-set-uri: http://keycloak:8000/auth/realms/glossary/protocol/openid-connect/certs # for test purposes to trigger auto configuration
