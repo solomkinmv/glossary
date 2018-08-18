@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import static io.github.solomkinmv.glossary.words.service.practice.generic.GenericTest.GenericTestWord;
+
 @Component
 public class GenericTestProvider extends AbstractTestProvider {
 
@@ -16,11 +18,17 @@ public class GenericTestProvider extends AbstractTestProvider {
         super(new Random());
     }
 
-    GenericTest generateWritingTest(List<Word> words) {
-        List<Word> learnedWords = words.stream()
-                                       .filter(word -> !word.getStage().equals(WordStage.LEARNED))
-                                       .limit(TEST_SIZE)
-                                       .collect(Collectors.toList());
-        return new GenericTest(learnedWords);
+    GenericTest generateWritingTest(List<Word> words, boolean originQuestions) {
+        return new GenericTest(words.stream()
+                                    .filter(word -> !word.getStage().equals(WordStage.LEARNED))
+                                    .limit(TEST_SIZE)
+                                    .map(word -> GenericTestWord.builder()
+                                                                .wordId(word.getId())
+                                                                .text(originQuestions ? word.getText() : word.getTranslation())
+                                                                .translation(originQuestions ? word.getTranslation() : word.getText())
+                                                                .image(word.getImage())
+                                                                .sound(word.getSound())
+                                                                .build())
+                                    .collect(Collectors.toList()));
     }
 }

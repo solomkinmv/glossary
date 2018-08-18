@@ -6,6 +6,7 @@ import io.github.solomkinmv.glossary.words.controller.dto.WordSetResponse;
 import io.github.solomkinmv.glossary.words.persistence.domain.WordStage;
 import io.github.solomkinmv.glossary.words.service.practice.Answer;
 import io.github.solomkinmv.glossary.words.service.practice.PracticeResults;
+import io.github.solomkinmv.glossary.words.service.practice.generic.GenericTest;
 import io.github.solomkinmv.glossary.words.service.practice.quiz.Quiz;
 import io.github.solomkinmv.glossary.words.service.practice.writing.WritingPracticeTest;
 import io.github.solomkinmv.glossary.words.service.practice.writing.WritingPracticeTest.Question;
@@ -103,26 +104,50 @@ public class PracticeControllerComponentTest extends BaseTest {
 
     @Test
     @WithOAuthSubject
-    public void generatesGenericTest() throws Exception {
-        mockMvc.perform(get("/practices/generic")
-                                .param("setId", valueOf(wordSet1.getId()))
-                                .header(AUTHORIZATION, "Bearer foo"))
-               .andExpect(status().isOk())
-               .andExpect(jsonPath("$.words", hasSize(wordSet1.getWords().size())))
-               .andDo(documentationHandler.document(
-                       requestHeaders(
-                               headerWithName("Authorization").description("OAuth2 JWT token")),
-                       requestParameters(
-                               parameterWithName("setId").description("Word Set id to generate generic test")
-                       ), responseFields(
-                               fieldWithPath("words[].id").description("id of the word"),
-                               fieldWithPath("words[].text").description("Original text of the word"),
-                               fieldWithPath("words[].translation").description("Translation text of the word"),
-                               fieldWithPath("words[].stage").description("Learning stage of the word"),
-                               fieldWithPath("words[].image").description("Image url for the word"),
-                               fieldWithPath("words[].sound").description("Pronunciation sound url for the word")
-                       )
-               ));
+    public void generatesGenericTestForWordSet() throws Exception {
+        GenericTest genericTest = getGenericTest(wordSet1.getId(), false);
+
+        assertThat(genericTest.getWords())
+                .extracting(GenericTest.GenericTestWord::getText)
+                .contains(wordSet1.getWords().stream().map(WordResponse::getTranslation).toArray(String[]::new));
+    }
+
+    @Test
+    @WithOAuthSubject
+    public void generatesGenericTestForAllWordSetsWithTrueOrigin() throws Exception {
+        GenericTest genericTest = getGenericTest(wordSet1.getId(), true);
+
+        assertThat(genericTest.getWords())
+                .extracting(GenericTest.GenericTestWord::getText)
+                .contains(wordSet1.getWords().stream().map(WordResponse::getText).toArray(String[]::new));
+    }
+
+    private GenericTest getGenericTest(long setId, boolean originQuestions) throws Exception {
+        String json = mockMvc.perform(get("/practices/generic")
+                                              .param("setId", valueOf(setId))
+                                              .param("originQuestions", valueOf(originQuestions))
+                                              .header(AUTHORIZATION, "Bearer foo"))
+                             .andExpect(status().isOk())
+                             .andExpect(jsonPath("$.words", hasSize(wordSet1.getWords().size())))
+                             .andDo(documentationHandler.document(
+                                     requestHeaders(
+                                             headerWithName("Authorization").description("OAuth2 JWT token")),
+                                     requestParameters(
+                                             parameterWithName("setId").description("Word Set id to generate generic test"),
+                                             parameterWithName("originQuestions")
+                                                     .description(
+                                                             "Flag that specifies test direction (word -> translation or translation -> word)")
+                                     ), responseFields(
+                                             fieldWithPath("words[].wordId").description("id of the word"),
+                                             fieldWithPath("words[].text").description("Original text of the word"),
+                                             fieldWithPath("words[].translation").description("Translation text of the word"),
+                                             fieldWithPath("words[].stage").description("Learning stage of the word"),
+                                             fieldWithPath("words[].image").description("Image url for the word"),
+                                             fieldWithPath("words[].sound").description("Pronunciation sound url for the word")
+                                     )
+                             )).andReturn().getResponse().getContentAsString();
+
+        return objectMapper.readValue(json, GenericTest.class);
     }
 
     @Test
