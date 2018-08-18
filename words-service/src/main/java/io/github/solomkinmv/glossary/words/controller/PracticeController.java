@@ -52,10 +52,11 @@ public class PracticeController {
 
     @GetMapping("/generic")
     public GenericTest getGenericTest(@RequestParam(value = "setId", required = false) Long setId,
+                                      @RequestParam("originQuestions") boolean originQuestions,
                                       OAuth2Authentication authentication) {
         String subjectId = OAuth2Utils.subjectId(authentication);
         log.info("Getting words for generic test [wordSetId: {}, subjectId: {}]", setId, subjectId);
-        return genericPracticeService.generateTest(subjectId, new PracticeParameters(setId));
+        return genericPracticeService.generateTest(subjectId, new PracticeParameters(setId, originQuestions));
     }
 
     @PostMapping

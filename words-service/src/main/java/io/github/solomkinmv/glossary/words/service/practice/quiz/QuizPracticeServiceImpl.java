@@ -2,7 +2,6 @@ package io.github.solomkinmv.glossary.words.service.practice.quiz;
 
 import io.github.solomkinmv.glossary.words.persistence.domain.Word;
 import io.github.solomkinmv.glossary.words.service.practice.AbstractPracticeService;
-import io.github.solomkinmv.glossary.words.service.practice.handler.PracticeResultsHandler;
 import io.github.solomkinmv.glossary.words.service.word.WordService;
 import io.github.solomkinmv.glossary.words.service.wordset.WordSetService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,10 +16,7 @@ public class QuizPracticeServiceImpl extends AbstractPracticeService<Quiz> imple
     private final QuizProvider quizProvider;
 
     @Autowired
-    public QuizPracticeServiceImpl(WordSetService wordSetService,
-                                   WordService wordService,
-                                   PracticeResultsHandler practiceResultsHandler,
-                                   QuizProvider quizProvider) {
+    public QuizPracticeServiceImpl(WordSetService wordSetService, WordService wordService, QuizProvider quizProvider) {
         super(wordSetService, wordService);
         this.quizProvider = quizProvider;
     }
