@@ -27,7 +27,7 @@ public class PollyConfiguration {
     @Primary
     @Profile("stub")
     SpeechService stubSpeechService() {
-        return speech -> ("http://stub-url/" + speech).replaceAll("\\W", "") + ".mp3";
+        return speech -> "http://localhost:8081/sound/bells.mp3";
     }
 
 }
