@@ -6,6 +6,7 @@ import io.github.solomkinmv.glossary.words.controller.dto.WordSetResponse;
 import io.github.solomkinmv.glossary.words.persistence.domain.WordStage;
 import io.github.solomkinmv.glossary.words.service.practice.Answer;
 import io.github.solomkinmv.glossary.words.service.practice.PracticeResults;
+import io.github.solomkinmv.glossary.words.service.practice.PracticeType;
 import io.github.solomkinmv.glossary.words.service.practice.generic.GenericTest;
 import io.github.solomkinmv.glossary.words.service.practice.quiz.Quiz;
 import io.github.solomkinmv.glossary.words.service.practice.writing.WritingPracticeTest;
@@ -13,15 +14,17 @@ import io.github.solomkinmv.glossary.words.service.practice.writing.WritingPract
 import org.junit.Test;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static io.github.solomkinmv.glossary.words.service.practice.PracticeType.LEARNED_FIRST;
+import static io.github.solomkinmv.glossary.words.service.practice.PracticeType.LEARNING;
 import static io.github.solomkinmv.glossary.words.service.practice.provider.AbstractTestProvider.NUMBER_OF_CHOICES;
 import static io.github.solomkinmv.glossary.words.service.practice.provider.AbstractTestProvider.TEST_SIZE;
 import static java.lang.String.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -32,7 +35,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class PracticeControllerComponentTest extends BaseTest {
@@ -105,11 +107,68 @@ public class PracticeControllerComponentTest extends BaseTest {
     @Test
     @WithOAuthSubject
     public void generatesGenericTestForWordSet() throws Exception {
+        WordResponse word0 = wordSet1.getWords().get(0);
+        WordResponse word1 = wordSet1.getWords().get(1);
+        WordResponse word2 = wordSet1.getWords().get(2);
+        PracticeResults practiceResults = new PracticeResults(Map.of(
+                word0.getId(), true,
+                word1.getId(), true,
+                word2.getId(), true
+        ));
+        handleResults(practiceResults);
+        handleResults(practiceResults);
+
         GenericTest genericTest = getGenericTest(wordSet1.getId(), false);
 
         assertThat(genericTest.getWords())
-                .extracting(GenericTest.GenericTestWord::getText)
-                .contains(wordSet1.getWords().stream().map(WordResponse::getTranslation).toArray(String[]::new));
+                .extracting(GenericTest.GenericTestWord::getWordId)
+                .doesNotContain(word0.getId(), word1.getId(), word2.getId())
+                .hasSize(wordSet1.getWords().size() - practiceResults.getWordAnswers().size());
+    }
+
+    @Test
+    @WithOAuthSubject
+    public void generatesGenericTestWithLearnedWords() throws Exception {
+        WordResponse word0 = wordSet1.getWords().get(0);
+        WordResponse word1 = wordSet1.getWords().get(1);
+        WordResponse word2 = wordSet1.getWords().get(2);
+        PracticeResults practiceResults = new PracticeResults(Map.of(
+                word0.getId(), true,
+                word1.getId(), true,
+                word2.getId(), true
+        ));
+        handleResults(practiceResults);
+        handleResults(practiceResults);
+
+        GenericTest genericTest = getGenericTest(wordSet1.getId(), false, LEARNED_FIRST);
+
+        assertThat(genericTest.getWords().subList(0, practiceResults.getWordAnswers().size()))
+                .extracting(GenericTest.GenericTestWord::getWordId)
+                .contains(word0.getId(), word1.getId(), word2.getId());
+
+        assertThat(genericTest.getWords())
+                .hasSize(wordSet1.getWords().size());
+    }
+
+    @Test
+    @WithOAuthSubject
+    public void generatesGenericTestWithAllWords() throws Exception {
+        WordResponse word0 = wordSet1.getWords().get(0);
+        WordResponse word1 = wordSet1.getWords().get(1);
+        WordResponse word2 = wordSet1.getWords().get(2);
+        PracticeResults practiceResults = new PracticeResults(Map.of(
+                word0.getId(), true,
+                word1.getId(), true,
+                word2.getId(), true
+        ));
+        handleResults(practiceResults);
+        handleResults(practiceResults);
+
+        GenericTest genericTest = getGenericTest(wordSet1.getId(), false, LEARNED_FIRST);
+
+        assertThat(genericTest.getWords())
+                .extracting(GenericTest.GenericTestWord::getWordId)
+                .hasSize(wordSet1.getWords().size());
     }
 
     @Test
@@ -123,12 +182,16 @@ public class PracticeControllerComponentTest extends BaseTest {
     }
 
     private GenericTest getGenericTest(long setId, boolean originQuestions) throws Exception {
+        return getGenericTest(setId, originQuestions, LEARNING);
+    }
+
+    private GenericTest getGenericTest(long setId, boolean originQuestions, PracticeType practiceType) throws Exception {
         String json = mockMvc.perform(get("/practices/generic")
                                               .param("setId", valueOf(setId))
                                               .param("originQuestions", valueOf(originQuestions))
+                                              .param("practiceType", valueOf(practiceType))
                                               .header(AUTHORIZATION, "Bearer foo"))
                              .andExpect(status().isOk())
-                             .andExpect(jsonPath("$.words", hasSize(wordSet1.getWords().size())))
                              .andDo(documentationHandler.document(
                                      requestHeaders(
                                              headerWithName("Authorization").description("OAuth2 JWT token")),
@@ -136,7 +199,10 @@ public class PracticeControllerComponentTest extends BaseTest {
                                              parameterWithName("setId").description("Word Set id to generate generic test"),
                                              parameterWithName("originQuestions")
                                                      .description(
-                                                             "Flag that specifies test direction (word -> translation or translation -> word)")
+                                                             "Flag that specifies test direction (word -> translation or translation -> word)"),
+                                             parameterWithName("practiceType")
+                                                     .description("Describes what types of words should be included in test scope. Possible values: " +
+                                                                          Arrays.toString(PracticeType.values()))
                                      ), responseFields(
                                              fieldWithPath("words[].wordId").description("id of the word"),
                                              fieldWithPath("words[].text").description("Original text of the word"),

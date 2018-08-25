@@ -2,6 +2,7 @@ package io.github.solomkinmv.glossary.words.service.practice.writing;
 
 import io.github.solomkinmv.glossary.words.persistence.domain.Word;
 import io.github.solomkinmv.glossary.words.service.practice.AbstractPracticeService;
+import io.github.solomkinmv.glossary.words.service.practice.PracticeType;
 import io.github.solomkinmv.glossary.words.service.practice.handler.PracticeResultsHandler;
 import io.github.solomkinmv.glossary.words.service.word.WordService;
 import io.github.solomkinmv.glossary.words.service.wordset.WordSetService;
@@ -26,7 +27,7 @@ public class WritingPracticeServiceImpl extends AbstractPracticeService<WritingP
     }
 
     @Override
-    protected WritingPracticeTest generateTest(List<Word> words, boolean originQuestions) {
+    protected WritingPracticeTest generateTest(List<Word> words, boolean originQuestions, PracticeType practiceType) {
         return writingTestProvider.generateWritingTest(words, originQuestions);
     }
 }
