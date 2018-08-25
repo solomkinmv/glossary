@@ -7,6 +7,7 @@ import io.github.solomkinmv.glossary.words.service.word.WordService;
 import io.github.solomkinmv.glossary.words.service.wordset.WordSetService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
 
@@ -32,9 +33,9 @@ public abstract class AbstractPracticeService<T> implements PracticeService<T> {
             words = wordService.findAllForUser(subjectId);
         }
 
-        return generateTest(words, practiceParameters.isOriginQuestions());
+        return generateTest(words, practiceParameters.isOriginQuestions(), practiceParameters.getPracticeType());
 
     }
 
-    protected abstract T generateTest(List<Word> words, boolean originQuestions);
+    protected abstract T generateTest(List<Word> words, boolean originQuestions, @Nullable PracticeType practiceType);
 }

@@ -2,6 +2,7 @@ package io.github.solomkinmv.glossary.words.controller;
 
 import io.github.solomkinmv.glossary.words.service.practice.PracticeParameters;
 import io.github.solomkinmv.glossary.words.service.practice.PracticeResults;
+import io.github.solomkinmv.glossary.words.service.practice.PracticeType;
 import io.github.solomkinmv.glossary.words.service.practice.generic.GenericPracticeService;
 import io.github.solomkinmv.glossary.words.service.practice.generic.GenericTest;
 import io.github.solomkinmv.glossary.words.service.practice.handler.PracticeResultsHandler;
@@ -53,10 +54,11 @@ public class PracticeController {
     @GetMapping("/generic")
     public GenericTest getGenericTest(@RequestParam(value = "setId", required = false) Long setId,
                                       @RequestParam("originQuestions") boolean originQuestions,
+                                      @RequestParam(value = "practiceType", required = false) PracticeType practiceType,
                                       OAuth2Authentication authentication) {
         String subjectId = OAuth2Utils.subjectId(authentication);
         log.info("Getting words for generic test [wordSetId: {}, subjectId: {}]", setId, subjectId);
-        return genericPracticeService.generateTest(subjectId, new PracticeParameters(setId, originQuestions));
+        return genericPracticeService.generateTest(subjectId, new PracticeParameters(setId, originQuestions, practiceType));
     }
 
     @PostMapping

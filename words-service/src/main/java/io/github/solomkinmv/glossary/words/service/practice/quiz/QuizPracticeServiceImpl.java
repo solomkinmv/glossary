@@ -2,6 +2,7 @@ package io.github.solomkinmv.glossary.words.service.practice.quiz;
 
 import io.github.solomkinmv.glossary.words.persistence.domain.Word;
 import io.github.solomkinmv.glossary.words.service.practice.AbstractPracticeService;
+import io.github.solomkinmv.glossary.words.service.practice.PracticeType;
 import io.github.solomkinmv.glossary.words.service.word.WordService;
 import io.github.solomkinmv.glossary.words.service.wordset.WordSetService;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ public class QuizPracticeServiceImpl extends AbstractPracticeService<Quiz> imple
     }
 
     @Override
-    protected Quiz generateTest(List<Word> words, boolean originQuestions) {
+    protected Quiz generateTest(List<Word> words, boolean originQuestions, PracticeType practiceType) {
         return quizProvider.generateQuiz(words, originQuestions);
     }
 }
