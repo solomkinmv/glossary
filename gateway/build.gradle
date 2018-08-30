@@ -19,6 +19,11 @@ dependencies {
     compile jaxbImpl// should be included as external dependency because of java 9
     compile activation// should be included as external dependency because of java 9
 
+    // zipkin
+    compile('org.springframework.cloud:spring-cloud-starter-sleuth')
+    compile('org.springframework.cloud:spring-cloud-starter-zipkin')
+    compile('org.springframework.amqp:spring-rabbit')
+
 //    web, todo: remove this
     compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
     compile 'org.springframework:spring-webflux'

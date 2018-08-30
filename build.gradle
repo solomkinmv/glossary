@@ -37,7 +37,7 @@ ext {
 
 buildscript {
     ext {
-        springBootVersion = '2.0.3.RELEASE'
+        springBootVersion = '2.0.4.RELEASE'
         palantirDockerPluginVersion = '0.20.0'
     }
 
@@ -57,7 +57,7 @@ buildscript {
 allprojects {
     // todo: remove this block after migration to microservices
     group 'io.github.solomkinmv'
-    version '0.0.2-SECURITY-SNAPSHOT'
+    version '0.0.3-SNAPSHOT'
 
     repositories {
         mavenCentral()
