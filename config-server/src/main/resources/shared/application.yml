@@ -6,3 +6,7 @@ eureka:
       defaultZone: http://registry:8761/eureka
 
 security.oauth2.resource.jwk.key-set-uri: http://keycloak:8000/auth/realms/glossary/protocol/openid-connect/certs
+
+spring:
+  rabbitmq.host: rabbitmq
+  sleuth.sampler.probability: 1.0
