@@ -1,9 +1,9 @@
-group 'io.github.solomkinmv'
-version '0.0.1'
-
 plugins {
     id 'org.asciidoctor.convert' version '1.5.6'
 }
+
+group 'io.github.solomkinmv'
+version '0.0.1'
 
 ext {
     snippetsDir = file('build/generated-snippets')
