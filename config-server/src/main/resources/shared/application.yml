@@ -2,11 +2,18 @@ eureka:
   client:
     fetchRegistry: true
     registerWithEureka: true
+    healthcheck.enabled: true
     serviceUrl:
       defaultZone: http://registry:8761/eureka
+  instance:
+    initial-status: down
 
 security.oauth2.resource.jwk.key-set-uri: http://keycloak:8000/auth/realms/glossary/protocol/openid-connect/certs
 
 spring:
   rabbitmq.host: rabbitmq
   sleuth.sampler.probability: 1.0
+
+management:
+  endpoints.web.exposure.include: '*'
+  endpoint.health.show-details: when_authorized
