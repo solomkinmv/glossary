@@ -8,7 +8,7 @@ eureka:
   instance:
     initial-status: down
 
-security.oauth2.resource.jwk.key-set-uri: http://keycloak:8000/auth/realms/glossary/protocol/openid-connect/certs
+security.oauth2.resource.jwk.key-set-uri: http://keycloak:8080/auth/realms/glossary/protocol/openid-connect/certs
 
 spring:
   rabbitmq.host: rabbitmq

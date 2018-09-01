@@ -6,3 +6,5 @@ eureka:
 logging.level.io.github.solomkinmv.glossary: trace
 
 security.oauth2.resource.jwk.key-set-uri: http://localhost:8000/auth/realms/glossary/protocol/openid-connect/certs
+
+spring.rabbitmq.host: localhost
