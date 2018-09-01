@@ -10,6 +10,7 @@ services:
     - 8888:8888
     depends_on:
     - rabbitmq
+    - keycloak
     logging:
       options:
         max-size: "10m"
@@ -35,6 +36,7 @@ services:
     restart: always
     depends_on:
     - config
+    - keycloak
     - rabbitmq
     ports:
     - 8008:8008
@@ -48,6 +50,7 @@ services:
     restart: always
     depends_on:
     - config
+    - keycloak
     - rabbitmq
     ports:
     - 8081:8081
@@ -63,6 +66,7 @@ services:
     restart: always
     depends_on:
     - config
+    - keycloak
     - rabbitmq
     ports:
     - 8082:8082
@@ -78,6 +82,7 @@ services:
     restart: always
     depends_on:
     - config
+    - keycloak
     - rabbitmq
     ports:
     - 8083:8083
@@ -93,6 +98,7 @@ services:
     restart: always
     depends_on:
     - config
+    - keycloak
     - rabbitmq
     ports:
     - 8084:8084
