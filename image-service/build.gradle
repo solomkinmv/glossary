@@ -28,11 +28,6 @@ dependencies {
     compile jaxbImpl
     compile activation
 
-	// security
-	compile 'org.springframework.cloud:spring-cloud-starter-security'
-	compile 'org.springframework.security:spring-security-test'
-	compile 'org.springframework.cloud:spring-cloud-starter-oauth2'
-
 	// zipkin
 	compile('org.springframework.cloud:spring-cloud-starter-sleuth')
 	compile('org.springframework.cloud:spring-cloud-starter-zipkin')
