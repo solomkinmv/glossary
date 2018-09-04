@@ -2,23 +2,23 @@
 == Generate Generic Test
 A `GET` request gets generic test data.
 
-include::{snippets}/practice-controller-component-test/generates-generic-test/response-body.adoc[]
+include::{snippets}/practice-controller-component-test/generates-generic-test-for-word-set/response-body.adoc[]
 
 === Request parameters
 
-include::{snippets}/practice-controller-component-test/generates-generic-test/request-parameters.adoc[]
+include::{snippets}/practice-controller-component-test/generates-generic-test-for-word-set/request-parameters.adoc[]
 
 === Response fields
 
-include::{snippets}/practice-controller-component-test/generates-generic-test/response-fields.adoc[]
+include::{snippets}/practice-controller-component-test/generates-generic-test-for-word-set/response-fields.adoc[]
 
 === Example request
 
-include::{snippets}/practice-controller-component-test/generates-generic-test/curl-request.adoc[]
+include::{snippets}/practice-controller-component-test/generates-generic-test-for-word-set/curl-request.adoc[]
 
 === Example response
 
-include::{snippets}/practice-controller-component-test/generates-generic-test/http-response.adoc[]
+include::{snippets}/practice-controller-component-test/generates-generic-test-for-word-set/http-response.adoc[]
 
 
 

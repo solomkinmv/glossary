@@ -25,10 +25,6 @@ dependencies {
 	compile jaxbImpl// should be included as external dependency because of java 9
 	compile activation// should be included as external dependency because of java 9
 
-	// security
-	compile 'org.springframework.cloud:spring-cloud-starter-security'
-	compile 'org.springframework.cloud:spring-cloud-starter-oauth2'
-
 	// zipkin
 	compile('org.springframework.cloud:spring-cloud-starter-sleuth')
 	compile('org.springframework.cloud:spring-cloud-starter-zipkin')

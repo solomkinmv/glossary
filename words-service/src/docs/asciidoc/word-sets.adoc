@@ -28,10 +28,6 @@ A `GET` request gets all word sets for user.
 
 include::{snippets}/word-set-controller-component-test/gets-all-word-sets/response-body.adoc[]
 
-=== Request parameters
-
-include::{snippets}/word-set-controller-component-test/gets-all-word-sets/request-parameters.adoc[]
-
 === Response fields
 
 include::{snippets}/word-set-controller-component-test/gets-all-word-sets/response-fields.adoc[]
