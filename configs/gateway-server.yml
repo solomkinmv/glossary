@@ -1,7 +1,0 @@
-server:
-  port: 8008
-
-zuul:
-  ignored-headers:
-  - authorization
-  sensitive-headers: Cookie,Set-Cookie
