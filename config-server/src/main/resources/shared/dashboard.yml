@@ -1,0 +1,8 @@
+turbine:
+  appConfig: words-service,storage-service,translate-service,tts-service,image-service,config-server,dashboard,gateway-server
+  aggregator.cluster-config: default
+  instanceUrlSuffix.default: actuator/hystrix.stream
+  clusterNameExpression: "'default'"
+
+server:
+  port: 9001
