@@ -188,3 +188,16 @@ services:
     ports:
     - 5672:5672
     - 15672:15672
+
+  dashboard:
+    image: solomkinmv/dashboard
+    restart: always
+    depends_on:
+    - config
+    - registry
+    ports:
+    - 9001:9001
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"

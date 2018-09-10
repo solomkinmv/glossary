@@ -35,3 +35,6 @@ after_success:
   - ./gradlew words-service:docker
   - ./gradlew words-service:dockerTag
   - ./gradlew words-service:dockerPush
+  - ./gradlew dashboard:docker
+  - ./gradlew dashboard:dockerTag
+  - ./gradlew dashboard:dockerPush
