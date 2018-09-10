@@ -11,12 +11,12 @@ apply plugin: 'com.palantir.docker'
 dependencies {
     compile awsSdk
 
-    compile('org.springframework.boot:spring-boot-starter-actuator')
-	compile('org.springframework.cloud:spring-cloud-starter-config')
-    compile('org.springframework.boot:spring-boot-configuration-processor')
-    compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')
-	compile('org.springframework.boot:spring-boot-starter-hateoas')
-	compile('org.springframework.boot:spring-boot-starter-web')
+    compile 'org.springframework.boot:spring-boot-starter-actuator'
+    compile 'org.springframework.cloud:spring-cloud-starter-netflix-hystrix'
+	compile 'org.springframework.cloud:spring-cloud-starter-config'
+    compile 'org.springframework.boot:spring-boot-configuration-processor'
+    compile 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	compile 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly lombok
 
     compile jaxbApi // should be included as external dependency because of java 9
@@ -25,12 +25,12 @@ dependencies {
     compile activation// should be included as external dependency because of java 9
 
     // zipkin
-    compile('org.springframework.cloud:spring-cloud-starter-sleuth')
-    compile('org.springframework.cloud:spring-cloud-starter-zipkin')
-    compile('org.springframework.amqp:spring-rabbit')
+    compile 'org.springframework.cloud:spring-cloud-starter-sleuth'
+    compile 'org.springframework.cloud:spring-cloud-starter-zipkin'
+    compile 'org.springframework.amqp:spring-rabbit'
 
-	testCompile('org.springframework.boot:spring-boot-starter-test')
-	testCompile('org.springframework.restdocs:spring-restdocs-mockmvc')
+	testCompile 'org.springframework.boot:spring-boot-starter-test'
+	testCompile 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
 
 docker {

@@ -16,4 +16,6 @@ spring:
 
 management:
   endpoints.web.exposure.include: '*'
-  endpoint.health.show-details: when_authorized
+  endpoint.health.show-details: always
+
+feign.hystrix.enabled: true
