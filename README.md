@@ -13,6 +13,17 @@
 ### Run docker-compose
 `docker-compose up`
 
+## Monitoring
+
+### Zipkin
+Open request tracing by visiting `http://localhost:9411/zipkin/`
+
+### Hystrix dashboard
+
+Visit dashboard: `http://localhost:9001/hystrix`.
+
+Use turbine stream to open dashboard: `http://localhost:9001/turbine.stream`.`
+
 # Monolith Legacy Flow
 ## Docker
 ### Build container
