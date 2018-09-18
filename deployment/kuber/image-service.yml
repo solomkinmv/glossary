@@ -1,0 +1,57 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: image-service
+  labels:
+    app: glossary
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: glossary
+        component: image-service
+    spec:
+      containers:
+      - name: image-service
+        image: solomkinmv/image-service
+        env:
+        - name: FLICKR_KEY
+          valueFrom:
+            secretKeyRef:
+              name: flickr-secret
+              key: key
+        - name: FLICKR_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: flickr-secret
+              key: secret
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8084
+        livenessProbe:
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          httpGet:
+            path: /actuator/health
+            port: 8084
+        resources:
+          limits:
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: image-service
+  labels:
+    app: glossary
+spec:
+  ports:
+  - port: 8084
+    nodePort: 30884
+  selector:
+    app: glossary
+    component: image-service
+  type: NodePort
+#  clusterIP: None
