@@ -2,27 +2,34 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mysql-words
+  labels:
+    app: glossary
 spec:
   ports:
   - port: 3306
   selector:
-    app: mysql-words
+    app: glossary
+    component: mysql-words
   clusterIP: None
 ---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
   name: mysql-words
+  labels:
+    app: glossary
 spec:
   selector:
     matchLabels:
-      app: mysql-words
+      app: glossary
+      component: mysql-words
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: mysql-words
+        app: glossary
+        component: mysql-words
     spec:
       containers:
       - image: mariadb:latest
@@ -54,6 +61,7 @@ metadata:
   name: mysql-words-volume
   labels:
     type: local
+    app: glossary
 spec:
   storageClassName: manual
   capacity:
@@ -67,6 +75,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-words-claim
+  labels:
+    app: glossary
 spec:
   storageClassName: manual
   accessModes:
@@ -79,12 +89,15 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: words-service
+  labels:
+    app: glossary
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: words-service
+        app: glossary
+        component: words-service
     spec:
       containers:
       - name: words-service
@@ -117,10 +130,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: words-service
+  labels:
+    app: glossary
 spec:
   ports:
   - nodePort: 30885
     port: 8085
   selector:
-    app: words-service
+    app: glossary
+    component: words-service
   type: NodePort

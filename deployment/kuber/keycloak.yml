@@ -2,27 +2,34 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mysql-keycloak
+  labels:
+    app: glossary
 spec:
   ports:
   - port: 3306
   selector:
-    app: mysql-keycloak
+    app: glossary
+    component: mysql-keycloak
   clusterIP: None
 ---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
   name: mysql-keycloak
+  labels:
+    app: glossary
 spec:
   selector:
     matchLabels:
-      app: mysql-keycloak
+      app: glossary
+      component: mysql-keycloak
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: mysql-keycloak
+        app: glossary
+        component: mysql-keycloak
     spec:
       containers:
       - image: mysql:5.7.22 # mysql v8 doesn't work with keycloak 4.1.0, there is some bug
@@ -53,6 +60,7 @@ apiVersion: v1
 metadata:
   name: mysql-keycloak-volume
   labels:
+    app: glossary
     type: local
 spec:
   storageClassName: manual
@@ -67,6 +75,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-keycloak-claim
+  labels:
+    app: glossary
 spec:
   storageClassName: manual
   accessModes:
@@ -79,12 +89,15 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: keycloak
+  labels:
+    app: glossary
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: keycloak
+        app: glossary
+        component: keycloak
     spec:
       containers:
       - name: keycloak
@@ -126,11 +139,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: keycloak
+  labels:
+    app: glossary
 spec:
   ports:
   - nodePort: 30880
     port: 8080
-  - port: 8080
   selector:
-    app: keycloak
+    app: glossary
+    component: keycloak
   type: NodePort
