@@ -1,0 +1,126 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-words
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: mysql-words
+  clusterIP: None
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: mysql-words
+spec:
+  selector:
+    matchLabels:
+      app: mysql-words
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql-words
+    spec:
+      containers:
+      - image: mariadb:latest
+        name: mysql-words
+        env:
+        # Use secret in real usage
+        - name: MYSQL_ROOT_PASSWORD
+          value: p4SSW0rd
+        - name: MYSQL_DATABASE
+          value: words-service-db
+        - name: MYSQL_USER
+          value: dbuser
+        - name: MYSQL_PASSWORD
+          value: dbp4ss
+        ports:
+        - containerPort: 3306
+          name: mysql-words
+        volumeMounts:
+        - name: mysql-words-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-words-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-words-claim
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: mysql-words-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 0.5Gi
+  accessModes:
+  - ReadWriteOnce
+  hostPath:
+    path: "/tmp/data/words-db"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-words-claim
+spec:
+  storageClassName: manual
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 0.5Gi
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: words-service
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: words-service
+    spec:
+      containers:
+      - name: words-service
+        image: solomkinmv/words-service
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8085
+        env:
+        - name: DATABASE_HOST
+          value: mysql-words
+        - name: DATABASE_USER
+          value: dbuser
+        - name: DATABASE_PASSWORD
+          value: dbp4ss
+        - name: DATABASE_NAME
+          value: words-service-db
+        - name: DATABASE_PORT
+          value: "3306"
+        livenessProbe:
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          httpGet:
+            path: /actuator/health
+            port: 8085
+        resources:
+          limits:
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: words-service
+spec:
+  ports:
+  - nodePort: 30885
+    port: 8085
+  selector:
+    app: words-service
+  type: NodePort
