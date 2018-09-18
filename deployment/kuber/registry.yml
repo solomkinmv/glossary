@@ -1,0 +1,41 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: registry
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: registry
+    #      annotations:
+    #        prometheus.io/scrape: 'true'
+    spec:
+      containers:
+      - name: registry
+        image: solomkinmv/discovery-server
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8761
+        livenessProbe:
+          initialDelaySeconds: 15
+          periodSeconds: 15
+          httpGet:
+            path: /actuator/health
+            port: 8761
+        resources:
+          limits:
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: registry
+spec:
+  ports:
+  - nodePort: 30761
+    port: 8761
+  selector:
+    app: registry
+  type: NodePort
