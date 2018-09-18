@@ -1,0 +1,39 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gateway
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+      - name: gateway
+        image: solomkinmv/gateway
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8008
+        livenessProbe:
+          initialDelaySeconds: 15
+          periodSeconds: 15
+          httpGet:
+            path: /actuator/health
+            port: 8008
+        resources:
+          limits:
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+spec:
+  ports:
+  - nodePort: 30808
+    port: 8008
+  selector:
+    app: gateway
+  type: NodePort
