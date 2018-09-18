@@ -1,0 +1,45 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: config
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: config
+    #      annotations:
+    #        prometheus.io/scrape: 'true'
+    spec:
+      containers:
+      - name: config
+        image: solomkinmv/config-server
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "native"
+        ports:
+        - containerPort: 8888
+        #        todo: should be UP without Eureka
+        #        livenessProbe:
+        #          initialDelaySeconds: 15
+        #          periodSeconds: 15
+        #          httpGet:
+        #            path: /actuator/health
+        #            port: 8888
+        resources:
+          limits:
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: config
+spec:
+  ports:
+  - nodePort: 30888
+    port: 8888
+  selector:
+    app: config
+  type: NodePort
