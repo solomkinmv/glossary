@@ -1,0 +1,136 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-keycloak
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: mysql-keycloak
+  clusterIP: None
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: mysql-keycloak
+spec:
+  selector:
+    matchLabels:
+      app: mysql-keycloak
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql-keycloak
+    spec:
+      containers:
+      - image: mysql:5.7.22 # mysql v8 doesn't work with keycloak 4.1.0, there is some bug
+        name: mysql-keycloak
+        env:
+        # Use secret in real usage
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+        - name: MYSQL_DATABASE
+          value: keycloak
+        - name: MYSQL_USER
+          value: keycloak
+        - name: MYSQL_PASSWORD
+          value: password
+        ports:
+        - containerPort: 3306
+          name: mysql-keycloak
+        volumeMounts:
+        - name: mysql-keycloak-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-keycloak-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-keycloak-claim
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: mysql-keycloak-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 0.5Gi
+  accessModes:
+  - ReadWriteOnce
+  hostPath:
+    path: "/tmp/data/keycloak-db"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-keycloak-claim
+spec:
+  storageClassName: manual
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 0.5Gi
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: keycloak
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+      - name: keycloak
+        image: jboss/keycloak:4.1.0.Final
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: management
+          containerPort: 9090
+        env:
+        - name: KEYCLOAK_LOGLEVEL
+          value: DEBUG
+        - name: PROXY_ADDRESS_FORWARDING
+          value: "true"
+        - name: DB_VENDOR
+          value: mysql
+        - name: DB_ADDR
+          value: mysql-keycloak
+        - name: DB_DATABASE
+          value: keycloak
+        - name: DB_USER
+          value: keycloak
+        - name: DB_PASSWORD
+          value: password
+        - name: KEYCLOAK_USER
+          value: keycloak
+        - name: KEYCLOAK_PASSWORD
+          value: keycloak
+        #        readinessProbe:
+        #          httpGet:
+        #            path: /auth/
+        #            port: 8080
+        resources:
+          limits:
+            memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+spec:
+  ports:
+  - nodePort: 30880
+    port: 8080
+  - port: 8080
+  selector:
+    app: keycloak
+  type: NodePort
