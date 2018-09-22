@@ -1,0 +1,59 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: tts-service
+  labels:
+    app: glossary
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: glossary
+        component: tts-service
+    spec:
+      containers:
+      - name: tts-service
+        image: solomkinmv/tts-service
+        env:
+        # Due to camelcase issues with "preferIpAddress", _JAVA_OPTIONS is used here
+        - name: _JAVA_OPTIONS
+          value: -Deureka.instance.preferIpAddress=true
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-secret
+              key: secret-access-key
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-secret
+              key: access-key-id
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8083
+        livenessProbe:
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          httpGet:
+            path: /actuator/health
+            port: 8083
+        resources:
+          limits:
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tts-service
+  labels:
+    app: glossary
+spec:
+  ports:
+  - port: 8083
+    nodePort: 30883
+  selector:
+    app: glossary
+    component: tts-service
+  type: NodePort
