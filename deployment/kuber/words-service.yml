@@ -106,6 +106,9 @@ spec:
         ports:
         - containerPort: 8085
         env:
+        # Due to camelcase issues with "preferIpAddress", _JAVA_OPTIONS is used here
+        - name: _JAVA_OPTIONS
+          value: -Deureka.instance.preferIpAddress=true
         - name: DATABASE_HOST
           value: mysql-words
         - name: DATABASE_USER
