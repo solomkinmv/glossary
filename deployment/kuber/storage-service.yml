@@ -20,6 +20,20 @@ spec:
         # Due to camelcase issues with "preferIpAddress", _JAVA_OPTIONS is used here
         - name: _JAVA_OPTIONS
           value: -Deureka.instance.preferIpAddress=true
+        - name: SPRING_PROFILES_ACTIVE
+          value: s3
+        - name: STORAGE.PRONUNCIATION_S3_BUCKET_NAME
+          value: glossary-pronunciations-0
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-secret
+              key: secret-access-key
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-secret
+              key: access-key-id
         imagePullPolicy: Always
         ports:
         - containerPort: 8081
