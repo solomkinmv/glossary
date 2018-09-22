@@ -10,8 +10,14 @@
 
 # Microservices Flow
 
-### Run docker-compose
+### Run docker-compose (deprecated since 22 September, 2018, can't support to many deployment configurations)
+
 `docker-compose up`
+
+### Deploy Kubernetes
+
+1. Provide necessary secrets. Find out more information in services README files. 
+2. `kubectl apply -f deployment/kuber/`   
 
 ## Monitoring
 
