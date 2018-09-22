@@ -17,6 +17,9 @@ spec:
       - name: image-service
         image: solomkinmv/image-service
         env:
+        # Due to camelcase issues with "preferIpAddress", _JAVA_OPTIONS is used here
+        - name: _JAVA_OPTIONS
+          value: -Deureka.instance.preferIpAddress=true
         - name: FLICKR_KEY
           valueFrom:
             secretKeyRef:
