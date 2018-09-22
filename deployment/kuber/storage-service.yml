@@ -1,0 +1,49 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: storage-service
+  labels:
+    app: glossary
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: glossary
+        component: storage-service
+    spec:
+      containers:
+      - name: storage-service
+        image: solomkinmv/storage-service
+        env:
+        # Due to camelcase issues with "preferIpAddress", _JAVA_OPTIONS is used here
+        - name: _JAVA_OPTIONS
+          value: -Deureka.instance.preferIpAddress=true
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8081
+        livenessProbe:
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          httpGet:
+            path: /actuator/health
+            port: 8081
+        resources:
+          limits:
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: storage-service
+  labels:
+    app: glossary
+spec:
+  ports:
+  - port: 8081
+    nodePort: 30881
+  selector:
+    app: glossary
+    component: storage-service
+  type: NodePort
