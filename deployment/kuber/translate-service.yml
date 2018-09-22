@@ -1,0 +1,54 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: translate-service
+  labels:
+    app: glossary
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: glossary
+        component: translate-service
+    spec:
+      containers:
+      - name: translate-service
+        image: solomkinmv/translate-service
+        env:
+        # Due to camelcase issues with "preferIpAddress", _JAVA_OPTIONS is used here
+        - name: _JAVA_OPTIONS
+          value: -Deureka.instance.preferIpAddress=true
+        - name: TRANSLATE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: translate-secret
+              key: key
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8082
+        livenessProbe:
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          httpGet:
+            path: /actuator/health
+            port: 8082
+        resources:
+          limits:
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: translate-service
+  labels:
+    app: glossary
+spec:
+  ports:
+  - port: 8082
+    nodePort: 30882
+  selector:
+    app: glossary
+    component: translate-service
+  type: NodePort
