@@ -34,6 +34,10 @@ spec:
       containers:
       - image: mariadb:latest
         name: mysql-words
+        args:
+        - mysqld
+        - --character-set-server=utf8mb4
+        - --collation-server=utf8mb4_unicode_ci
         env:
         # Use secret in real usage
         - name: MYSQL_ROOT_PASSWORD
