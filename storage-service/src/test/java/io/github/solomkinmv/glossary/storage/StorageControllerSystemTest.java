@@ -29,8 +29,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.endsWith;
-import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
@@ -97,19 +96,6 @@ public class StorageControllerSystemTest {
         imgUploadPath = Paths.get(storageProperties.getImgUploadDir());
     }
 
-    private void createInitialTestFile(String filename, String content) throws IOException {
-
-        if (!Files.exists(imgUploadPath)) {
-            Files.createDirectory(imgUploadPath);
-        }
-
-        Path filePath = imgUploadPath.resolve(filename);
-        Files.createFile(filePath);
-        try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
-            writer.write(content);
-        }
-    }
-
     @Test
     public void uploadsFile() throws Exception {
         String originalFilename = "img one.jpg";
@@ -121,8 +107,7 @@ public class StorageControllerSystemTest {
                                 .accept(MediaType.APPLICATION_JSON))
                .andExpect(status().isCreated())
                .andExpect(header().string("Location",
-                                          startsWith("http://localhost:8080" + imgPathPrefix + "/imgone")))
-               .andExpect(header().string("Location", endsWith(".jpg")))
+                                          equalTo("http://localhost:8080" + imgPathPrefix + "/img-one.jpg")))
                .andDo(documentationHandler.document(
                        requestParts(
                                partWithName("file").description("A file to upload")
@@ -225,5 +210,18 @@ public class StorageControllerSystemTest {
         assertThat(Files.exists(filePathOne)).isFalse();
         Path filePathTwo = imgUploadPath.resolve(originalFilenameTwo);
         assertThat(Files.exists(filePathTwo)).isFalse();
+    }
+
+    private void createInitialTestFile(String filename, String content) throws IOException {
+
+        if (!Files.exists(imgUploadPath)) {
+            Files.createDirectory(imgUploadPath);
+        }
+
+        Path filePath = imgUploadPath.resolve(filename);
+        Files.createFile(filePath);
+        try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
+            writer.write(content);
+        }
     }
 }
