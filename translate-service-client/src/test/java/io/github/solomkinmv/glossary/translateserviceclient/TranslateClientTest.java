@@ -17,8 +17,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static wiremock.org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 import static wiremock.org.eclipse.jetty.http.HttpStatus.OK_200;
 
 @RunWith(SpringRunner.class)
@@ -82,6 +84,22 @@ public class TranslateClientTest {
         TranslateResult actualTranslateResult = translateClient.translate(text, Language.RUSSIAN);
 
         assertThat(actualTranslateResult).isEqualTo(expectedResult);
+    }
+
+    @Test
+    public void triggersFallbackFactoryInCaseOfError() {
+        String text = "hello world";
+        TranslateResult expectedResult = new TranslateResult(text, emptyList(), null, Language.RUSSIAN);
+
+        stubFor(post(urlPathEqualTo("/translate"))
+                        .withQueryParam("text", equalTo(text))
+                        .withQueryParam("target", equalTo("RUSSIAN"))
+                        .willReturn(aResponse().withStatus(BAD_REQUEST_400)));
+
+        TranslateResult actualTranslateResult = translateClient.translate(text, Language.RUSSIAN);
+
+        assertThat(actualTranslateResult).isEqualTo(expectedResult);
+
     }
 
     @EnableAutoConfiguration

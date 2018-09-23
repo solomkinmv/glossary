@@ -20,13 +20,17 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.Arrays;
 
 import static java.util.Collections.singletonList;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -105,8 +109,7 @@ public class TranslateControllerSystemTest {
         String translation = "translation";
         String targetLanguage = "RUSSIAN";
         String sourceLanguage = "ENGLISH";
-        YandexTranslationResult translationResult = new YandexTranslationResult((short) 200, "en",
-                                                                                singletonList(translation));
+        YandexTranslationResult translationResult = new YandexTranslationResult((short) 200, "en", singletonList(translation));
         when(yandexTranslateClient.translate(any(), eq(text), eq("en-ru")))
                 .thenReturn(translationResult);
 
