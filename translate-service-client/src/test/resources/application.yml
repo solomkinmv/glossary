@@ -1,1 +1,3 @@
 translate-service.ribbon.listOfServers: localhost:${wiremock.server.port}
+
+feign.hystrix.enabled: true

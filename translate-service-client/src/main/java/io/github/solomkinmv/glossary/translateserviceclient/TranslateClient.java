@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @FeignClient(
-        name = "translate-service"
+        name = "translate-service",
+        fallbackFactory = TranslateClientFallbackFactory.class
 )
 public interface TranslateClient {
 
