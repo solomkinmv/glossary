@@ -24,6 +24,8 @@ spec:
           value: s3
         - name: STORAGE.PRONUNCIATION_S3_BUCKET_NAME
           value: glossary-pronunciations-0
+        - name: STORAGE.IMAGE_S3_BUCKET_NAME
+          value: glossary-images-0
         - name: AWS_SECRET_ACCESS_KEY
           valueFrom:
             secretKeyRef:
