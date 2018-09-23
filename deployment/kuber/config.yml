@@ -12,25 +12,19 @@ spec:
       labels:
         app: glossary
         component: config
-    #      annotations:
-    #        prometheus.io/scrape: 'true'
     spec:
       containers:
       - name: config
         image: solomkinmv/config-server
         imagePullPolicy: Always
-        env:
-        - name: SPRING_PROFILES_ACTIVE
-          value: "native"
         ports:
         - containerPort: 8888
-        #        todo: should be UP without Eureka
-        #        livenessProbe:
-        #          initialDelaySeconds: 15
-        #          periodSeconds: 15
-        #          httpGet:
-        #            path: /actuator/health
-        #            port: 8888
+        livenessProbe:
+          initialDelaySeconds: 300
+          periodSeconds: 30
+          httpGet:
+            path: /actuator/health
+            port: 8888
         resources:
           limits:
             memory: 512Mi
