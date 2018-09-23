@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Optional;
@@ -48,7 +49,11 @@ public class YandexTranslator implements Translator {
         }
 
         YandexTranslationResult translationResult = yandexTranslateClient.translate(key, text, lang);
+        log.debug("Received translation result [text: {}, lang: {}, result: {}]", text, lang, translationResult);
 
+        if (CollectionUtils.isEmpty(translationResult.getText())) {
+            return Optional.empty();
+        }
         String translatedText = translationResult.getText().get(0);
         if (translatedText.equals(text)) {
             return Optional.empty();
