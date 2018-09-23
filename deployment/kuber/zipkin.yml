@@ -29,7 +29,7 @@ spec:
             port: 9411
         resources:
           limits:
-            memory: 512Mi
+            memory: 768Mi
 ---
 apiVersion: v1
 kind: Service
