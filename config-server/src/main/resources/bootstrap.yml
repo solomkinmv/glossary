@@ -8,8 +8,7 @@ spring:
         native:
           search-locations: classpath:/shared
         git:
-          uri: https://github.com/solomkinmv/glossary
-          search-paths: /configs
+          uri: https://github.com/solomkinmv/glossary-configs
         bootstrap: true
 
 server:
