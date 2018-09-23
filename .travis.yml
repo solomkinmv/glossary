@@ -38,3 +38,5 @@ after_success:
   - ./gradlew dashboard:docker
   - ./gradlew dashboard:dockerTag
   - ./gradlew dashboard:dockerPush
+  - ./gradlew statistics-service:dockerTag
+  - ./gradlew statistics-service:dockerPush

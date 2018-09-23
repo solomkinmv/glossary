@@ -5,15 +5,16 @@ apply plugin: 'com.palantir.docker'
 
 dependencies {
     compile 'org.springframework.cloud:spring-cloud-starter-config'
+    compile 'org.springframework.boot:spring-boot-starter-actuator'
     compile 'org.springframework.boot:spring-boot-starter-amqp'
-    compile 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+//    compile 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
     compile 'org.springframework.boot:spring-boot-starter-webflux'
     compile 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     compile 'org.springframework.cloud:spring-cloud-starter-netflix-hystrix'
     compile 'org.springframework.cloud:spring-cloud-starter-sleuth'
     compile 'org.springframework.cloud:spring-cloud-stream-binder-rabbit'
     compile 'org.springframework.cloud:spring-cloud-stream-reactive'
-    compile 'org.springframework.retry:spring-retry'
+//    compile 'org.springframework.retry:spring-retry'
     compileOnly 'org.projectlombok:lombok'
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
