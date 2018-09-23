@@ -32,6 +32,8 @@ public class StorageController {
         log.info("Getting file [name: {}, type: {}]", filename, type);
         Optional<String> path = storageService.getObject(filename, type);
 
+        log.info("Found file {} of type {} with following path {}", filename, type, path);
+
         return path.map(ResponseEntity::ok)
                    .orElse(ResponseEntity.noContent().build());
     }

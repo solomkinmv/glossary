@@ -91,11 +91,16 @@ public class S3StorageService extends NameAdaptingStorageService {
     @Override
     public Optional<String> getObject(String filename, StoredType type) {
         String bucketName = storedTypeBuckerMapping.get(type);
+
+        log.debug("Getting file {} of type {} from S3 bucket {}", filename, type, bucketName);
         if (!amazonS3.doesObjectExist(bucketName, filename)) {
+            log.debug("File {} of type {} does not exist in bucket {}", filename, type, bucketName);
             return Optional.empty();
         }
 
         String url = amazonS3.getUrl(bucketName, filename).toString();
+
+        log.debug("File {} of type {} exist in bucket {} with url {}", filename, type, bucketName, url);
         return Optional.of(url);
     }
 
