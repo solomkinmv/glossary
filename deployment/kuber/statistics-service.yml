@@ -1,0 +1,49 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: statistics-service
+  labels:
+    app: glossary
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: glossary
+        component: statistics-service
+    spec:
+      containers:
+      - name: statistics-service
+        image: solomkinmv/statistics-service
+        imagePullPolicy: Always
+        env:
+        # Due to camelcase issues with "preferIpAddress", _JAVA_OPTIONS is used here
+        - name: _JAVA_OPTIONS
+          value: -Deureka.instance.preferIpAddress=true
+        ports:
+        - containerPort: 8086
+        livenessProbe:
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          httpGet:
+            path: /actuator/health
+            port: 8086
+        resources:
+          limits:
+            memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: statistics-service
+  labels:
+    app: glossary
+spec:
+  ports:
+  - port: 8086
+    nodePort: 30886
+  selector:
+    app: glossary
+    component: statistics-service
+  type: NodePort
