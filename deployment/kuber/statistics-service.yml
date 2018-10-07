@@ -12,6 +12,9 @@ spec:
       labels:
         app: glossary
         component: statistics-service
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/path: '/actuator/prometheus'
     spec:
       containers:
       - name: statistics-service
@@ -73,4 +76,4 @@ spec:
   - type: Resource
     resource:
       name: memory
-      targetAverageValue: 300Mi
+      targetAverageValue: 1000Mi
