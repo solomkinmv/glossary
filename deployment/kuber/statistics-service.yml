@@ -77,3 +77,7 @@ spec:
     resource:
       name: memory
       targetAverageValue: 1000Mi
+  - type: Pods
+    pods:
+      metricName: rabbitmq_queue_size
+      targetAverageValue: 10
