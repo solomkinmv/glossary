@@ -33,6 +33,11 @@ spec:
   ports:
   - port: 5672
     targetPort: 5672
+    name: queue-port
+  - nodePort: 30762
+    port: 15672
+    name: management-port
   selector:
     app: glossary
     component: rabbitmq
+  type: NodePort
