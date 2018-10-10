@@ -6,6 +6,7 @@ import io.github.solomkinmv.glossary.statistics.domain.WordStage;
 import io.github.solomkinmv.glossary.statistics.listener.LearningResultMessage;
 import io.github.solomkinmv.glossary.statistics.listener.LearningResultMessage.LearningResult;
 import lombok.SneakyThrows;
+import org.awaitility.Duration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +27,7 @@ import static io.github.solomkinmv.glossary.statistics.domain.WordStage.LEARNING
 import static io.github.solomkinmv.glossary.statistics.domain.WordStage.NOT_LEARNED;
 import static io.github.solomkinmv.glossary.statistics.listener.LearningResultMessage.LearningResult.CORRECT;
 import static io.github.solomkinmv.glossary.statistics.listener.LearningResultMessage.LearningResult.INCORRECT;
+import static org.awaitility.Awaitility.await;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -115,12 +117,14 @@ public class StatisticsServiceApplicationTests {
     }
 
     private void assertCounters(int learnedWords, int learningWords) {
-        getStats()
-                .isEqualTo(UserStatsResponse.builder()
-                                            .subjectId(getSubjectId())
-                                            .learnedWords(learnedWords)
-                                            .learningWords(learningWords)
-                                            .build());
+        await()
+                .atMost(Duration.ONE_SECOND)
+                .untilAsserted(() -> getStats()
+                        .isEqualTo(UserStatsResponse.builder()
+                                                    .subjectId(getSubjectId())
+                                                    .learnedWords(learnedWords)
+                                                    .learningWords(learningWords)
+                                                    .build()));
     }
 
     private WebTestClient.BodySpec<UserStatsResponse, ?> getStats() {
