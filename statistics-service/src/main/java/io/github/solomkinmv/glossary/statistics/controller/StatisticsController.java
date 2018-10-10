@@ -15,7 +15,7 @@ public class StatisticsController {
     private final StatisticsService statisticsService;
 
     @RequestMapping("/")
-    Mono<UserStatsResponse> getUserStats(@RequestParam("userId") String subjectId) { // todo: use subject from token
+    Mono<UserStatsResponse> getUserStats(@RequestParam("subjectId") String subjectId) { // todo: use subject from token
         return statisticsService.getStats(Mono.just(subjectId))
                                 .map(UserStatsResponse::valueOf);
     }

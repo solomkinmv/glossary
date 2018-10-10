@@ -8,14 +8,14 @@ import lombok.Value;
 @Builder
 public class UserStatsResponse {
     private String subjectId;
-    private int totalWords;
+    private int learningWords;
     private int learnedWords;
 
     public static UserStatsResponse valueOf(UserStats userStats) {
         return UserStatsResponse.builder()
                                 .subjectId(userStats.getSubjectId())
-                                .totalWords(userStats.getTotalWords())
-                                .learnedWords(userStats.getTotalLearnedWords())
+                                .learningWords(userStats.getLearningWordsThisWeek().size())
+                                .learnedWords(userStats.getLearnedWordsThisWeek().size())
                                 .build();
     }
 }

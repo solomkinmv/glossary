@@ -1,9 +1,0 @@
-spring.cloud.stream.bindings:
-  input:
-    destination: learned-words
-    group: stats
-
-  output:
-    destination: learned-words
-
-queue.name: learned-words.stats
