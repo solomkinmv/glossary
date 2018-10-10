@@ -25,4 +25,4 @@ out/
 
 # sensitive info
 /principal_keys.env
-/realm-export.json
+/deployment/compose/realm-export.json

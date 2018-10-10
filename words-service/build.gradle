@@ -24,6 +24,11 @@ dependencies {
     compile jaxbImpl// should be included as external dependency because of java 9
     compile activation// should be included as external dependency because of java 9
 
+    // messaging
+    compile 'org.springframework.boot:spring-boot-starter-amqp'
+    compile 'org.springframework.cloud:spring-cloud-stream-binder-rabbit'
+    compile 'org.springframework.cloud:spring-cloud-stream-reactive'
+
     // security
     compile 'org.springframework.cloud:spring-cloud-starter-security'
     compile 'org.springframework.security:spring-security-test'
@@ -34,6 +39,7 @@ dependencies {
     compile('org.springframework.cloud:spring-cloud-starter-zipkin')
     compile('org.springframework.amqp:spring-rabbit')
 
+    // test
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'org.springframework.restdocs:spring-restdocs-mockmvc'
     testCompile playtikaTestcontainers

@@ -62,8 +62,10 @@ public class PracticeController {
     }
 
     @PostMapping
-    public void handleResults(@Validated @RequestBody PracticeResults practiceResults) {
-        log.info("Handling quiz results");
-        practiceResultsHandler.handle(practiceResults);
+    public void handleResults(@Validated @RequestBody PracticeResults practiceResults,
+                              OAuth2Authentication authentication) {
+        String subjectId = OAuth2Utils.subjectId(authentication);
+        log.info("Handling quiz results [practiceResults: {}, subjectId: {}]", practiceResults, subjectId);
+        practiceResultsHandler.handle(practiceResults, subjectId);
     }
 }
