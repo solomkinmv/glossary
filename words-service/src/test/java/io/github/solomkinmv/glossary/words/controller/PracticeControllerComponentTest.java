@@ -11,8 +11,17 @@ import io.github.solomkinmv.glossary.words.service.practice.generic.GenericTest;
 import io.github.solomkinmv.glossary.words.service.practice.quiz.Quiz;
 import io.github.solomkinmv.glossary.words.service.practice.writing.WritingPracticeTest;
 import io.github.solomkinmv.glossary.words.service.practice.writing.WritingPracticeTest.Question;
+import io.github.solomkinmv.glossary.words.service.statistic.LearningResultMessage;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.http.MediaType;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +34,10 @@ import static io.github.solomkinmv.glossary.words.service.practice.provider.Abst
 import static io.github.solomkinmv.glossary.words.service.practice.provider.AbstractTestProvider.TEST_SIZE;
 import static java.lang.String.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -38,6 +51,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class PracticeControllerComponentTest extends BaseTest {
+
+    @MockBean
+    private Source source;
+
+    @Mock
+    private MessageChannel messageChannel;
+
+    @Captor
+    private ArgumentCaptor<Message<LearningResultMessage>> messageArgumentCaptor;
+
+    @Before
+    public void setUp() {
+        when(source.output())
+                .thenReturn(messageChannel);
+    }
 
     @Test
     @WithOAuthSubject
@@ -85,23 +113,6 @@ public class PracticeControllerComponentTest extends BaseTest {
                 word2.getId(), false
         ));
         handleResults(practiceResults);
-    }
-
-    private void handleResults(PracticeResults practiceResults) throws Exception {
-        mockMvc.perform(post("/practices")
-                                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                                .content(objectMapper.writeValueAsString(practiceResults))
-                                .header(AUTHORIZATION, "Bearer foo"))
-               .andExpect(status().isOk())
-               .andDo(documentationHandler.document(
-                       requestHeaders(
-                               headerWithName("Authorization").description("OAuth2 JWT token")),
-                       requestFields(
-                               fieldWithPath("wordAnswers.*")
-                                       .description(
-                                               "Map of word answers. Key is word id, value is boolean successful result")
-                       )
-               ));
     }
 
     @Test
@@ -181,41 +192,6 @@ public class PracticeControllerComponentTest extends BaseTest {
                 .contains(wordSet1.getWords().stream().map(WordResponse::getText).toArray(String[]::new));
     }
 
-    private GenericTest getGenericTest(long setId, boolean originQuestions) throws Exception {
-        return getGenericTest(setId, originQuestions, LEARNING);
-    }
-
-    private GenericTest getGenericTest(long setId, boolean originQuestions, PracticeType practiceType) throws Exception {
-        String json = mockMvc.perform(get("/practices/generic")
-                                              .param("setId", valueOf(setId))
-                                              .param("originQuestions", valueOf(originQuestions))
-                                              .param("practiceType", valueOf(practiceType))
-                                              .header(AUTHORIZATION, "Bearer foo"))
-                             .andExpect(status().isOk())
-                             .andDo(documentationHandler.document(
-                                     requestHeaders(
-                                             headerWithName("Authorization").description("OAuth2 JWT token")),
-                                     requestParameters(
-                                             parameterWithName("setId").description("Word Set id to generate generic test"),
-                                             parameterWithName("originQuestions")
-                                                     .description(
-                                                             "Flag that specifies test direction (word -> translation or translation -> word)"),
-                                             parameterWithName("practiceType")
-                                                     .description("Describes what types of words should be included in test scope. Possible values: " +
-                                                                          Arrays.toString(PracticeType.values()))
-                                     ), responseFields(
-                                             fieldWithPath("words[].wordId").description("id of the word"),
-                                             fieldWithPath("words[].text").description("Original text of the word"),
-                                             fieldWithPath("words[].translation").description("Translation text of the word"),
-                                             fieldWithPath("words[].stage").description("Learning stage of the word"),
-                                             fieldWithPath("words[].image").description("Image url for the word"),
-                                             fieldWithPath("words[].sound").description("Pronunciation sound url for the word")
-                                     )
-                             )).andReturn().getResponse().getContentAsString();
-
-        return objectMapper.readValue(json, GenericTest.class);
-    }
-
     @Test
     @WithOAuthSubject
     public void generatesQuizOfCorrectSize() throws Exception {
@@ -253,45 +229,6 @@ public class PracticeControllerComponentTest extends BaseTest {
             assertThat(question.getAlternatives()).hasSize(NUMBER_OF_CHOICES);
             assertThat(question.getAlternatives()).containsOnlyOnce(associatedWord.getTranslation());
         });
-    }
-
-    private Quiz getQuiz() throws Exception {
-        String contentAsString = mockMvc.perform(get("/practices/quiz")
-                                                         .param("originQuestions", valueOf(true))
-                                                         .header(AUTHORIZATION, "Bearer foo"))
-                                        .andExpect(status().isOk())
-                                        .andDo(documentationHandler.document(
-                                                requestHeaders(
-                                                        headerWithName("Authorization").description("OAuth2 JWT token")),
-                                                requestParameters(
-                                                        parameterWithName("originQuestions")
-                                                                .description(
-                                                                        "Flag that specifies test direction (word -> translation or translation -> word)"),
-                                                        parameterWithName("setId")
-                                                                .description("Optional word set id")
-                                                                .optional()
-                                                ),
-                                                responseFields(
-                                                        fieldWithPath("questions[].questionText")
-                                                                .description("Question text"),
-                                                        fieldWithPath("questions[].answer.wordId")
-                                                                .description("Correct word id"),
-                                                        fieldWithPath("questions[].answer.answerText")
-                                                                .description("Correct word text"),
-                                                        fieldWithPath("questions[].answer.stage")
-                                                                .description("Correct word learning stage"),
-                                                        fieldWithPath("questions[].answer.image")
-                                                                .description("Correct word image url"),
-                                                        fieldWithPath("questions[].answer.pronunciation")
-                                                                .description("Correct word pronunciation url"),
-                                                        fieldWithPath("questions[].alternatives[]")
-                                                                .description(
-                                                                        "List of possible answers. Includes one correct answer")
-                                                )
-                                        ))
-                                        .andReturn().getResponse().getContentAsString();
-
-        return objectMapper.readValue(contentAsString, Quiz.class);
     }
 
     @Test
@@ -349,13 +286,6 @@ public class PracticeControllerComponentTest extends BaseTest {
                 .containsAnyElementsOf(wordsFromWordSet2);
     }
 
-    private List<String> extractWords(WordSetResponse wordSet) {
-        return wordSet.getWords()
-                      .stream()
-                      .map(WordResponse::getText)
-                      .collect(Collectors.toList());
-    }
-
     @Test
     @WithOAuthSubject
     public void generatesWritingTestForAppropriateWordSet() throws Exception {
@@ -365,6 +295,111 @@ public class PracticeControllerComponentTest extends BaseTest {
         assertThat(writingPracticeTest.getQuestions())
                 .extracting(Question::getQuestionText)
                 .doesNotContainAnyElementsOf(wordsFromWordSet2);
+    }
+
+    private void handleResults(PracticeResults practiceResults) throws Exception {
+        mockMvc.perform(post("/practices")
+                                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                                .content(objectMapper.writeValueAsString(practiceResults))
+                                .header(AUTHORIZATION, "Bearer foo"))
+               .andExpect(status().isOk())
+               .andDo(documentationHandler.document(
+                       requestHeaders(
+                               headerWithName("Authorization").description("OAuth2 JWT token")),
+                       requestFields(
+                               fieldWithPath("wordAnswers.*")
+                                       .description(
+                                               "Map of word answers. Key is word id, value is boolean successful result")
+                       )
+               ));
+
+        verifyStatsMessage(practiceResults);
+    }
+
+    private void verifyStatsMessage(PracticeResults practiceResults) {
+        verify(messageChannel, times(practiceResults.getWordAnswers().size())).send(messageArgumentCaptor.capture());
+        reset(messageChannel);
+    }
+
+    private GenericTest getGenericTest(long setId, boolean originQuestions) throws Exception {
+        return getGenericTest(setId, originQuestions, LEARNING);
+    }
+
+    private GenericTest getGenericTest(long setId, boolean originQuestions, PracticeType practiceType) throws Exception {
+        String json = mockMvc.perform(get("/practices/generic")
+                                              .param("setId", valueOf(setId))
+                                              .param("originQuestions", valueOf(originQuestions))
+                                              .param("practiceType", valueOf(practiceType))
+                                              .header(AUTHORIZATION, "Bearer foo"))
+                             .andExpect(status().isOk())
+                             .andDo(documentationHandler.document(
+                                     requestHeaders(
+                                             headerWithName("Authorization").description("OAuth2 JWT token")),
+                                     requestParameters(
+                                             parameterWithName("setId").description("Word Set id to generate generic test"),
+                                             parameterWithName("originQuestions")
+                                                     .description(
+                                                             "Flag that specifies test direction (word -> translation or translation -> word)"),
+                                             parameterWithName("practiceType")
+                                                     .description("Describes what types of words should be included in test scope. Possible values: " +
+                                                                          Arrays.toString(PracticeType.values()))
+                                     ), responseFields(
+                                             fieldWithPath("words[].wordId").description("id of the word"),
+                                             fieldWithPath("words[].text").description("Original text of the word"),
+                                             fieldWithPath("words[].translation").description("Translation text of the word"),
+                                             fieldWithPath("words[].stage").description("Learning stage of the word"),
+                                             fieldWithPath("words[].image").description("Image url for the word"),
+                                             fieldWithPath("words[].sound").description("Pronunciation sound url for the word")
+                                     )
+                             )).andReturn().getResponse().getContentAsString();
+
+        return objectMapper.readValue(json, GenericTest.class);
+    }
+
+    private Quiz getQuiz() throws Exception {
+        String contentAsString = mockMvc.perform(get("/practices/quiz")
+                                                         .param("originQuestions", valueOf(true))
+                                                         .header(AUTHORIZATION, "Bearer foo"))
+                                        .andExpect(status().isOk())
+                                        .andDo(documentationHandler.document(
+                                                requestHeaders(
+                                                        headerWithName("Authorization").description("OAuth2 JWT token")),
+                                                requestParameters(
+                                                        parameterWithName("originQuestions")
+                                                                .description(
+                                                                        "Flag that specifies test direction (word -> translation or translation -> word)"),
+                                                        parameterWithName("setId")
+                                                                .description("Optional word set id")
+                                                                .optional()
+                                                ),
+                                                responseFields(
+                                                        fieldWithPath("questions[].questionText")
+                                                                .description("Question text"),
+                                                        fieldWithPath("questions[].answer.wordId")
+                                                                .description("Correct word id"),
+                                                        fieldWithPath("questions[].answer.answerText")
+                                                                .description("Correct word text"),
+                                                        fieldWithPath("questions[].answer.stage")
+                                                                .description("Correct word learning stage"),
+                                                        fieldWithPath("questions[].answer.image")
+                                                                .description("Correct word image url"),
+                                                        fieldWithPath("questions[].answer.pronunciation")
+                                                                .description("Correct word pronunciation url"),
+                                                        fieldWithPath("questions[].alternatives[]")
+                                                                .description(
+                                                                        "List of possible answers. Includes one correct answer")
+                                                )
+                                        ))
+                                        .andReturn().getResponse().getContentAsString();
+
+        return objectMapper.readValue(contentAsString, Quiz.class);
+    }
+
+    private List<String> extractWords(WordSetResponse wordSet) {
+        return wordSet.getWords()
+                      .stream()
+                      .map(WordResponse::getText)
+                      .collect(Collectors.toList());
     }
 
     private WritingPracticeTest getWritingPracticeTest(long wordSetId) throws Exception {
