@@ -106,7 +106,7 @@ spec:
       containers:
       - name: words-service
         image: solomkinmv/words-service
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 8085
         env:
