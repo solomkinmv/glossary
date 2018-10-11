@@ -1,0 +1,112 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: local-storage
+  labels:
+    app: glossary
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+---
+
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: mongodb-volume
+  labels:
+    type: local
+    app: glossary
+spec:
+  storageClassName: local-storage
+  capacity:
+    storage: 2Gi
+  accessModes:
+  - ReadWriteOnce
+  hostPath:
+    path: "/tmp/data/dynamic-pv"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-claim
+  labels:
+    app: glossary
+spec:
+  storageClassName: local-storage
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+  labels:
+    name: mongo
+    app: glossary
+spec:
+  ports:
+  - port: 27017
+    targetPort: 27017
+  clusterIP: None
+  selector:
+    app: glossary
+    role: mongo
+
+---
+
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: mongo
+  labels:
+    app: glossary
+spec:
+  serviceName: "mongo"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        role: mongo
+        app: glossary
+        environment: test
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: mongo
+        image: mongo:4.0.3
+        imagePullPolicy: Always
+        #        env:
+        # Use secret in real usage
+        #        - name: MONGO_INITDB_ROOT_USERNAME
+        #          value: "mongo_user"
+        #        - name: MONGO_INITDB_ROOT_PASSWORD
+        #          value: "pswrd"
+        #        - name: MONGO_INITDB_DATABASE
+        #          value: "stats"
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: local-claim
+          mountPath: /data/db
+      - name: mongo-sidecar
+        image: cvallance/mongo-k8s-sidecar
+        env:
+        - name: MONGO_SIDECAR_POD_LABELS
+          value: "app=glossary,role=mongo,environment=test"
+  volumeClaimTemplates:
+  - metadata:
+      name: local-claim
+      labels:
+        app: glossary
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: local-storage
+      resources:
+        requests:
+          storage: 1Gi
