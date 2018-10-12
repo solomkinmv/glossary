@@ -24,5 +24,5 @@ out/
 *.jpg
 
 # sensitive info
-/principal_keys.env
+/deployment/compose/principal_keys.env
 /deployment/compose/realm-export.json
