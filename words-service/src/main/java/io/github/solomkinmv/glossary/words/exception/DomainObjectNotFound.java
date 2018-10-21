@@ -1,6 +1,6 @@
 package io.github.solomkinmv.glossary.words.exception;
 
-public class DomainObjectNotFound extends RuntimeException {
+public class DomainObjectNotFound extends WordsServiceException {
     public DomainObjectNotFound(String message) {
         super(message);
     }
