@@ -26,16 +26,31 @@ public class StorageServiceFacade {
     private final StorageClient storageClient;
 
     public String save(InputStream is, String filename) {
-        log.trace("Saving file to storage service {}", filename);
-        ResponseEntity<Void> responseEntity = storageClient.save(StoredType.SOUND, createMultipart(is, filename));
+        log.debug("Saving file to storage service {}", filename);
+        String location;
+        try {
+            ResponseEntity<Void> responseEntity = storageClient.save(StoredType.SOUND, createMultipart(is, filename));
+            location = Objects.requireNonNull(responseEntity.getHeaders().getLocation()).toString();
+        } catch (RuntimeException e) {
+            String msg = String.format("Failed to save filename: %s", filename);
+            log.error(msg, e);
+            throw new TtsServiceException(msg, e);
+        }
 
-        log.debug("Saved sound file. Location: {}", responseEntity.getHeaders().getLocation());
-        return Objects.requireNonNull(responseEntity.getHeaders().getLocation()).toString();
+        log.debug("Saved sound file. Location: {}", location);
+        return location;
     }
 
     public Optional<String> get(String filename) {
         log.trace("Getting sound file from storage service: {}", filename);
-        Optional<String> optionalUrl = storageClient.get(StoredType.SOUND, filename);
+        Optional<String> optionalUrl;
+        try {
+            optionalUrl = storageClient.get(StoredType.SOUND, filename);
+        } catch (RuntimeException e) {
+            String msg = String.format("Failed to get filename: %s", filename);
+            log.error(msg, e);
+            throw new TtsServiceException(msg, e);
+        }
 
         log.debug("Get result from storage service [filename: {}, result: {}]", filename, optionalUrl);
         return optionalUrl;
