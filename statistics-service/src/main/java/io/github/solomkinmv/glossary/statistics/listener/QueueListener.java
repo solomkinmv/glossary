@@ -33,7 +33,7 @@ public class QueueListener {
     @StreamListener(Processor.INPUT)
     public void receive2(String message) throws InterruptedException {
         log.info("Processing message: {}", message);
-        Thread.sleep(2000);
+        Thread.sleep(1000);
         log.info("Processed message: {}", message);
 
         LearningResultMessage learningResultMessage = null;
