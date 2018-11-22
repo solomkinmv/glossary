@@ -5,7 +5,7 @@ services:
   - docker
 
 language: java
-jdk: oraclejdk10
+jdk: oraclejdk11
 script:
   - ./gradlew codeCoverageReport
 after_success:
