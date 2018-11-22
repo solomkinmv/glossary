@@ -41,6 +41,7 @@ public class QueueListener {
             learningResultMessage = objectMapper.readValue(message, LearningResultMessage.class);
         } catch (IOException e) {
             log.error("Failed to parse: {}", message, e);
+            return;
         }
 
         statisticsService.updateStats(learningResultMessage)
