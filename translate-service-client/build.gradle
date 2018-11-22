@@ -1,6 +1,6 @@
 group = 'io.github.solomkinmv.glossary'
 version = '0.0.3-SNAPSHOT'
-sourceCompatibility = 11
+sourceCompatibility = 10
 
 dependencies {
 	compile 'org.springframework.cloud:spring-cloud-starter-openfeign'
