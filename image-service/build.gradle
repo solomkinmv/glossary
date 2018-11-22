@@ -4,7 +4,7 @@ plugins {
 
 group = 'io.github.solomkinmv.glossary'
 version = '0.0.3-SNAPSHOT'
-sourceCompatibility = 10
+sourceCompatibility = 11
 
 apply plugin: 'com.palantir.docker'
 

@@ -74,8 +74,8 @@ allprojects {
         toolVersion = jacocoVersion
     }
 
-    sourceCompatibility = 10
-    targetCompatibility = 10
+    sourceCompatibility = 11
+    targetCompatibility = 11
 
     compileJava {
         options.compilerArgs << '-parameters'
